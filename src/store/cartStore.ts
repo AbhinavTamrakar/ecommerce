@@ -3,17 +3,32 @@ import { Cart, CartItem } from "@/types";
 import toast from "react-hot-toast";
 import { useAuthStore } from "@/store/authStore";
 
-const BASE = process.env.NEXT_PUBLIC_API_URL || '';
+const BASE = '';
 
 interface CartState {
   cart: Cart | null;
   isLoading: boolean;
   itemCount: number;
   fetchCart: () => Promise<void>;
-  addItem: (productId: number, quantity: number) => Promise<void>;
+  addItem: (productId: number, quantity: number, variantId?: number) => Promise<void>;
   updateItem: (id: number, quantity: number) => Promise<void>;
   removeItem: (id: number) => Promise<void>;
   clearCart: () => Promise<void>;
+}
+
+function getToken(): string | null {
+  const storeToken = useAuthStore.getState().token;
+  if (storeToken) return storeToken;
+  try {
+    const raw = localStorage.getItem('auth');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return parsed?.state?.token || null;
+    }
+  } catch {
+    // ignore
+  }
+  return null;
 }
 
 export const useCartStore = create<CartState>((set, get) => ({
@@ -24,10 +39,9 @@ export const useCartStore = create<CartState>((set, get) => ({
   fetchCart: async () => {
     try {
       set({ isLoading: true });
-      const token = useAuthStore.getState().token;
+      const token = getToken();
       if (!token) throw new Error("No token");
       const res = await fetch(`${BASE}/api/cart`, {
-        credentials: "include",
         headers: {
           "Accept": "application/json",
           "Authorization": `Bearer ${token}`
@@ -35,51 +49,54 @@ export const useCartStore = create<CartState>((set, get) => ({
       });
       if (!res.ok) throw new Error("Failed to fetch cart");
       const data = await res.json();
-      const cart = data.data || data;
-      const items: CartItem[] = cart?.items || cart || [];
-      const count = items.reduce((acc: number, item: CartItem) => acc + item.quantity, 0);
+      const cart: Cart = data.data || data;
+      const count = cart?.items_count ?? cart?.items?.length ?? 0;
       set({ cart, itemCount: count });
     } catch {
-      // Not logged in — cart empty
       set({ cart: null, itemCount: 0 });
     } finally {
       set({ isLoading: false });
     }
   },
 
-  addItem: async (productId, quantity) => {
-    const { isAuthenticated } = useAuthStore.getState()
-    if (!isAuthenticated) {
-      window.location.href = '/login?redirect=/cart'
-      return
+  addItem: async (productId, quantity, variantId) => {
+    const token = getToken();
+    if (!token) {
+      window.location.href = '/login?redirect=/cart';
+      return;
     }
     try {
-      const token = useAuthStore.getState().token;
-      if (!token) throw new Error("No token");
-      const res = await fetch(`${BASE}/api/cart`, {
+      const res = await fetch(`${BASE}/api/cart/items`, {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ product_id: productId, quantity })
+        body: JSON.stringify({
+          product_id: productId,
+          quantity,
+          ...(variantId ? { variant_id: variantId } : {})
+        })
       });
-      if (!res.ok) throw new Error("Failed to add");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        const message = errData?.message || "Failed to add item.";
+        toast.error(message);
+        return;
+      }
       toast.success("Added to cart!");
       await get().fetchCart();
     } catch {
-      toast.error("Failed to add item. Please login first.");
+      toast.error("Failed to add item. Please try again.");
     }
   },
 
   updateItem: async (id, quantity) => {
     try {
-      const token = useAuthStore.getState().token;
-      const res = await fetch(`${BASE}/api/cart/${id}`, {
+      const token = getToken();
+      const res = await fetch(`${BASE}/api/cart/items/${id}`, {
         method: "PUT",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
@@ -96,10 +113,9 @@ export const useCartStore = create<CartState>((set, get) => ({
 
   removeItem: async (id) => {
     try {
-      const token = useAuthStore.getState().token;
-      const res = await fetch(`${BASE}/api/cart/${id}`, {
+      const token = getToken();
+      const res = await fetch(`${BASE}/api/cart/items/${id}`, {
         method: "DELETE",
-        credentials: "include",
         headers: {
           "Accept": "application/json",
           "Authorization": `Bearer ${token}`
@@ -113,12 +129,12 @@ export const useCartStore = create<CartState>((set, get) => ({
     }
   },
 
+  // ✅ Fixed: DELETE /api/cart (not /api/cart/items)
   clearCart: async () => {
     try {
-      const token = useAuthStore.getState().token;
+      const token = getToken();
       const res = await fetch(`${BASE}/api/cart`, {
         method: "DELETE",
-        credentials: "include",
         headers: {
           "Accept": "application/json",
           "Authorization": `Bearer ${token}`

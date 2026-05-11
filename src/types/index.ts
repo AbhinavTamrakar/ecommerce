@@ -77,27 +77,36 @@ export interface ProductsResponse {
 
 export interface CartItem {
   id: number
+  product_id: number
+  product_variant_id: number | null
   quantity: number
-  price: number
+  price: string
+  discount_percentage: string
+  stock_available: number
+  subtotal: number
+  created_at: string
   product: {
     id: number
     name: string
-    price: number
-    thumbnail?: string
-    image?: string
-    images?: { url: string }[]
-    category?: {
-      id: number
-      name: string
-      slug: string
-    }
+    slug: string
+    status: string
+    primary_image: string | null
+    delivery_charge: string
   }
+  variant: ProductVariant | null
+  variant_options: VariantOption[]
 }
 
 export interface Cart {
   id: number
+  user_id: number
+  user_name: string
   items: CartItem[]
-  total?: number
+  items_count: number
+  total_quantity: number
+  total: number
+  created_at: string
+  updated_at: string
 }
 
 export interface Banner {
