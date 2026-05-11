@@ -51,7 +51,7 @@ export default async function HomePage({
   const { products, categories, banners } = await getData();
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen py-16">
 
       <HeroSection
         banners={banners as Banner[]}
@@ -59,7 +59,7 @@ export default async function HomePage({
       />
 
       {/* ── Main content with sidebar ── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-10 items-start">
 
           {/* Sidebar — hidden on mobile via JS */}

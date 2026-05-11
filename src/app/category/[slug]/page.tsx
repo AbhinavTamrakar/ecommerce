@@ -43,7 +43,7 @@ export default async function CategoryPage({ params }: Props) {
 
   return (
     <div className="min-h-screen pt-5 pb-24 bg-[var(--color-cream)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="mb-10">
           <p className="text-xs uppercase tracking-widest text-[var(--color-accent)] mb-2">
             Category

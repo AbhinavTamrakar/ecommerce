@@ -414,7 +414,7 @@ export default function CartPage() {
       )}
 
       <div className="min-h-screen pt-8 pb-24">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
           <div className="flex items-center justify-between mb-10">
             <h1 className="text-3xl sm:text-4xl font-bold" style={{ fontFamily: "var(--font-display)" }}>
               Shopping Cart

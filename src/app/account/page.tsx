@@ -145,7 +145,7 @@ export default function AccountPage() {
 
   return (
     <div className="min-h-screen pt-8 pb-24">
-      <div className="max-w-3xl mx-auto px-6">
+      <div className="max-w-3xl mx-auto px-6 py-10">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

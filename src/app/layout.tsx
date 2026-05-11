@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
 import { Toaster } from "react-hot-toast";
 import { CartInitializer } from "@/components/cart/CartInitializer";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import { Bodoni_Moda, Jost } from 'next/font/google';
-import { ConditionalBanner } from "@/components/layout/ConditionalBanner";
+import { StoreLayout } from "@/components/layout/StoreLayout";
 
 const bodoni = Bodoni_Moda({ 
   subsets: ['latin'], 
@@ -17,7 +15,7 @@ const bodoni = Bodoni_Moda({
 const jost = Jost({ 
   subsets: ['latin'], 
   variable: '--font-body',
-  weight:'500'
+  weight: '500'
 }) 
 
 export const metadata: Metadata = {
@@ -47,10 +45,7 @@ export default function RootLayout({
             },
           }}
         />
-        <Navbar />
-        <ConditionalBanner />
-        <main>{children}</main>
-        <Footer />
+        <StoreLayout>{children}</StoreLayout>
       </body>
     </html>
   );

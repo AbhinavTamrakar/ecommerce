@@ -24,7 +24,7 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div className="min-h-screen pb-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         <ProductDetail product={product} />
         <SimilarProducts
           categorySlug={product.category.slug}
