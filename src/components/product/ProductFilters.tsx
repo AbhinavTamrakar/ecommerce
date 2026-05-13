@@ -4,16 +4,11 @@ import { useRouter } from "next/navigation";
 
 interface Props {
   categories: Category[];
+  types?: { id: number; name: string; slug: string }[];
   currentParams: Record<string, string | undefined>;
 }
 
-const TYPES = [
-  { slug: "mens", label: "Men" },
-  { slug: "women", label: "Women" },
-  { slug: "unisex", label: "Unisex" },
-];
-
-export function ProductFilters({ categories, currentParams }: Props) {
+export function ProductFilters({ categories, types = [], currentParams }: Props) {
   const router = useRouter();
 
   const setParam = (key: string, value: string | null) => {
@@ -70,7 +65,7 @@ export function ProductFilters({ categories, currentParams }: Props) {
           Type
         </h3>
         <ul className="space-y-2">
-          {TYPES.map(({ slug, label }) => (
+          {types.map(({ slug, name }) => (
             <li key={slug}>
               <button
                 onClick={() =>
@@ -82,7 +77,7 @@ export function ProductFilters({ categories, currentParams }: Props) {
                     : "text-[var(--color-muted)] hover:text-[var(--color-charcoal)]"
                 }`}
               >
-                {label}
+                {name}
               </button>
             </li>
           ))}

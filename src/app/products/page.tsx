@@ -16,11 +16,7 @@ interface Props {
   }>;
 }
 
-const TYPE_LABELS: Record<string, string> = {
-  mens: "Men",
-  women: "Women",
-  unisex: "Unisex",
-};
+
 
 async function getProducts(params: {
   search?: string;
@@ -76,9 +72,7 @@ async function getProducts(params: {
 
 async function getCategories(): Promise<Category[]> {
   try {
-    const res = await fetch(`${BASE}/api/public/categories`, {
-      cache: "no-store",
-    });
+    const res = await fetch(`${BASE}/api/public/categories`, { cache: "no-store" });
     if (!res.ok) return [];
     return (await res.json()).data ?? [];
   } catch (error) {
@@ -87,18 +81,32 @@ async function getCategories(): Promise<Category[]> {
   }
 }
 
+async function getTypes(): Promise<{ id: number; name: string; slug: string }[]> {
+  try {
+    const res = await fetch(`${BASE}/api/public/types`, { cache: "no-store" });
+    if (!res.ok) return [];
+    return (await res.json()).data ?? [];
+  } catch (error) {
+    console.error("Fetch Types Error:", error);
+    return [];
+  }
+}
+
 export default async function ProductsPage({ searchParams }: Props) {
   const sp = await searchParams;
 
-  const [products, categories] = await Promise.all([
+  const [products, categories, types] = await Promise.all([
     getProducts(sp),
     getCategories(),
+    getTypes(),
   ]);
+
+  const typeLabel = types.find((t: any) => t.slug === sp.type)?.name;
 
   const title = sp.search
     ? `Results for "${sp.search}"`
-    : sp.type && TYPE_LABELS[sp.type]
-    ? `${TYPE_LABELS[sp.type]}'s Collection`
+    : sp.type && typeLabel
+    ? `${typeLabel}'s Collection`
     : "All Products";
 
   return (
@@ -115,7 +123,7 @@ export default async function ProductsPage({ searchParams }: Props) {
                 </h3>
                 <PriceSlider initialMax={sp.maxPrice} />
               </div>
-              <ProductFilters categories={categories} currentParams={sp} />
+              <ProductFilters categories={categories} types={types} currentParams={sp} />
             </div>
           </SidebarWrapper>
 

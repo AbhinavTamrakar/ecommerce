@@ -12,10 +12,11 @@ const BASE = process.env.NEXT_PUBLIC_API_URL;
 
 async function getData() {
   try {
-    const [productsRes, categoriesRes, bannersRes] = await Promise.allSettled([
+    const [productsRes, categoriesRes, bannersRes, typesRes] = await Promise.allSettled([
       fetch(`${BASE}/api/public/products`, { cache: "no-store" }),
       fetch(`${BASE}/api/public/categories`, { cache: "no-store" }),
       fetch(`${BASE}/api/public/banners`, { cache: "no-store" }),
+      fetch(`${BASE}/api/public/types`, { cache: "no-store" }),
     ]);
 
     const products =
@@ -33,9 +34,14 @@ async function getData() {
         ? (await bannersRes.value.json()).data ?? []
         : [];
 
-    return { products, categories, banners };
+    const types =
+      typesRes.status === "fulfilled" && typesRes.value.ok
+        ? (await typesRes.value.json()).data ?? []
+        : [];
+
+    return { products, categories, banners, types };
   } catch {
-    return { products: [], categories: [], banners: [] };
+    return { products: [], categories: [], banners: [], types: [] };
   }
 }
 
@@ -49,7 +55,7 @@ export default async function HomePage({
   }>;
 }) {
   const sp = await searchParams;
-  const { products, categories, banners } = await getData();
+  const { products, categories, banners, types } = await getData();
 
   return (
     <div className="min-h-screen">
@@ -76,6 +82,7 @@ export default async function HomePage({
               </div>
               <ProductFilters
                 categories={categories as Category[]}
+                types={types}
                 currentParams={sp}
               />
             </div>
