@@ -58,27 +58,27 @@ export default function AdminDashboard() {
     Promise.all([
       fetchWithToken('/api/admin/dashboard/stats', token).catch(() => null),
       fetchWithToken('/api/admin/orders', token).catch(() => null),
-      fetchWithToken('/api/admin/products', token).catch(() => null),
+      fetchWithToken('/api/products', token).catch(() => null),
       fetchWithToken('/api/admin/customers', token).catch(() => null),
-      fetchWithToken('/api/reviews', token).catch(() => null),
+      fetchWithToken('/api/admin/reviews', token).catch(() => null),
     ]).then(([dashStats, orders, products, customers, reviews]) => {
       setStats(dashStats)
 
       const orderArr: any[] = Array.isArray(orders)
         ? orders
-        : orders?.data ?? orders?.orders ?? []
+        : orders?.data?.data ?? orders?.data ?? orders?.orders ?? []
 
       const productArr: any[] = Array.isArray(products)
         ? products
-        : products?.data ?? products?.products ?? []
+        : products?.data?.data ?? products?.data ?? products?.products ?? []
 
       const customerArr: any[] = Array.isArray(customers)
         ? customers
-        : customers?.data ?? customers?.customers ?? []
+        : customers?.data?.data ?? customers?.data ?? customers?.customers ?? []
 
       const reviewArr: any[] = Array.isArray(reviews)
         ? reviews
-        : reviews?.data ?? reviews?.reviews ?? []
+        : reviews?.data?.data ?? reviews?.data ?? reviews?.reviews ?? []
 
       // Status counts
       const statusCounts: Record<string, number> = {}
@@ -121,6 +121,10 @@ export default function AdminDashboard() {
         totalProducts: productArr.length,
         totalCustomers: customerArr.length,
         totalReviews: reviewArr.length,
+        totalOrders: orderArr.length,
+        lowStock: productArr
+          .filter((p: any) => (p.stock ?? 0) <= 5)
+          .sort((a: any, b: any) => (a.stock ?? 0) - (b.stock ?? 0))
       })
 
       setLoading(false)
@@ -129,12 +133,12 @@ export default function AdminDashboard() {
 
   const kpis = stats?.kpis || {}
   const recentOrders = stats?.recent_orders || []
-  const lowStock = stats?.low_stock || []
+  const lowStock = extraStats?.lowStock || stats?.low_stock || []
 
   const kpiCards = [
     { label: 'Total Revenue', value: `$${Number(kpis.total_revenue || 0).toFixed(2)}`, icon: DollarSign, color: 'bg-green-50 text-green-700' },
     { label: "Today's Revenue", value: `$${Number(kpis.today_revenue || 0).toFixed(2)}`, icon: TrendingUp, color: 'bg-blue-50 text-blue-700' },
-    { label: 'Total Orders', value: kpis.total_orders || 0, icon: ShoppingBag, color: 'bg-orange-50 text-orange-700' },
+    { label: 'Total Orders', value: extraStats?.totalOrders ?? kpis.total_orders ?? 0, icon: ShoppingBag, color: 'bg-orange-50 text-orange-700' },
     { label: 'New Customers', value: kpis.new_customers || 0, icon: Users, color: 'bg-purple-50 text-purple-700' },
   ]
 
