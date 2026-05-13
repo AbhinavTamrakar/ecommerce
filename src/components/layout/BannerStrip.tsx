@@ -2,7 +2,7 @@ import React from 'react';
 
 export const BannerStrip = () => {
   return (
-    <div className="bg-[var(--color-charcoal)] text-white overflow-hidden flex whitespace-nowrap border-y border-white/10 mt-[64px]">
+    <div className="bg-[var(--color-charcoal)] text-white overflow-hidden flex whitespace-nowrap border-y border-white/10 mt-[64px] py-2">
       {[...Array(2)].map((_, i) => (
         <div key={i} className="animate-marquee-right flex items-center shrink-0" aria-hidden={i === 1}>
           
