@@ -1,6 +1,6 @@
 "use client";
 import { Category } from "@/types";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 interface Props {
   categories: Category[];
@@ -10,6 +10,7 @@ interface Props {
 
 export function ProductFilters({ categories, types = [], currentParams }: Props) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const setParam = (key: string, value: string | null) => {
     const params = new URLSearchParams();
@@ -17,11 +18,11 @@ export function ProductFilters({ categories, types = [], currentParams }: Props)
       if (v && k !== key) params.set(k, v);
     });
     if (value) params.set(key, value);
-    router.push(`/products?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const clearAll = () => {
-    router.push("/products");
+    router.push(pathname);
   };
 
   return (

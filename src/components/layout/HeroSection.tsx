@@ -147,7 +147,7 @@ export function HeroSection({ banners: rawBanners, products = [] }: Props) {
               Shop Collection
             </Link>
             <Link
-              href="/products"
+              href="/new-arrivals"
               className="btn-outline px-2 py-3"
               style={{
                 borderColor: "blue-500",

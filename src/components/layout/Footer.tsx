@@ -15,10 +15,15 @@ export function Footer() {
         <div>
           <h4 className="text-xs uppercase tracking-widest text-white/40 mb-4">Shop</h4>
           <ul className="space-y-2">
-            {["New Arrivals", "Men", "Women", "Accessories"].map((item) => (
-              <li key={item}>
-                <Link href="/products" className="text-sm text-white/70 hover:text-white transition-colors">
-                  {item}
+            {[
+              { label: "New Arrivals", href: "/new-arrivals" },
+              { label: "Men", href: "/products?type=mens" },
+              { label: "Women", href: "/products?type=women" },
+              { label: "Accessories", href: "/products" },
+            ].map((item) => (
+              <li key={item.label}>
+                <Link href={item.href} className="text-sm text-white/70 hover:text-white transition-colors">
+                  {item.label}
                 </Link>
               </li>
             ))}

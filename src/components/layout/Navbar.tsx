@@ -63,6 +63,7 @@ export function Navbar() {
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/products", label: "Shop" },
+    { href: "/new-arrivals", label: "New Arrivals" },
   ];
 
   const categories = [
