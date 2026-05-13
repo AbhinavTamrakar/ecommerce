@@ -1,5 +1,6 @@
 import { Product, Category, Banner } from "@/types";
 import { HeroSection } from "@/components/layout/HeroSection";
+import { BannerStrip } from "@/components/layout/BannerStrip";
 import { ProductSlider } from "@/components/product/ProductSlider";
 import { CategoryGrid } from "@/components/layout/CategoryGrid";
 import { ProductFilters } from "@/components/product/ProductFilters";
@@ -51,7 +52,9 @@ export default async function HomePage({
   const { products, categories, banners } = await getData();
 
   return (
-    <div className="min-h-screen py-16">
+    <div className="min-h-screen">
+
+      <BannerStrip />
 
       <HeroSection
         banners={banners as Banner[]}
