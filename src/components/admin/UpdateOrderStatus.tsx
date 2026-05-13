@@ -4,17 +4,18 @@ import { useAuthStore } from '@/store/authStore'
 import toast from 'react-hot-toast'
 import { ChevronDown } from 'lucide-react'
 
-const BASE = process.env.NEXT_PUBLIC_API_URL || ''
+const API = 'http://194.146.12.71:8008'
 
 const STATUSES = ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded']
 
 interface Props {
   orderId: number
   currentStatus: string
+  currentPaymentStatus?: string
   onUpdated?: () => void
 }
 
-export function UpdateOrderStatus({ orderId, currentStatus, onUpdated }: Props) {
+export function UpdateOrderStatus({ orderId, currentStatus, currentPaymentStatus, onUpdated }: Props) {
   const [status, setStatus] = useState(currentStatus)
   const [loading, setLoading] = useState(false)
 
@@ -22,26 +23,35 @@ export function UpdateOrderStatus({ orderId, currentStatus, onUpdated }: Props) 
     if (newStatus === status) return
     setLoading(true)
     try {
-      const token = useAuthStore.getState().token
-      const res = await fetch(`${BASE}/api/admin/orders/${orderId}`, {
+      const token = useAuthStore.getState().token ||
+        JSON.parse(localStorage.getItem('auth') || '{}')?.state?.token
+
+      // Auto-set payment_status to 'paid' when delivered
+      const payment_status = newStatus === 'delivered' ? 'paid'
+        : newStatus === 'cancelled' || newStatus === 'refunded' ? 'refunded'
+        : currentPaymentStatus || 'pending'
+
+      const res = await fetch(`${API}/api/admin/orders/${orderId}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ status: newStatus, payment_status }),
       })
+
       if (!res.ok) {
         const err = await res.json()
-        throw new Error(JSON.stringify(err))
+        throw new Error(err?.message || 'Failed')
       }
+
       setStatus(newStatus)
       toast.success(`Order #${orderId} → ${newStatus}`)
       onUpdated?.()
-    } catch (err) {
+    } catch (err: any) {
       console.error(err)
-      toast.error('Failed to update order status')
+      toast.error(err?.message || 'Failed to update order status')
     } finally {
       setLoading(false)
     }

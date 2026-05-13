@@ -82,8 +82,18 @@ function ProductCard({ product }: { product: any }) {
   );
 }
 
-export function HeroSection({ banners, products = [] }: Props) {
+export function HeroSection({ banners: rawBanners, products = [] }: Props) {
   const [current, setCurrent] = useState(0);
+
+  // Filter and normalize banners
+  const banners = rawBanners
+    .filter(b => (!b.position || b.position === 'hero') && b.is_active !== false)
+    .map(b => ({
+      ...b,
+      title: b.title || b.name,
+      image: b.image || (b.images && b.images.length > 0 ? b.images[0] : ''),
+    }))
+    .filter(b => b.image); // Only keep banners with an image
 
   useEffect(() => {
     if (banners.length <= 1) return;
@@ -160,11 +170,11 @@ export function HeroSection({ banners, products = [] }: Props) {
       {/* Background slides */}
       {banners.map((b, i) => (
         <div
-          key={b.id}
+          key={b.id || i}
           className="absolute inset-0 transition-opacity duration-1000"
           style={{ opacity: i === current ? 1 : 0 }}
         >
-          {getImageUrl(b.image) && (
+          {b.image && getImageUrl(b.image) && (
             <img
               src={getImageUrl(b.image)}
               alt={b.title || "Banner"}

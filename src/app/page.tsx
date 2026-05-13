@@ -54,7 +54,7 @@ export default async function HomePage({
   return (
     <div className="min-h-screen">
 
-      <BannerStrip />
+      <BannerStrip banners={banners as Banner[]} />
 
       <HeroSection
         banners={banners as Banner[]}

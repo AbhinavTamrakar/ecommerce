@@ -1,17 +1,53 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Package, ShoppingBag, Users, Tag, LogOut, Menu, X } from 'lucide-react'
+import {
+  LayoutDashboard, Package, ShoppingBag, Users, Tag, LogOut, Menu, X,
+  Layers, ShoppingCart, Sliders, CreditCard, Mail, Star, Settings, Image
+} from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
-const links = [
-  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin/products', label: 'Products', icon: Package },
-  { href: '/admin/orders', label: 'Orders', icon: ShoppingBag },
-  { href: '/admin/users', label: 'Users', icon: Users },
-  { href: '/admin/categories', label: 'Categories', icon: Tag },
+const navGroups = [
+  {
+    label: 'Main',
+    links: [
+      { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+    ],
+  },
+  {
+    label: 'Catalog',
+    links: [
+      { href: '/admin/products', label: 'Products', icon: Package },
+      { href: '/admin/categories', label: 'Categories', icon: Tag },
+      { href: '/admin/types', label: 'Types', icon: Layers },
+      { href: '/admin/cart', label: 'Cart', icon: ShoppingCart },
+      { href: '/admin/attributes', label: 'Attributes', icon: Sliders },
+    ],
+  },
+  {
+    label: 'Sales',
+    links: [
+      { href: '/admin/orders', label: 'Orders', icon: ShoppingBag },
+      { href: '/admin/transactions', label: 'Transactions', icon: CreditCard },
+    ],
+  },
+  {
+    label: 'Customers',
+    links: [
+      { href: '/admin/users', label: 'Customers', icon: Users },
+      { href: '/admin/contacts', label: 'Contacts', icon: Mail },
+      { href: '/admin/reviews', label: 'Reviews', icon: Star },
+    ],
+  },
+  {
+    label: 'System',
+    links: [
+      { href: '/admin/settings', label: 'Settings', icon: Settings },
+      { href: '/admin/banners', label: 'Banners', icon: Image },
+    ],
+  },
 ]
 
 export default function AdminSidebar() {
@@ -34,25 +70,34 @@ export default function AdminSidebar() {
   }
 
   const NavLinks = () => (
-    <nav className="flex-1 px-3 py-4 space-y-1">
-      {links.map(({ href, label, icon: Icon }) => {
-        const active = pathname === href || (href !== '/admin' && pathname.startsWith(href))
-        return (
-          <Link
-            key={href}
-            href={href}
-            onClick={() => setOpen(false)}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-              active
-                ? 'bg-[#f97316] text-white font-medium'
-                : 'text-white/60 hover:text-white hover:bg-white/10'
-            }`}
-          >
-            <Icon size={17} />
-            {label}
-          </Link>
-        )
-      })}
+    <nav className="flex-1 px-3 py-4 overflow-y-auto">
+      {navGroups.map((group) => (
+        <div key={group.label} className="mb-4">
+          <p className="px-3 mb-1 text-[10px] uppercase tracking-widest font-bold text-black/40">
+            {group.label}
+          </p>
+          <div className="space-y-0.5">
+            {group.links.map(({ href, label, icon: Icon }) => {
+              const active = pathname === href || (href !== '/admin' && pathname.startsWith(href))
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={() => setOpen(false)}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+                    active
+                      ? 'bg-[#f97316] text-white font-medium'
+                      : 'text-black/60 hover:text-black hover:bg-black/10'
+                  }`}
+                >
+                  <Icon size={17} />
+                  {label}
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      ))}
     </nav>
   )
 
@@ -81,7 +126,7 @@ export default function AdminSidebar() {
       {!isMobile && (
         <aside className="fixed top-0 left-0 h-full w-64 bg-[#96b1d8] text-black flex flex-col z-50">
           <div className="px-6 py-5 border-b border-white/10">
-            <p className="text-[11px] uppercase tracking-widest font-bold text-black/40 mb-0.5">ShakTa</p>
+            <p className="text-[20px] uppercase tracking-widest font-bold text-black/40 mb-0.5">ShakTa</p>
             <h1 className="text-lg font-bold">Admin Panel</h1>
           </div>
           <NavLinks />

@@ -95,7 +95,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   updateItem: async (productId, quantity) => {
     try {
       const token = getToken();
-      const res = await fetch(`${BASE}/api/cart/items/{productId}`, {
+      const res = await fetch(`${BASE}/api/cart/items/${productId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -4,7 +4,7 @@ import { useAuthStore } from '@/store/authStore'
 import { UpdateOrderStatus } from '@/components/admin/UpdateOrderStatus'
 import { Package } from 'lucide-react'
 
-const BASE = process.env.NEXT_PUBLIC_API_URL || ''
+const API = 'http://194.146.12.71:8008'
 
 const statusColor: Record<string, string> = {
   delivered: 'bg-green-100 text-green-700',
@@ -22,10 +22,10 @@ export default function AdminOrdersPage() {
   const fetchOrders = async () => {
     setLoading(true)
     try {
-      const token = useAuthStore.getState().token
-      const res = await fetch(`${BASE}/api/admin/orders`, {
+      const token = useAuthStore.getState().token ||
+        JSON.parse(localStorage.getItem('auth') || '{}')?.state?.token
+      const res = await fetch(`${API}/api/admin/orders`, {
         headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
-        cache: 'no-store',
       })
       if (!res.ok) throw new Error(`${res.status}`)
       const data = await res.json()
@@ -99,7 +99,9 @@ export default function AdminOrdersPage() {
                 </td>
                 <td className="px-4 py-3">
                   <span className={`text-xs px-2.5 py-1 rounded-full font-medium capitalize ${
-                    order.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+                    order.payment_status === 'paid' ? 'bg-green-100 text-green-700' :
+                    order.payment_status === 'refunded' ? 'bg-gray-100 text-gray-600' :
+                    'bg-amber-100 text-amber-700'
                   }`}>
                     {order.payment_status || 'pending'}
                   </span>
@@ -110,7 +112,12 @@ export default function AdminOrdersPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  <UpdateOrderStatus orderId={order.id} currentStatus={order.status} onUpdated={fetchOrders} />
+                  <UpdateOrderStatus
+                    orderId={order.id}
+                    currentStatus={order.status}
+                    currentPaymentStatus={order.payment_status}
+                    onUpdated={fetchOrders}
+                  />
                 </td>
               </tr>
             ))}

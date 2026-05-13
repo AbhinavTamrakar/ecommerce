@@ -123,7 +123,7 @@ export default function TransactionsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr style={{ background: 'linear-gradient(135deg, #e8826a 0%, #d96b52 100%)' }}>
+                <tr style={{ background: 'linear-gradient(135deg, #464343ff 0%,   #4d3833ff 100%)' }}>
                   {['S.N', 'Transaction ID', 'Order #', 'Customer', 'Amount', 'Method', 'Status', 'Date', 'Actions'].map((h) => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider whitespace-nowrap">
                       {h}

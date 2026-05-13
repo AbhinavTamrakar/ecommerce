@@ -53,23 +53,22 @@ export default function ProductForm({ productId }: Props) {
     fetch(`${BASE}/api/public/types`, { headers })
       .then(r => r.json()).then(d => setTypes(d.data || [])).catch(() => {})
 
-    // Fetch attribute values (Color, Size IDs) — auth-protected endpoint
-    fetch(`${BASE}/api/attribute-values`, { headers })
+    // Fetch attributes with nested values to build color/size ID maps
+    fetch(`${BASE}/api/attributes`, { headers })
       .then(r => r.json())
       .then(d => {
-        const vals: any[] = Array.isArray(d.data) ? d.data : Array.isArray(d) ? d : []
-        console.log('[ProductForm] attribute-values raw:', vals[0])
+        const attrs: any[] = d.data || d || []
         const colorMap: Record<string,number> = {}
         const sizeMap: Record<string,number> = {}
-        vals.forEach((v: any) => {
-          const attrName = (v.attribute?.name || v.attribute_name || '').toLowerCase()
-          if (attrName === 'color') colorMap[v.value] = v.id
-          if (attrName === 'size') sizeMap[v.value] = v.id
+        attrs.forEach((attr: any) => {
+          const attrName = (attr.name || '').toLowerCase()
+          ;(attr.values || []).forEach((v: any) => {
+            if (attrName === 'color') colorMap[v.value] = v.id
+            if (attrName === 'size') sizeMap[v.value] = v.id
+          })
         })
-        if (Object.keys(colorMap).length || Object.keys(sizeMap).length) {
-          console.log('[ProductForm] colorMap from API:', colorMap, 'sizeMap:', sizeMap)
-          setAttrValueMap({ colorMap, sizeMap })
-        }
+        console.log('[ProductForm] colorMap:', colorMap, 'sizeMap:', sizeMap)
+        setAttrValueMap({ colorMap, sizeMap })
       })
       .catch(() => {})
 
@@ -103,8 +102,9 @@ export default function ProductForm({ productId }: Props) {
           ;(p.variants || []).forEach((v: any) => {
             ;(v.options || []).forEach((o: any) => {
               const attrName = (o.attribute_name || '').toLowerCase()
-              // attribute_value_id is the ID the API expects in attribute_values[]
-              const valId = o.attribute_value_id ?? o.id
+              // Try all possible ID field names the API might return
+              const valId = o.attribute_value_id ?? o.product_attribute_value_id ?? o.pivot?.attribute_value_id ?? o.id
+              console.log('[ProductForm] option fields:', JSON.stringify(o))
               if (attrName === 'color' && valId) colorMap[o.value] = valId
               if (attrName === 'size' && valId) sizeMap[o.value] = valId
             })
@@ -121,7 +121,7 @@ export default function ProductForm({ productId }: Props) {
               color: v.options?.find((o: any) => o.attribute_name === 'Color')?.value || '',
               size: v.options?.find((o: any) => o.attribute_name === 'Size')?.value || '',
               // Store the IDs from the API so we can send them back unchanged
-              attributeValueIds: (v.options || []).map((o: any) => o.attribute_value_id).filter(Boolean),
+              attributeValueIds: (v.options || []).map((o: any) => o.attribute_value_id ?? o.id).filter(Boolean),
             })))
           }
         })
@@ -187,8 +187,12 @@ export default function ProductForm({ productId }: Props) {
         if (v.size && sizeMap[v.size]) attrValues.push(sizeMap[v.size])
 
         if (v.id) {
-          // Existing variant: send stored IDs back as-is (no lookup needed)
+          // Existing variant: use stored IDs, fall back to colorMap/sizeMap lookup
           const ids = v.attributeValueIds?.length ? v.attributeValueIds : attrValues
+          // If still empty, log warning and skip to avoid API validation error
+          if (ids.length === 0) {
+            console.warn('[ProductForm] No attribute_value IDs for existing variant', v, '— skipping attribute_values')
+          }
           formData.append(`variants[${variantIndex}][id]`, String(v.id))
           formData.append(`variants[${variantIndex}][sku]`, v.sku)
           formData.append(`variants[${variantIndex}][price]`, v.price || form.price)
@@ -363,24 +367,14 @@ export default function ProductForm({ productId }: Props) {
 <select value={v.color} onChange={e => updateVariant(i, 'color', e.target.value)}
                       className="w-full border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-gray-400 bg-white">
                       <option value="">Color</option>
-                      <option value="Red">Red</option>
-                      <option value="Black">Black</option>
-                      <option value="White">White</option>
-                      <option value="Blue">Blue</option>
-                      <option value="Green">Green</option>
-                      <option value="Navy">Navy</option>
+                      {Object.keys(colorMap).map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
                   <div>
 <select value={v.size} onChange={e => updateVariant(i, 'size', e.target.value)}
                       className="w-full border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-gray-400 bg-white">
                       <option value="">Size</option>
-                      <option value="XS">XS</option>
-                      <option value="S">S</option>
-                      <option value="M">M</option>
-                      <option value="L">L</option>
-                      <option value="XL">XL</option>
-                      <option value="XXL">XXL</option>
+                      {Object.keys(sizeMap).map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </div>
                   <div>
