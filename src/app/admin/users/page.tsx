@@ -26,7 +26,7 @@ export default async function AdminUsersPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-900">Users</h1>
+        <h1 className="text-xl font-bold text-gray-900 py-10">Users</h1>
         <p className="text-gray-500 text-sm mt-1">{users.length} users total</p>
       </div>
 

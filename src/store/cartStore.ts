@@ -10,9 +10,9 @@ interface CartState {
   isLoading: boolean;
   itemCount: number;
   fetchCart: () => Promise<void>;
-  addItem: (productId: number, quantity: number, variantId?: number) => Promise<void>;
-  updateItem: (id: number, quantity: number) => Promise<void>;
-  removeItem: (id: number) => Promise<void>;
+  addItem: (productId: number, quantity: number, product_variant_id?: number) => Promise<void>;
+  updateItem: (productId: number, quantity: number) => Promise<void>;
+  removeItem: (productId: number) => Promise<void>;
   clearCart: () => Promise<void>;
 }
 
@@ -59,7 +59,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     }
   },
 
-  addItem: async (productId, quantity, variantId) => {
+  addItem: async (productId, quantity, product_variant_id) => {
     const token = getToken();
     if (!token) {
       window.location.href = '/login?redirect=/cart';
@@ -76,7 +76,7 @@ export const useCartStore = create<CartState>((set, get) => ({
         body: JSON.stringify({
           product_id: productId,
           quantity,
-          ...(variantId ? { variant_id: variantId } : {})
+          ...(product_variant_id ? { product_variant_id: product_variant_id } : {})
         })
       });
       if (!res.ok) {
@@ -92,10 +92,10 @@ export const useCartStore = create<CartState>((set, get) => ({
     }
   },
 
-  updateItem: async (id, quantity) => {
+  updateItem: async (productId, quantity) => {
     try {
       const token = getToken();
-      const res = await fetch(`${BASE}/api/cart/items/${id}`, {
+      const res = await fetch(`${BASE}/api/cart/items/{productId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -111,10 +111,10 @@ export const useCartStore = create<CartState>((set, get) => ({
     }
   },
 
-  removeItem: async (id) => {
+  removeItem: async (productId) => {
     try {
       const token = getToken();
-      const res = await fetch(`${BASE}/api/cart/items/${id}`, {
+      const res = await fetch(`${BASE}/api/cart/items/${productId}`, {
         method: "DELETE",
         headers: {
           "Accept": "application/json",

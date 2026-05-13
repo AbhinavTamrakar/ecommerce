@@ -57,8 +57,17 @@ export default function AccountPage() {
       return
     }
     const token = useAuthStore.getState().token
+    // Fetch full profile to get created_at and any fields missing from login response
+    fetch(`${BASE}/api/profile`, {
+      headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        const profileData = res.data || res
+        if (profileData?.id) setUser(profileData)
+      })
+      .catch(() => {})
     fetch(`${BASE}/api/orders`, {
-      credentials: 'include',
       headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -79,7 +88,6 @@ export default function AccountPage() {
       const token = useAuthStore.getState().token
       const res = await fetch(`${BASE}/api/profile`, {
         method: 'PUT',
-        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
@@ -104,7 +112,6 @@ export default function AccountPage() {
       const token = useAuthStore.getState().token
       await fetch(`${BASE}/api/logout`, {
         method: 'POST',
-        credentials: 'include',
         headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
       })
     } catch {}
@@ -273,7 +280,7 @@ export default function AccountPage() {
               </p>
               {filter === 'all' && (
                 <a
-                  href="/shop"
+                  href="/products"
                   className="flex items-center gap-1.5 text-sm text-[var(--color-charcoal)] font-medium hover:underline"
                 >
                   <ShoppingBag size={14} />

@@ -4,7 +4,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
-const BASE = process.env.NEXT_PUBLIC_API_URL || ''
+const API = 'http://194.146.12.71:8008'
 
 export function DeleteCategoryButton({ id }: { id: number }) {
   const router = useRouter()
@@ -12,10 +12,15 @@ export function DeleteCategoryButton({ id }: { id: number }) {
   const handleDelete = async () => {
     if (!confirm('Delete this category?')) return
     try {
-      const token = useAuthStore.getState().token
-      const res = await fetch(`${BASE}/api/categories/${id}`, {
+      const token = useAuthStore.getState().token ||
+        JSON.parse(localStorage.getItem('auth') || '{}')?.state?.token
+
+      const res = await fetch(`${API}/api/categories/${id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
       })
       if (!res.ok) throw new Error()
       toast.success('Category deleted')

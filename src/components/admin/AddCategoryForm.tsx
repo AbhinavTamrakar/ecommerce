@@ -4,10 +4,11 @@ import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
-const BASE = process.env.NEXT_PUBLIC_API_URL || ''
+const API = 'http://194.146.12.71:8008'
 
 export function AddCategoryForm() {
   const [name, setName] = useState('')
+  const [image, setImage] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
@@ -15,20 +16,32 @@ export function AddCategoryForm() {
     e.preventDefault()
     setLoading(true)
     try {
-      const token = useAuthStore.getState().token
-      const slug = name.toLowerCase().replace(/\s+/g, '-')
-      const res = await fetch(`${BASE}/api/categories`, {
+      const token = useAuthStore.getState().token ||
+        JSON.parse(localStorage.getItem('auth') || '{}')?.state?.token
+
+      const formData = new FormData()
+      formData.append('name', name)
+      if (image) formData.append('image', image)
+
+      const res = await fetch(`${API}/api/categories`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           Accept: 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name, slug }),
+        body: formData,
       })
-      if (!res.ok) throw new Error()
+
+      const data = await res.json()
+      if (!res.ok) {
+        const msg = data?.message || 'Failed to add category'
+        toast.error(msg)
+        return
+      }
+
       toast.success('Category added!')
       setName('')
+      setImage(null)
       router.refresh()
     } catch {
       toast.error('Failed to add category')
@@ -55,6 +68,15 @@ export function AddCategoryForm() {
           disabled
           value={name.toLowerCase().replace(/\s+/g, '-')}
           className="w-full border border-gray-100 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-400"
+        />
+      </div>
+      <div>
+        <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1.5">Image (optional)</label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={e => setImage(e.target.files?.[0] || null)}
+          className="w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
         />
       </div>
       <button

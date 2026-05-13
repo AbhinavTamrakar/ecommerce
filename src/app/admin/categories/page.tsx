@@ -12,7 +12,7 @@ async function getCategories(token: string) {
     })
     if (!res.ok) return []
     const data = await res.json()
-    return data.data || []
+    return Array.isArray(data) ? data : data.data || []
   } catch { return [] }
 }
 

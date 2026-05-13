@@ -26,7 +26,7 @@ export default async function AdminProductsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Products</h1>
+          <h1 className="text-xl font-bold text-gray-900 py-10">Products</h1>
           <p className="text-gray-500 text-sm mt-1">{products.length} products total</p>
         </div>
         <Link
