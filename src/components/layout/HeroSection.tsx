@@ -73,7 +73,7 @@ function ProductCard({ product }: { product: any }) {
         </div>
         <Link
           href={`/products/${product.id}`}
-          className="absolute top-2 right-2 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-white text-[10px] uppercase tracking-wider px-2 py-1 transition-colors"
+          className="absolute top-2 right-2 bg-black/75 hover:bg-white/40 backdrop-blur-sm text-white text-[10px] uppercase tracking-wider px-2 py-1 transition-colors"
         >
           View
         </Link>
