@@ -4,7 +4,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
-const BASE = process.env.NEXT_PUBLIC_API_URL || ''
+const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://194.146.12.71:8008'
 
 export function DeleteProductButton({ id }: { id: number }) {
   const router = useRouter()

@@ -273,7 +273,7 @@ export default function AdminDashboard() {
           <div className="px-8 py-6 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
              <h2 className="text-xs font-black text-black uppercase tracking-[0.25em] flex items-center gap-2">
               <div className="w-2 h-2 bg-red-500 rounded-full animate-ping" />
-              Critical Stock
+              Low Stock
             </h2>
             <a href="/admin/products" className="text-[9px] font-black uppercase tracking-widest bg-black text-white px-3 py-1.5 rounded-full hover:bg-gray-800 transition-all">Restock Registry →</a>
           </div>

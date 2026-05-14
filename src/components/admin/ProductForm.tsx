@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 import Link from 'next/link'
 import { ChevronLeft, Plus, Trash2 } from 'lucide-react'
 
-const BASE = process.env.NEXT_PUBLIC_API_URL || ''
+const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://194.146.12.71:8008'
 
 interface Variant {
   id?: number

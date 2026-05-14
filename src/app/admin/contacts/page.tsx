@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ShieldCheck, Mail, Calendar, Trash2, Search, ChevronDown } from 'lucide-react'
+import { ShieldCheck, Mail, Calendar, Trash2, Search, ChevronDown, Eye, X } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import Pagination from '@/components/admin/Pagination'
 
@@ -11,6 +11,7 @@ export default function AdminContactsPage() {
   const token = useAuthStore((s) => s.token) ?? ''
   const [inquiries, setInquiries] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [selected, setSelected] = useState<any>(null)
   const [deleting, setDeleting] = useState<number | null>(null)
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
@@ -64,8 +65,8 @@ export default function AdminContactsPage() {
   }
 
   const filtered = inquiries.filter(i => 
-    i.name?.toLowerCase().includes(search.toLowerCase()) || 
-    i.email?.toLowerCase().includes(search.toLowerCase())
+    (i.full_name || i.name || '').toLowerCase().includes(search.toLowerCase()) || 
+    (i.email || '').toLowerCase().includes(search.toLowerCase())
   )
 
   const displayData = isServerPaginated 
@@ -98,22 +99,21 @@ export default function AdminContactsPage() {
         </div>
       </div>
 
-      {/* Table Area */}
-      <div className="bg-white rounded-[20px] shadow-sm overflow-x-auto border border-gray-100">
-        <table className="w-full text-sm min-w-[1000px]">
+      <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden mb-12 animate-in fade-in zoom-in-95 duration-1000">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[1000px]">
           <thead>
-            {/* The distinct salmon/red background requested from the visual */}
-            <tr className="bg-red-400 text-white">
-              <th className="px-6 py-4 text-left font-bold uppercase tracking-wider text-[11px] rounded-tl-[20px]">SN</th>
-              <th className="px-6 py-4 text-left font-bold uppercase tracking-wider text-[11px]">SENDER</th>
-              <th className="px-6 py-4 text-left font-bold uppercase tracking-wider text-[11px]">SUBJECT</th>
-              <th className="px-6 py-4 text-left font-bold uppercase tracking-wider text-[11px]">PHONE</th>
-              <th className="px-6 py-4 text-left font-bold uppercase tracking-wider text-[11px]">MESSAGE</th>
-              <th className="px-6 py-4 text-left font-bold uppercase tracking-wider text-[11px]">DATE</th>
-              <th className="px-6 py-4 text-center font-bold uppercase tracking-wider text-[11px] rounded-tr-[20px]">ACTIONS</th>
+            <tr className="bg-gray-50/80 border-b border-gray-100 text-black">
+              <th className="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em]">SN</th>
+              <th className="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em]">SENDER</th>
+              <th className="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em]">SUBJECT</th>
+              <th className="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em]">PHONE</th>
+              <th className="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em]">MESSAGE</th>
+              <th className="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em]">DATE</th>
+              <th className="px-6 py-4 text-right text-[10px] font-bold uppercase tracking-[0.2em]">ACTIONS</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-50">
             {loading && inquiries.length === 0 ? (
                 Array.from({ length: 5 }).map((_, i) => (
                     <tr key={i} className="animate-pulse">
@@ -131,53 +131,63 @@ export default function AdminContactsPage() {
               </tr>
             ) : displayData.map((i, idx) => (
               <tr key={i.id} className="hover:bg-gray-50/50 transition-colors group">
-                <td className="px-6 py-6 text-gray-400 text-sm font-medium">
+                <td className="px-6 py-6 text-black/40 font-black text-[10px]">
                    {(page - 1) * pageSize + idx + 1}
                 </td>
-                <td className="px-6 py-6">
+                <td className="px-6 py-6" onClick={() => setSelected(i)}>
                   <div className="flex flex-col space-y-1">
-                    <span className="font-bold text-gray-900 text-[15px]">{i.name}</span>
-                    <div className="flex items-center gap-1.5 text-gray-500 text-[13px]">
-                      <Mail size={12} className="text-gray-400" />
-                      {i.email}
+                    <span className="font-bold text-black text-[15px] cursor-pointer">{i.full_name || i.name || 'Unknown User'}</span>
+                    <div className="flex items-center gap-1.5 text-black/60 text-[13px] font-bold">
+                      <Mail size={12} className="text-black/60" />
+                      {i.email || 'No Email'}
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-6">
-                  <div className="flex items-center gap-2 cursor-pointer group/item">
-                    <span className="text-gray-700 font-medium text-[14px] truncate max-w-[150px]">{i.subject || 'No Subject'}</span>
-                    <ChevronDown size={14} className="text-blue-500 opacity-50 group-hover/item:opacity-100 transition-opacity" />
+                  <div className="flex items-center gap-2 cursor-pointer group/item" onClick={() => setSelected(i)}>
+                    <span className="text-black font-bold text-[14px] truncate max-w-[150px]">{i.subject || 'No Subject'}</span>
+                    <ChevronDown size={14} className="text-black/40 opacity-50 group-hover/item:opacity-100 transition-opacity" />
                   </div>
                 </td>
                 <td className="px-6 py-6">
-                  <span className="text-gray-700 font-medium text-[14px]">{i.phone || 'N/A'}</span>
+                  <span className="text-black font-bold text-[14px]">{i.phone || 'N/A'}</span>
                 </td>
                 <td className="px-6 py-6">
-                  <div className="flex items-center gap-2 cursor-pointer group/item">
-                    <span className="text-gray-700 text-[14px] line-clamp-1 max-w-[200px]">{i.message}</span>
-                    <ChevronDown size={14} className="text-blue-500 opacity-50 group-hover/item:opacity-100 transition-opacity" />
+                  <div className="flex items-center gap-2 cursor-pointer group/item" onClick={() => setSelected(i)}>
+                    <span className="text-black font-medium text-[14px] line-clamp-1 max-w-[200px]">{i.message}</span>
+                    <ChevronDown size={14} className="text-black/40 opacity-50 group-hover/item:opacity-100 transition-opacity" />
                   </div>
                 </td>
                 <td className="px-6 py-6">
-                  <div className="flex items-center gap-2 text-gray-600 text-[13px] font-medium">
-                    <Calendar size={14} className="text-blue-500" />
-                    {new Date(i.created_at).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })}
+                  <div className="flex items-center gap-2 text-black/60 text-[10px] font-bold uppercase tracking-widest">
+                    <Calendar size={14} className="text-black/60" />
+                    {new Date(i.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
                 </td>
                 <td className="px-6 py-6 text-center">
-                  <button 
-                    onClick={() => handleDelete(i.id)} 
-                    disabled={deleting === i.id}
-                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center w-full"
-                    title="Delete submission"
-                  >
-                     <Trash2 size={16} />
-                  </button>
+                  <div className="flex items-center justify-end gap-1">
+                    <button 
+                      onClick={() => setSelected(i)} 
+                      className="p-3 text-black/40 hover:text-black hover:bg-gray-100 rounded-2xl transition-all outline-none"
+                      title="View submission details"
+                    >
+                       <Eye size={16} />
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(i.id)} 
+                      disabled={deleting === i.id}
+                      className="p-3 text-black/20 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all outline-none"
+                      title="Delete submission"
+                    >
+                       <Trash2 size={16} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Pagination component logic handling */}
@@ -196,6 +206,49 @@ export default function AdminContactsPage() {
                setPage(1);
              }}
            />
+        </div>
+      )}
+
+      {selected && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setSelected(null)}>
+            <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+               <div className="bg-gray-50/50 px-10 py-8 flex items-center justify-between border-b border-gray-100">
+                  <div className="flex items-center gap-5">
+                     <div className="w-14 h-14 bg-black text-white rounded-2xl flex items-center justify-center text-lg font-black shadow-lg">
+                        {(selected.full_name || selected.name || 'U').charAt(0).toUpperCase()}
+                     </div>
+                     <div>
+                        <h2 className="text-xl font-bold text-black tracking-tight leading-none mb-1.5">{selected.full_name || selected.name || 'Unknown User'}</h2>
+                        <div className="flex items-center gap-1.5">
+                           <Mail size={12} className="text-black/40" />
+                           <p className="text-[12px] font-bold text-black/60">{selected.email || 'No Email'}</p>
+                        </div>
+                     </div>
+                  </div>
+                  <button onClick={() => setSelected(null)} className="p-4 bg-white rounded-2xl shadow-sm text-black/40 hover:text-black hover:bg-gray-100 transition-all outline-none border border-gray-50"><X size={20} /></button>
+               </div>
+               <div className="p-10 space-y-8">
+                  <div className="grid grid-cols-2 gap-6">
+                     <div className="space-y-1.5 px-6 py-5 bg-gray-50 rounded-2xl border border-gray-100 shadow-inner">
+                        <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">Phone Number</p>
+                        <p className="font-bold text-black text-sm">{selected.phone || 'N/A'}</p>
+                     </div>
+                     <div className="space-y-1.5 px-6 py-5 bg-gray-50 rounded-2xl border border-gray-100 shadow-inner">
+                        <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">Date Sent</p>
+                        <p className="font-bold text-black text-sm">{new Date(selected.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                     </div>
+                  </div>
+                  <div className="pt-6">
+                     <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest mb-3">Subject</p>
+                     <p className="text-black font-semibold text-base mb-6">{selected.subject || 'No Subject'}</p>
+                     
+                     <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest mb-3">Message Content</p>
+                     <div className="bg-gray-50 rounded-3xl p-8 text-black font-medium leading-relaxed text-[15px] border border-gray-200">
+                        {selected.message}
+                     </div>
+                  </div>
+               </div>
+            </div>
         </div>
       )}
     </div>
