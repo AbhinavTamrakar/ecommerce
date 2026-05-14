@@ -1,6 +1,8 @@
 import { Product, Category } from "@/types";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { notFound } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL;
 
@@ -45,6 +47,9 @@ export default async function CategoryPage({ params }: Props) {
     <div className="min-h-screen pt-5 pb-24 bg-[var(--color-cream)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="mb-10">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-muted)] hover:text-[var(--color-charcoal)] transition-colors mb-8 group">
+            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Home
+          </Link>
           <p className="text-xs uppercase tracking-widest text-[var(--color-accent)] mb-2">
             Category
           </p>

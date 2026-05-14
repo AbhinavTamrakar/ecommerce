@@ -1,6 +1,7 @@
 "use client";
 import { Category } from "@/types";
 import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 
 interface Props {
   categories: Category[];
@@ -33,36 +34,35 @@ export function ProductFilters({ categories, types = [], currentParams }: Props)
         </h3>
         <ul className="space-y-2">
           <li>
-            <button
-              onClick={clearAll}
-              className={`text-sm w-full text-left py-1 transition-colors ${
-                !currentParams.category && !currentParams.type
+            <Link
+              href="/products"
+              className={`text-sm w-full text-left py-1 transition-colors block ${
+                pathname === "/products" && !currentParams.type
                   ? "font-semibold text-[var(--color-charcoal)]"
                   : "text-[var(--color-muted)] hover:text-[var(--color-charcoal)]"
               }`}
             >
               All Products
-            </button>
+            </Link>
           </li>
 
           {categories.length === 0 ? (
-            // Remove this block once categories are confirmed to be passing correctly
             <li className="text-xs text-red-400 italic">
               No categories received — check that categories prop is being fetched and passed from the parent page.
             </li>
           ) : (
             categories.map((cat) => (
               <li key={cat.id}>
-                <button
-                  onClick={() => setParam("category", String(cat.id))}
-                  className={`text-sm w-full text-left py-1 transition-colors ${
-                    currentParams.category === String(cat.id)
+                <Link
+                  href={`/category/${cat.slug}`}
+                  className={`text-sm w-full text-left py-1 transition-colors block ${
+                    pathname === `/category/${cat.slug}`
                       ? "font-semibold text-[var(--color-charcoal)]"
                       : "text-[var(--color-muted)] hover:text-[var(--color-charcoal)]"
                   }`}
                 >
                   {cat.name}
-                </button>
+                </Link>
               </li>
             ))
           )}
