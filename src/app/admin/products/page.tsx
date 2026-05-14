@@ -72,7 +72,7 @@ export default function AdminProductsPage() {
              </div>
              Inventory
           </h1>
-          <p className="text-[10px] font-bold text-black/40 mt-1 uppercase tracking-[0.3em] ml-1">{totalProducts} units listed in registry</p>
+          <p className="text-[10px] font-bold text-black/80 mt-1 uppercase tracking-[0.3em] ml-1">{totalProducts} units listed in registry</p>
         </div>
         <Link
           href="/admin/products/new"
@@ -85,13 +85,13 @@ export default function AdminProductsPage() {
 
       <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-3 mb-8 flex items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-700">
         <div className="flex-1 relative">
-           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black/20" size={18} />
+           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black" size={18} />
            <input 
               type="text" 
               placeholder="Filter by Stock Unit ID, Name or Asset Tag..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-gray-50/50 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold text-black placeholder:text-black/20 focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-inner"
+              className="w-full bg-gray-50/50 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold text-black placeholder:text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-inner"
            />
         </div>
       </div>
@@ -120,7 +120,7 @@ export default function AdminProductsPage() {
               ) : displayData.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-8 py-32 text-center">
-                    <div className="flex flex-col items-center gap-4 opacity-20">
+                    <div className="flex flex-col items-center gap-4 opacity-50">
                        <Database size={56} className="stroke-[1px]" />
                        <p className="text-sm font-black uppercase tracking-[0.4em]">Registry Empty</p>
                     </div>
@@ -128,7 +128,7 @@ export default function AdminProductsPage() {
                 </tr>
               ) : displayData.map((product: any, i: number) => (
                 <tr key={product.id} className="group hover:bg-gray-50/50 transition-all cursor-pointer">
-                  <td className="px-8 py-6 text-black/20 font-black text-[10px]">
+                  <td className="px-8 py-6 text-black font-black text-[10px]">
                      {(page - 1) * pageSize + i + 1}
                   </td>
                   <td className="px-8 py-5">
@@ -137,12 +137,12 @@ export default function AdminProductsPage() {
                           {product.primary_image ? (
                             <Image src={getImageUrl(product.primary_image)} alt="" fill className="object-cover" />
                           ) : (
-                            <div className="absolute inset-0 flex items-center justify-center text-black/10"><ImageIcon size={24} strokeWidth={1} /></div>
+                            <div className="absolute inset-0 flex items-center justify-center text-black/90"><ImageIcon size={24} strokeWidth={1} /></div>
                           )}
                        </div>
                        <div>
                          <p className="font-black text-black text-base tracking-tighter leading-none">{product.name}</p>
-                         <p className="text-[10px] font-black text-black/30 uppercase tracking-widest mt-2 px-1">{product.slug}</p>
+                         <p className="text-[10px] font-black text-black/70 uppercase tracking-widest mt-2 px-1">{product.slug}</p>
                        </div>
                     </div>
                   </td>
@@ -169,14 +169,14 @@ export default function AdminProductsPage() {
                   </td>
                   <td className="px-8 py-5">
                     <span className={`text-[9px] px-3.5 py-1.5 rounded-full font-black uppercase tracking-[0.15em] shadow-sm transition-all ${
-                      product.status === 'active' ? 'bg-black text-white' : 'bg-gray-100 text-black/20'
+                      product.status === 'active' ? 'bg-black text-white' : 'bg-gray-100 text-black'
                     }`}>
                       {product.status}
                     </span>
                   </td>
                   <td className="px-8 py-5 text-right whitespace-nowrap">
                     <div className="flex items-center justify-end gap-1 translate-x-2">
-                      <Link href={`/admin/products/${product.id}`} className="p-3 rounded-2xl text-black/40 hover:text-black hover:bg-white transition-all shadow-sm border border-transparent hover:border-gray-100">
+                      <Link href={`/admin/products/${product.id}`} className="p-3 rounded-2xl text-black/80 hover:text-black hover:bg-white transition-all shadow-sm border border-transparent hover:border-gray-100">
                         <Pencil size={18} />
                       </Link>
                       <DeleteProductButton id={product.id} />

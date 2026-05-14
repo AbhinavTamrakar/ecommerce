@@ -113,7 +113,7 @@ export default function AdminSettingsPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-4xl font-black text-black tracking-tighter">Business Settings</h1>
-          <p className="text-[10px] font-bold text-black/30 mt-1 uppercase tracking-[0.3em] ml-1">Configuration Control Cluster</p>
+          <p className="text-[10px] font-bold text-black/70 mt-1 uppercase tracking-[0.3em] ml-1">Configuration Control Cluster</p>
         </div>
         {(activeTab === 'social' || activeTab === 'quick') && (
            <button 
@@ -134,7 +134,7 @@ export default function AdminSettingsPage() {
             className={`flex items-center justify-center gap-3 px-10 py-4 rounded-[2rem] text-[11px] font-black uppercase tracking-widest transition-all min-w-[200px] ${
               activeTab === tab.id 
               ? 'bg-white text-black shadow-xl shadow-black/5 ring-1 ring-black/5' 
-              : 'text-black/40 hover:text-black'
+              : 'text-black/80 hover:text-black'
             }`}
           >
             <tab.icon size={18} className={activeTab === tab.id ? 'text-[#96b1d8]' : ''} />
@@ -152,7 +152,7 @@ export default function AdminSettingsPage() {
                  <div className="p-4 bg-white rounded-2xl shadow-sm text-black"><Globe size={28} /></div>
                  <div>
                     <h2 className="text-2xl font-black text-black leading-none">Company Profile</h2>
-                    <p className="text-[10px] font-bold text-black/30 uppercase tracking-widest mt-2">Foundational Registry Data</p>
+                    <p className="text-[10px] font-bold text-black/70 uppercase tracking-widest mt-2">Foundational Registry Data</p>
                  </div>
               </div>
               <div className="p-12 space-y-12">
@@ -161,7 +161,7 @@ export default function AdminSettingsPage() {
                        Company Name <span className="text-red-500">*</span>
                     </label>
                     <div className="relative group">
-                       <div className="absolute left-7 top-1/2 -translate-y-1/2 text-black/20 group-focus-within:text-black transition-colors"><Settings size={20} /></div>
+                       <div className="absolute left-7 top-1/2 -translate-y-1/2 text-black group-focus-within:text-black transition-colors"><Settings size={20} /></div>
                        <input 
                          type="text" 
                          value={businessData.name} 
@@ -178,19 +178,19 @@ export default function AdminSettingsPage() {
                     <div className="grid grid-cols-3 gap-6">
                         {['logo', 'header', 'footer'].map(type => (
                            <div key={type} className="aspect-[4/3] bg-gray-50 border border-gray-100 rounded-[2.5rem] flex flex-col items-center justify-center gap-4 group hover:border-[#96b1d8] hover:bg-white transition-all cursor-pointer relative overflow-hidden shadow-inner">
-                              <ImageIcon size={32} className="text-black/10 group-hover:text-black transition-colors" />
+                              <ImageIcon size={32} className="text-black/90 group-hover:text-black transition-colors" />
                               <span className="text-[10px] font-black text-black uppercase tracking-widest">{type}</span>
                                <div className="absolute bottom-0 left-0 right-0 h-1 transition-all bg-black group-hover:bg-[#96b1d8]" />
                            </div>
                         ))}
                     </div>
-                    <p className="text-[10px] font-bold text-black/30 uppercase tracking-widest text-center">Tap to cycle assets (PNG, JPG up to 2MB)</p>
+                    <p className="text-[10px] font-bold text-black/70 uppercase tracking-widest text-center">Tap to cycle assets (PNG, JPG up to 2MB)</p>
                  </div>
 
                  {/* About Business */}
                  <div className="space-y-4">
                     <label className="text-[11px] font-black text-black uppercase tracking-widest ml-1 flex items-center gap-2">
-                       <LinkIcon size={14} className="text-black/30" /> About Business
+                       <LinkIcon size={14} className="text-black/70" /> About Business
                     </label>
                     <div className="relative group">
                        <textarea 
@@ -198,22 +198,22 @@ export default function AdminSettingsPage() {
                          onChange={e => setBusinessData({...businessData, about: e.target.value})}
                          className="w-full bg-gray-50/50 border border-transparent rounded-[2.5rem] p-10 font-bold text-black text-base focus:bg-white focus:border-black transition-all outline-none resize-none h-44"
                        />
-                       <span className="absolute bottom-6 right-8 text-[10px] font-black text-black/20 uppercase tracking-widest">{businessData.about.length}/1000</span>
+                       <span className="absolute bottom-6 right-8 text-[10px] font-black text-black uppercase tracking-widest">{businessData.about.length}/1000</span>
                     </div>
                  </div>
 
                  {/* Maps Frame */}
                  <div className="space-y-4">
                     <label className="text-[11px] font-black text-black uppercase tracking-widest ml-1 flex items-center gap-2">
-                       <MapPin size={14} className="text-black/30" /> Google Maps Embed
+                       <MapPin size={14} className="text-black/70" /> Google Maps Embed
                     </label>
                     <div className="relative group">
                        <textarea 
                          readOnly
                          value={businessData.mapsIframe}
-                         className="w-full bg-gray-50/30 border border-gray-200 rounded-[1.5rem] px-8 py-6 font-mono text-[10px] font-bold text-black/60 outline-none resize-none h-32"
+                         className="w-full bg-gray-50/30 border border-gray-200 rounded-[1.5rem] px-8 py-6 font-mono text-[10px] font-bold text-black outline-none resize-none h-32"
                        />
-                       <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col gap-2 text-black/20">
+                       <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col gap-2 text-black">
                           <ChevronUp size={20} /><ChevronDown size={20} />
                        </div>
                     </div>
@@ -228,14 +228,14 @@ export default function AdminSettingsPage() {
                     <div className="p-4 bg-white rounded-2xl shadow-sm text-black"><Phone size={28} /></div>
                     <div>
                         <h2 className="text-2xl font-black text-black leading-none">Contact Details</h2>
-                        <p className="text-[10px] font-bold text-black/30 uppercase tracking-widest mt-2">How customers can reach you</p>
+                        <p className="text-[10px] font-bold text-black/70 uppercase tracking-widest mt-2">How customers can reach you</p>
                     </div>
                  </div>
                  <div className="p-12 space-y-12">
                     <div className="space-y-4">
                        <label className="text-[11px] font-black text-black uppercase tracking-widest ml-1">Email Address</label>
                        <div className="relative group">
-                          <div className="absolute left-7 top-1/2 -translate-y-1/2 text-black/20 group-focus-within:text-black transition-colors"><Mail size={20} /></div>
+                          <div className="absolute left-7 top-1/2 -translate-y-1/2 text-black group-focus-within:text-black transition-colors"><Mail size={20} /></div>
                           <input 
                             type="email" 
                             value={businessData.email}
@@ -252,7 +252,7 @@ export default function AdminSettingsPage() {
                           {businessData.phones.map((p, idx) => (
                              <div key={idx} className="relative group flex items-center gap-4">
                                 <div className="flex-1 relative">
-                                   <div className="absolute left-7 top-1/2 -translate-y-1/2 text-black/20 group-focus-within:text-black transition-colors"><Phone size={20} /></div>
+                                   <div className="absolute left-7 top-1/2 -translate-y-1/2 text-black group-focus-within:text-black transition-colors"><Phone size={20} /></div>
                                    <input 
                                      type="text" 
                                      value={p}
@@ -277,7 +277,7 @@ export default function AdminSettingsPage() {
                     <div className="space-y-4">
                        <label className="text-[11px] font-black text-black uppercase tracking-widest ml-1">Office Address</label>
                        <div className="relative group">
-                          <div className="absolute left-7 top-1/2 -translate-y-1/2 text-black/20 group-focus-within:text-black transition-colors"><MapPin size={20} /></div>
+                          <div className="absolute left-7 top-1/2 -translate-y-1/2 text-black group-focus-within:text-black transition-colors"><MapPin size={20} /></div>
                           <input 
                             type="text" 
                             value={businessData.address}
@@ -306,16 +306,16 @@ export default function AdminSettingsPage() {
              <table className="w-full text-sm">
                <thead>
                  <tr className="bg-gray-50/80 border-b border-gray-100">
-                   <th className="px-12 py-6 text-left text-[11px] font-black uppercase tracking-[0.2em] text-black/40">{activeTab === 'social' ? 'Platform Node' : 'Link Identifier'}</th>
-                   <th className="px-12 py-6 text-left text-[11px] font-black uppercase tracking-[0.2em] text-black/40">Routing URL</th>
-                   <th className="px-12 py-6 text-right text-[11px] font-black uppercase tracking-[0.2em] w-[180px] text-black/40">Actions</th>
+                   <th className="px-12 py-6 text-left text-[11px] font-black uppercase tracking-[0.2em] text-black/80">{activeTab === 'social' ? 'Platform Node' : 'Link Identifier'}</th>
+                   <th className="px-12 py-6 text-left text-[11px] font-black uppercase tracking-[0.2em] text-black/80">Routing URL</th>
+                   <th className="px-12 py-6 text-right text-[11px] font-black uppercase tracking-[0.2em] w-[180px] text-black/80">Actions</th>
                  </tr>
                </thead>
                <tbody className="divide-y divide-gray-50">
                  {(activeTab === 'social' ? socialLinks : quickLinks).length === 0 ? (
                     <tr>
                        <td colSpan={3} className="px-10 py-32 text-center">
-                          <div className="flex flex-col items-center gap-6 opacity-20">
+                          <div className="flex flex-col items-center gap-6 opacity-50">
                              <div className="p-8 bg-gray-50 rounded-[2.5rem]">
                                 {activeTab === 'social' ? <Share2 size={56} /> : <LinkIcon size={56} />}
                              </div>
@@ -335,13 +335,13 @@ export default function AdminSettingsPage() {
                         <div className="flex items-center justify-end gap-2">
                            <button 
                              onClick={() => { setEditingItem(item); setFormName(item.name || item.platform); setFormUrl(item.url); setShowItemModal(true); }}
-                             className="p-3 text-black/40 hover:text-black hover:bg-white rounded-2xl transition-all"
+                             className="p-3 text-black/80 hover:text-black hover:bg-white rounded-2xl transition-all"
                            >
                              <Pencil size={18} />
                            </button>
                            <button 
                              onClick={() => handleDeleteItem(item.id)}
-                             className="p-3 text-black/40 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"
+                             className="p-3 text-black/80 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"
                            >
                              <Trash2 size={18} />
                            </button>
@@ -354,11 +354,11 @@ export default function AdminSettingsPage() {
            </div>
            
            <div className="px-12 py-8 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
-              <p className="text-[11px] font-black text-black/20 uppercase tracking-widest">
+              <p className="text-[11px] font-black text-black uppercase tracking-widest">
                  Registry Navigation · Page 1 of 1
               </p>
               <div className="flex items-center gap-4">
-                 <span className="text-[11px] font-black text-black/20 uppercase tracking-widest">Index Control</span>
+                 <span className="text-[11px] font-black text-black uppercase tracking-widest">Index Control</span>
                  <select className="bg-white border border-gray-200 rounded-xl px-4 py-2 text-[11px] font-black outline-none shadow-sm cursor-pointer">
                     <option>10</option><option>50</option>
                  </select>
@@ -374,9 +374,9 @@ export default function AdminSettingsPage() {
              <table className="w-full text-sm">
                <thead>
                  <tr className="bg-gray-50/80 border-b border-gray-100">
-                   <th className="px-12 py-6 text-left text-[11px] font-black uppercase tracking-[0.2em] text-black/40">Method Entity</th>
-                   <th className="px-12 py-6 text-left text-[11px] font-black uppercase tracking-[0.2em] text-black/40">Security Layer</th>
-                   <th className="px-12 py-6 text-right text-[11px] font-black uppercase tracking-[0.2em] text-black/40">Status</th>
+                   <th className="px-12 py-6 text-left text-[11px] font-black uppercase tracking-[0.2em] text-black/80">Method Entity</th>
+                   <th className="px-12 py-6 text-left text-[11px] font-black uppercase tracking-[0.2em] text-black/80">Security Layer</th>
+                   <th className="px-12 py-6 text-right text-[11px] font-black uppercase tracking-[0.2em] text-black/80">Status</th>
                  </tr>
                </thead>
                <tbody className="divide-y divide-gray-50">
@@ -387,11 +387,11 @@ export default function AdminSettingsPage() {
                            <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center text-3xl border border-gray-100 shadow-sm group-hover:scale-110 transition-transform duration-500">{method.icon}</div>
                            <div>
                               <p className="font-black text-black text-xl tracking-tighter leading-none">{method.name}</p>
-                              <p className="text-[10px] font-black text-black/20 uppercase tracking-widest mt-2">{method.id}</p>
+                              <p className="text-[10px] font-black text-black uppercase tracking-widest mt-2">{method.id}</p>
                            </div>
                         </div>
                      </td>
-                     <td className="px-12 py-8 text-black/40 font-black uppercase tracking-[0.15em] text-[11px]">{method.provider}</td>
+                     <td className="px-12 py-8 text-black/80 font-black uppercase tracking-[0.15em] text-[11px]">{method.provider}</td>
                      <td className="px-12 py-8">
                         <div className="flex items-center justify-end gap-3 translate-x-2">
                            <button 
@@ -420,9 +420,9 @@ export default function AdminSettingsPage() {
               <div className="bg-gray-50/50 px-12 py-10 flex items-center justify-between border-b border-gray-100">
                  <div>
                     <h2 className="text-3xl font-black text-black tracking-tighter">{editingItem ? 'Modify' : 'Manifest'} {activeTab === 'social' ? 'Social Link' : 'Quick Link'}</h2>
-                    <p className="text-[11px] font-black text-black/30 uppercase tracking-[0.2em] mt-1">Registry Protocol 8.4</p>
+                    <p className="text-[11px] font-black text-black/70 uppercase tracking-[0.2em] mt-1">Registry Protocol 8.4</p>
                  </div>
-                 <button onClick={() => setShowItemModal(false)} className="p-5 bg-white rounded-3xl shadow-sm text-black/20 hover:text-black transition-all"><X size={24} /></button>
+                 <button onClick={() => setShowItemModal(false)} className="p-5 bg-white rounded-3xl shadow-sm text-black hover:text-black transition-all"><X size={24} /></button>
               </div>
               <div className="p-12 space-y-10">
                  <div className="space-y-4">

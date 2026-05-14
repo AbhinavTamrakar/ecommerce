@@ -34,7 +34,7 @@ export function DeleteCategoryButton({ id, onDeleted }: { id: number; onDeleted?
   return (
     <button
       onClick={handleDelete}
-      className="p-2.5 text-black/40 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+      className="p-2.5 text-black/80 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
     >
       <Trash2 size={16} />
     </button>

@@ -152,7 +152,7 @@ export default function AdminDashboard() {
     <div className="text-black">
       <div className="mb-10">
         <h1 className="text-3xl font-black text-black tracking-tighter">Terminal</h1>
-        <p className="text-black/40 text-[10px] font-bold mt-1 uppercase tracking-[0.3em]">System Intelligence & Commerce Audit</p>
+        <p className="text-black/80 text-[10px] font-bold mt-1 uppercase tracking-[0.3em]">System Intelligence & Commerce Audit</p>
       </div>
 
       {/* Main KPI cards */}
@@ -161,7 +161,7 @@ export default function AdminDashboard() {
           <div key={label} className={`rounded-[2rem] p-8 ${color} transition-all hover:scale-[1.02] duration-300 group`}>
             <div className="flex items-center justify-between mb-4">
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">{label}</span>
-              <Icon size={20} className="opacity-40 group-hover:opacity-100 transition-opacity" />
+              <Icon size={20} className="opacity-70 group-hover:opacity-700 transition-opacity" />
             </div>
             <p className="text-3xl font-black tracking-tighter">{value}</p>
           </div>
@@ -175,7 +175,7 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8">
           <div className="mb-8">
             <p className="text-xs font-black text-black uppercase tracking-[0.2em]">Revenue Velocity</p>
-            <p className="text-[9px] text-black/30 font-bold uppercase tracking-widest">7-Day Trajectory</p>
+            <p className="text-[9px] text-black/70 font-bold uppercase tracking-widest">7-Day Trajectory</p>
           </div>
           {loading ? (
             <div className="h-[240px] bg-gray-50/50 rounded-3xl" />
@@ -199,7 +199,7 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8">
           <div className="mb-8">
             <p className="text-xs font-black text-black uppercase tracking-[0.2em]">Asset Distribution</p>
-            <p className="text-[9px] text-black/30 font-bold uppercase tracking-widest">Global Status Map</p>
+            <p className="text-[9px] text-black/70 font-bold uppercase tracking-widest">Global Status Map</p>
           </div>
           {loading ? (
             <div className="h-[240px] bg-gray-50/50 rounded-3xl" />
@@ -224,7 +224,7 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8">
            <div className="mb-8">
             <p className="text-xs font-black text-black uppercase tracking-[0.2em]">High Performance</p>
-            <p className="text-[9px] text-black/30 font-bold uppercase tracking-widest">Top SKU Flux</p>
+            <p className="text-[9px] text-black/70 font-bold uppercase tracking-widest">Top SKU Flux</p>
           </div>
           {loading ? (
             <div className="h-[240px] bg-gray-50/50 rounded-3xl" />
@@ -253,12 +253,12 @@ export default function AdminDashboard() {
           </div>
           <div className="divide-y divide-gray-50">
             {recentOrders.length === 0 ? (
-              <p className="px-8 py-16 text-[10px] font-bold text-black/20 uppercase tracking-widest text-center italic">Awaiting connection…</p>
+              <p className="px-8 py-16 text-[10px] font-bold text-black uppercase tracking-widest text-center italic">Awaiting connection…</p>
             ) : recentOrders.slice(0, 5).map((order: any) => (
               <div key={order.id} className="px-8 py-5 flex items-center justify-between gap-4 hover:bg-gray-50 transition-all cursor-pointer">
                 <div>
                   <p className="text-sm font-black text-black tracking-tighter">REF-{order.id}</p>
-                  <p className="text-[9px] font-bold text-black/30 uppercase tracking-widest">{new Date(order.created_at).toLocaleDateString()}</p>
+                  <p className="text-[9px] font-bold text-black/70 uppercase tracking-widest">{new Date(order.created_at).toLocaleDateString()}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-black text-black tracking-tighter">${Number(order.total_amount || 0).toLocaleString()}</p>
@@ -279,7 +279,7 @@ export default function AdminDashboard() {
           </div>
           <div className="divide-y divide-gray-50">
             {lowStock.length === 0 ? (
-              <p className="px-8 py-16 text-[10px] font-bold text-black/20 uppercase tracking-widest text-center italic">Vault Healthy</p>
+              <p className="px-8 py-16 text-[10px] font-bold text-black uppercase tracking-widest text-center italic">Vault Healthy</p>
             ) : lowStock.slice(0, 5).map((product: any) => (
               <div key={product.id} className="px-8 py-5 flex items-center justify-between gap-4 hover:bg-gray-50 transition-all">
                 <p className="text-sm font-black text-black tracking-tighter truncate">{product.name}</p>

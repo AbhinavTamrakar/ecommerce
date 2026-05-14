@@ -98,19 +98,19 @@ export default function AdminReviewsPage() {
              </div>
              Feedback Registry
           </h1>
-          <p className="text-[10px] font-bold text-black/40 mt-1 uppercase tracking-[0.3em] ml-1">Asset Performance Metrics</p>
+          <p className="text-[10px] font-bold text-black/80 mt-1 uppercase tracking-[0.3em] ml-1">Asset Performance Metrics</p>
         </div>
       </div>
 
       <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-3 mb-8 flex items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-700">
         <div className="flex-1 relative">
-           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black/20" size={18} />
+           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black" size={18} />
            <input 
               type="text" 
               placeholder="Search by Author Node, Product Asset or Narrative Metadata..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-gray-50/50 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold text-black placeholder:text-black/20 focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-inner"
+              className="w-full bg-gray-50/50 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold text-black placeholder:text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-inner"
            />
         </div>
       </div>
@@ -139,7 +139,7 @@ export default function AdminReviewsPage() {
               ) : displayData.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-8 py-32 text-center">
-                    <div className="flex flex-col items-center gap-4 opacity-20">
+                    <div className="flex flex-col items-center gap-4 opacity-50">
                       <MessageSquare size={56} className="stroke-[1px]" />
                       <p className="text-sm font-black uppercase tracking-[0.4em]">No Logs Available</p>
                     </div>
@@ -148,7 +148,7 @@ export default function AdminReviewsPage() {
               ) : (
                 displayData.map((r, i) => (
                   <tr key={r.id} className="group hover:bg-gray-50/50 transition-all cursor-pointer">
-                    <td className="px-8 py-6 text-black/20 font-black text-[10px]">
+                    <td className="px-8 py-6 text-black font-black text-[10px]">
                        {(page - 1) * pageSize + i + 1}
                     </td>
                     <td className="px-8 py-6">
@@ -161,21 +161,21 @@ export default function AdminReviewsPage() {
                     </td>
                     <td className="px-8 py-6">
                         <div className="flex items-center gap-2">
-                           <Box size={14} className="text-black/20" />
+                           <Box size={14} className="text-black" />
                            <p className="text-[11px] font-black text-black group-hover:text-[#96b1d8] transition-colors truncate max-w-[120px] uppercase tracking-widest">{r.product?.name || 'Purged Asset'}</p>
                         </div>
                     </td>
                     <td className="px-8 py-6"><StarRating rating={r.rating} /></td>
                     <td className="px-8 py-6">
-                        <p className="text-[11px] font-black text-black/40 max-w-[280px] truncate leading-relaxed bg-gray-50/50 px-4 py-2.5 rounded-2xl border border-dotted border-gray-200 italic group-hover:text-black transition-colors">
-                         {r.comment ? `"${r.comment}"` : <span className="opacity-40 uppercase tracking-[0.3em] text-[8px] font-black">Empty Segment</span>}
+                        <p className="text-[11px] font-black text-black/80 max-w-[280px] truncate leading-relaxed bg-gray-50/50 px-4 py-2.5 rounded-2xl border border-dotted border-gray-200 italic group-hover:text-black transition-colors">
+                         {r.comment ? `"${r.comment}"` : <span className="opacity-70 uppercase tracking-[0.3em] text-[8px] font-black">Empty Segment</span>}
                         </p>
                     </td>
-                    <td className="px-8 py-6 text-[10px] font-black text-black/20 uppercase tracking-[0.2em] whitespace-nowrap text-right group-hover:text-black/40">
+                    <td className="px-8 py-6 text-[10px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap text-right group-hover:text-black/80">
                       {r.created_at ? new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
                     </td>
                     <td className="px-8 py-6 text-right whitespace-nowrap">
-                      <button onClick={() => setDeleteId(r.id)} className="p-3 rounded-2xl text-black/20 hover:text-red-500 hover:bg-red-50 transition-all shadow-sm border border-transparent hover:border-red-100" title="Purge Record">
+                      <button onClick={() => setDeleteId(r.id)} className="p-3 rounded-2xl text-black hover:text-red-500 hover:bg-red-50 transition-all shadow-sm border border-transparent hover:border-red-100" title="Purge Record">
                          <Trash2 size={18} />
                       </button>
                     </td>
@@ -209,7 +209,7 @@ export default function AdminReviewsPage() {
                <Trash2 size={28} />
             </div>
             <h2 className="text-3xl font-black text-black mb-3 tracking-tighter leading-none">Wipe Entry?</h2>
-            <p className="text-[10px] font-black text-black/30 mb-12 leading-relaxed uppercase tracking-[0.3em]">
+            <p className="text-[10px] font-black text-black/70 mb-12 leading-relaxed uppercase tracking-[0.3em]">
               This feedback fragment will be permanently purged from the cloud registry.
             </p>
             <div className="flex gap-4">

@@ -54,7 +54,7 @@ export function AddCategoryForm({ onCategoryAdded }: { onCategoryAdded?: () => v
   return (
     <form onSubmit={handleSubmit} className="space-y-5 text-black">
       <div>
-        <label className="block text-[10px] font-bold uppercase tracking-widest text-black/40 mb-2 ml-1">Category Name *</label>
+        <label className="block text-[10px] font-bold uppercase tracking-widest text-black/80 mb-2 ml-1">Category Name *</label>
         <input
           required
           value={name}
@@ -64,20 +64,20 @@ export function AddCategoryForm({ onCategoryAdded }: { onCategoryAdded?: () => v
         />
       </div>
       <div>
-        <label className="block text-[10px] font-bold uppercase tracking-widest text-black/40 mb-2 ml-1">Slug (auto-generated)</label>
+        <label className="block text-[10px] font-bold uppercase tracking-widest text-black/80 mb-2 ml-1">Slug (auto-generated)</label>
         <input
           disabled
           value={name.toLowerCase().replace(/\s+/g, '-')}
-          className="w-full border border-gray-50 rounded-2xl px-4 py-3 text-sm bg-gray-50 text-black/30 font-mono shadow-inner"
+          className="w-full border border-gray-50 rounded-2xl px-4 py-3 text-sm bg-gray-50 text-black/70 font-mono shadow-inner"
         />
       </div>
       <div>
-        <label className="block text-[10px] font-bold uppercase tracking-widest text-black/40 mb-2 ml-1">Brand Illustration (optional)</label>
+        <label className="block text-[10px] font-bold uppercase tracking-widest text-black/80 mb-2 ml-1">Brand Illustration (optional)</label>
         <input
           type="file"
           accept="image/*"
           onChange={e => setImage(e.target.files?.[0] || null)}
-          className="w-full text-[11px] text-black/50 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:uppercase file:bg-black/5 file:text-black hover:file:bg-black/10 transition-all cursor-pointer"
+          className="w-full text-[11px] text-black/90 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:uppercase file:bg-black/5 file:text-black hover:file:bg-black/10 transition-all cursor-pointer"
         />
       </div>
       <button

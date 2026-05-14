@@ -61,7 +61,7 @@ export default function AdminCategoriesPage() {
             </div>
             Categories
           </h1>
-          <p className="text-[10px] font-bold text-black/40 mt-1 uppercase tracking-[0.3em] ml-1">Classification Registry</p>
+          <p className="text-[10px] font-bold text-black/80 mt-1 uppercase tracking-[0.3em] ml-1">Classification Registry</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
@@ -92,7 +92,7 @@ export default function AdminCategoriesPage() {
               ) : displayData.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-8 py-32 text-center">
-                    <div className="flex flex-col items-center gap-4 opacity-20">
+                    <div className="flex flex-col items-center gap-4 opacity-50">
                        <Layers size={56} className="stroke-[1px]" />
                        <p className="text-sm font-black uppercase tracking-[0.4em]">Registry Empty</p>
                     </div>
@@ -101,7 +101,7 @@ export default function AdminCategoriesPage() {
               ) : (
                 displayData.map((cat: any, idx: number) => (
                   <tr key={cat.id} className="group hover:bg-gray-50/50 transition-all cursor-pointer">
-                    <td className="px-8 py-6 text-black/20 font-black text-[10px]">
+                    <td className="px-8 py-6 text-black font-black text-[10px]">
                        {(page - 1) * pageSize + idx + 1}
                     </td>
                     <td className="px-8 py-6">
@@ -117,7 +117,7 @@ export default function AdminCategoriesPage() {
                         )}
                         <div>
                            <p className="font-black text-black text-xl tracking-tighter leading-none group-hover:text-[#96b1d8] transition-colors">{cat.name}</p>
-                           <p className="text-[10px] font-black text-black/20 uppercase tracking-[0.3em] mt-2 ml-1">Node ID: {cat.id}</p>
+                           <p className="text-[10px] font-black text-black uppercase tracking-[0.3em] mt-2 ml-1">Node ID: {cat.id}</p>
                         </div>
                       </div>
                     </td>
@@ -158,9 +158,9 @@ export default function AdminCategoriesPage() {
               <div className="px-12 py-10 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
                  <div>
                     <h2 className="text-3xl font-black text-black tracking-tighter leading-none mb-2">New Category</h2>
-                    <p className="text-[10px] font-black text-black/30 uppercase tracking-[0.2em]">Append classification node</p>
+                    <p className="text-[10px] font-black text-black/70 uppercase tracking-[0.2em]">Append classification node</p>
                  </div>
-                 <button onClick={() => setShowAddModal(false)} className="p-5 bg-white rounded-3xl shadow-sm text-black/10 hover:text-black transition-all">
+                 <button onClick={() => setShowAddModal(false)} className="p-5 bg-white rounded-3xl shadow-sm text-black/90 hover:text-black transition-all">
                     <X size={24} />
                  </button>
               </div>

@@ -103,7 +103,7 @@ export default function AdminCartsPage() {
              </div>
              Abandoned Carts
           </h1>
-          <p className="text-[10px] font-black text-black/40 mt-1 uppercase tracking-[0.3em] ml-1">Asset Staging Registry</p>
+          <p className="text-[10px] font-black text-black/80 mt-1 uppercase tracking-[0.3em] ml-1">Asset Staging Registry</p>
         </div>
       </div>
 
@@ -116,11 +116,11 @@ export default function AdminCartsPage() {
       {/* Summary stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 mb-10">
         <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8 group hover:border-black transition-all">
-           <p className="text-[10px] font-black text-black/20 uppercase tracking-[0.4em] mb-2">Active Staging Cycles</p>
+           <p className="text-[10px] font-black text-black uppercase tracking-[0.4em] mb-2">Active Staging Cycles</p>
            <p className="text-4xl font-black text-black tracking-tighter group-hover:scale-105 transition-transform origin-left">{loading ? '…' : carts.length}</p>
         </div>
         <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8 group hover:border-[#96b1d8] transition-all">
-           <p className="text-[10px] font-black text-black/20 uppercase tracking-[0.4em] mb-2">Total Staged Valuation</p>
+           <p className="text-[10px] font-black text-black uppercase tracking-[0.4em] mb-2">Total Staged Valuation</p>
            <p className="text-4xl font-black text-black tracking-tighter group-hover:scale-105 transition-transform origin-left">${totalValue.toLocaleString()}</p>
         </div>
       </div>
@@ -128,13 +128,13 @@ export default function AdminCartsPage() {
       {/* Search */}
       <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-3 mb-8 flex items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-700">
         <div className="flex-1 relative">
-           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black/20" size={18} />
+           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black" size={18} />
            <input 
               type="text" 
               placeholder="Filter by Customer Node or Session Identity..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-gray-50/50 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold text-black placeholder:text-black/20 focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-inner"
+              className="w-full bg-gray-50/50 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold text-black placeholder:text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-inner"
            />
         </div>
       </div>
@@ -163,7 +163,7 @@ export default function AdminCartsPage() {
               ) : displayData.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-8 py-32 text-center">
-                    <div className="flex flex-col items-center gap-4 opacity-20">
+                    <div className="flex flex-col items-center gap-4 opacity-50">
                        <ShoppingCart size={56} className="stroke-[1px]" />
                        <p className="text-sm font-black uppercase tracking-[0.4em]">No matching carts</p>
                     </div>
@@ -172,12 +172,12 @@ export default function AdminCartsPage() {
               ) : (
                 displayData.map((cart, idx) => (
                   <tr key={cart.id} className="group hover:bg-gray-50/50 transition-all cursor-pointer" onClick={() => setSelected(cart)}>
-                    <td className="px-8 py-6 text-black/20 font-black text-[10px]">
+                    <td className="px-8 py-6 text-black font-black text-[10px]">
                        {(page - 1) * pageSize + idx + 1}
                     </td>
                     <td className="px-8 py-6">
                       <p className="font-black text-black text-base tracking-tighter leading-none">{cart.user_name || `Anonymous Node`}</p>
-                      <p className="text-[10px] font-black text-black/30 uppercase tracking-widest mt-2 px-1">ID: {cart.user_id}</p>
+                      <p className="text-[10px] font-black text-black/70 uppercase tracking-widest mt-2 px-1">ID: {cart.user_id}</p>
                     </td>
                     <td className="px-8 py-6">
                       <div className="flex -space-x-4">
@@ -186,7 +186,7 @@ export default function AdminCartsPage() {
                             {item.product?.primary_image ? (
                               <Image src={getImageUrl(item.product.primary_image)} alt="" fill className="object-cover" sizes="48px" />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-gray-50"><Package size={16} className="text-black/10" /></div>
+                              <div className="w-full h-full flex items-center justify-center bg-gray-50"><Package size={16} className="text-black/90" /></div>
                             )}
                           </div>
                         ))}
@@ -199,11 +199,11 @@ export default function AdminCartsPage() {
                     </td>
                     <td className="px-8 py-6 font-black text-black tracking-widest">{cart.total_quantity} SKU</td>
                     <td className="px-8 py-6 font-black text-black text-lg tracking-tighter">${Number(cart.total).toLocaleString()}</td>
-                    <td className="px-8 py-6 text-[10px] font-black text-black/20 uppercase tracking-widest whitespace-nowrap group-hover:text-black/40 transition-colors">
+                    <td className="px-8 py-6 text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap group-hover:text-black/80 transition-colors">
                       {cart.updated_at ? new Date(cart.updated_at).toLocaleDateString() : '—'}
                     </td>
                     <td className="px-8 py-6 text-right whitespace-nowrap">
-                      <button className="p-3 rounded-2xl text-black/20 hover:text-black hover:bg-white transition-all shadow-sm border border-transparent group-hover:border-gray-100 mt-1">
+                      <button className="p-3 rounded-2xl text-black hover:text-black hover:bg-white transition-all shadow-sm border border-transparent group-hover:border-gray-100 mt-1">
                         <Eye size={18} />
                       </button>
                     </td>
@@ -239,7 +239,7 @@ export default function AdminCartsPage() {
                 <h2 className="text-2xl font-black text-black tracking-tighter leading-none mb-2">{selected.user_name}'s Cart</h2>
                 <p className="text-[10px] font-black text-[#96b1d8] uppercase tracking-[0.3em]">Payload Audit · {selected.items?.length || 0} Assets Staged</p>
               </div>
-              <button onClick={() => setSelected(null)} className="p-5 bg-white rounded-3xl shadow-sm text-black/10 hover:text-black transition-all">
+              <button onClick={() => setSelected(null)} className="p-5 bg-white rounded-3xl shadow-sm text-black/90 hover:text-black transition-all">
                  <X size={24} />
               </button>
             </div>
@@ -256,18 +256,18 @@ export default function AdminCartsPage() {
                   <div className="flex-1 min-w-0">
                     <p className="text-base font-black text-black tracking-tight leading-none mb-2 truncate group-hover/item:text-[#96b1d8] transition-colors">{item.product?.name || `Asset #${item.product_id}`}</p>
                     {item.variant_options && item.variant_options.length > 0 && (
-                      <p className="text-[10px] font-black text-black/20 uppercase tracking-widest">{item.variant_options.map(v => `${v.attribute_name}: ${v.value}`).join(' · ')}</p>
+                      <p className="text-[10px] font-black text-black uppercase tracking-widest">{item.variant_options.map(v => `${v.attribute_name}: ${v.value}`).join(' · ')}</p>
                     )}
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-lg font-black text-black tracking-tighter leading-none mb-2">${Number(item.subtotal).toLocaleString()}</p>
-                    <p className="text-[10px] font-black text-black/20 uppercase tracking-[0.3em]">Volume: {item.quantity}</p>
+                    <p className="text-[10px] font-black text-black uppercase tracking-[0.3em]">Volume: {item.quantity}</p>
                   </div>
                 </div>
               ))}
             </div>
             <div className="px-12 py-10 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between">
-              <span className="text-[11px] font-black text-black/20 uppercase tracking-[0.4em]">Integrated Valuation</span>
+              <span className="text-[11px] font-black text-black uppercase tracking-[0.4em]">Integrated Valuation</span>
               <span className="text-3xl font-black text-black tracking-tighter">${Number(selected.total).toLocaleString()}</span>
             </div>
           </div>

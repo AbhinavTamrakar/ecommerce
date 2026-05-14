@@ -82,19 +82,19 @@ export default function AdminContactsPage() {
              <ShieldCheck className="text-blue-600" size={32} strokeWidth={2.5} />
              Contact Submissions
           </h1>
-          <p className="text-gray-500 text-[15px] mt-1 ml-1 font-medium">
+          <p className="text-gray-700 text-[15px] mt-1 ml-1 font-medium">
             View and manage messages sent from the Contact Us page
           </p>
         </div>
         
         <div className="relative w-full md:w-[320px]">
-           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" size={18} />
            <input 
               type="text" 
               placeholder="Search by name, email..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-white border border-gray-200 rounded-full py-3.5 pl-12 pr-6 text-[14px] text-gray-700 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all shadow-sm"
+              className="w-full bg-white border border-gray-200 rounded-full py-3.5 pl-12 pr-6 text-[14px] text-gray-700 placeholder:text-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all shadow-sm"
            />
         </div>
       </div>
@@ -123,7 +123,7 @@ export default function AdminContactsPage() {
             ) : displayData.length === 0 ? (
               <tr>
                  <td colSpan={7} className="px-6 py-20 text-center">
-                  <div className="flex flex-col items-center gap-3 text-gray-400">
+                  <div className="flex flex-col items-center gap-3 text-gray-600">
                     <ShieldCheck size={48} strokeWidth={1} />
                     <p className="text-sm font-semibold">No submissions found</p>
                   </div>
@@ -131,14 +131,14 @@ export default function AdminContactsPage() {
               </tr>
             ) : displayData.map((i, idx) => (
               <tr key={i.id} className="hover:bg-gray-50/50 transition-colors group">
-                <td className="px-6 py-6 text-black/40 font-black text-[10px]">
+                <td className="px-6 py-6 text-black/80 font-black text-[10px]">
                    {(page - 1) * pageSize + idx + 1}
                 </td>
                 <td className="px-6 py-6" onClick={() => setSelected(i)}>
                   <div className="flex flex-col space-y-1">
                     <span className="font-bold text-black text-[15px] cursor-pointer">{i.full_name || i.name || 'Unknown User'}</span>
-                    <div className="flex items-center gap-1.5 text-black/60 text-[13px] font-bold">
-                      <Mail size={12} className="text-black/60" />
+                    <div className="flex items-center gap-1.5 text-black text-[13px] font-bold">
+                      <Mail size={12} className="text-black" />
                       {i.email || 'No Email'}
                     </div>
                   </div>
@@ -146,7 +146,7 @@ export default function AdminContactsPage() {
                 <td className="px-6 py-6">
                   <div className="flex items-center gap-2 cursor-pointer group/item" onClick={() => setSelected(i)}>
                     <span className="text-black font-bold text-[14px] truncate max-w-[150px]">{i.subject || 'No Subject'}</span>
-                    <ChevronDown size={14} className="text-black/40 opacity-50 group-hover/item:opacity-100 transition-opacity" />
+                    <ChevronDown size={14} className="text-black/80 opacity-50 group-hover/item:opacity-700 transition-opacity" />
                   </div>
                 </td>
                 <td className="px-6 py-6">
@@ -155,12 +155,12 @@ export default function AdminContactsPage() {
                 <td className="px-6 py-6">
                   <div className="flex items-center gap-2 cursor-pointer group/item" onClick={() => setSelected(i)}>
                     <span className="text-black font-medium text-[14px] line-clamp-1 max-w-[200px]">{i.message}</span>
-                    <ChevronDown size={14} className="text-black/40 opacity-50 group-hover/item:opacity-100 transition-opacity" />
+                    <ChevronDown size={14} className="text-black/80 opacity-50 group-hover/item:opacity-700 transition-opacity" />
                   </div>
                 </td>
                 <td className="px-6 py-6">
-                  <div className="flex items-center gap-2 text-black/60 text-[10px] font-bold uppercase tracking-widest">
-                    <Calendar size={14} className="text-black/60" />
+                  <div className="flex items-center gap-2 text-black text-[10px] font-bold uppercase tracking-widest">
+                    <Calendar size={14} className="text-black" />
                     {new Date(i.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
                 </td>
@@ -168,7 +168,7 @@ export default function AdminContactsPage() {
                   <div className="flex items-center justify-end gap-1">
                     <button 
                       onClick={() => setSelected(i)} 
-                      className="p-3 text-black/40 hover:text-black hover:bg-gray-100 rounded-2xl transition-all outline-none"
+                      className="p-3 text-black/80 hover:text-black hover:bg-gray-100 rounded-2xl transition-all outline-none"
                       title="View submission details"
                     >
                        <Eye size={16} />
@@ -176,7 +176,7 @@ export default function AdminContactsPage() {
                     <button 
                       onClick={() => handleDelete(i.id)} 
                       disabled={deleting === i.id}
-                      className="p-3 text-black/20 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all outline-none"
+                      className="p-3 text-black hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all outline-none"
                       title="Delete submission"
                     >
                        <Trash2 size={16} />
@@ -192,7 +192,7 @@ export default function AdminContactsPage() {
 
       {/* Pagination component logic handling */}
       {!loading && totalPages > 0 && (
-        <div className="flex items-center justify-between text-sm text-gray-500 pt-2 pb-8">
+        <div className="flex items-center justify-between text-sm text-gray-700 pt-2 pb-8">
            <div className="font-medium px-2">
              Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, filtered.length)} of {filtered.length} results
            </div>
@@ -220,29 +220,29 @@ export default function AdminContactsPage() {
                      <div>
                         <h2 className="text-xl font-bold text-black tracking-tight leading-none mb-1.5">{selected.full_name || selected.name || 'Unknown User'}</h2>
                         <div className="flex items-center gap-1.5">
-                           <Mail size={12} className="text-black/40" />
-                           <p className="text-[12px] font-bold text-black/60">{selected.email || 'No Email'}</p>
+                           <Mail size={12} className="text-black/80" />
+                           <p className="text-[12px] font-bold text-black">{selected.email || 'No Email'}</p>
                         </div>
                      </div>
                   </div>
-                  <button onClick={() => setSelected(null)} className="p-4 bg-white rounded-2xl shadow-sm text-black/40 hover:text-black hover:bg-gray-100 transition-all outline-none border border-gray-50"><X size={20} /></button>
+                  <button onClick={() => setSelected(null)} className="p-4 bg-white rounded-2xl shadow-sm text-black/80 hover:text-black hover:bg-gray-100 transition-all outline-none border border-gray-50"><X size={20} /></button>
                </div>
                <div className="p-10 space-y-8">
                   <div className="grid grid-cols-2 gap-6">
                      <div className="space-y-1.5 px-6 py-5 bg-gray-50 rounded-2xl border border-gray-100 shadow-inner">
-                        <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">Phone Number</p>
+                        <p className="text-[10px] font-bold text-black/80 uppercase tracking-widest">Phone Number</p>
                         <p className="font-bold text-black text-sm">{selected.phone || 'N/A'}</p>
                      </div>
                      <div className="space-y-1.5 px-6 py-5 bg-gray-50 rounded-2xl border border-gray-100 shadow-inner">
-                        <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">Date Sent</p>
+                        <p className="text-[10px] font-bold text-black/80 uppercase tracking-widest">Date Sent</p>
                         <p className="font-bold text-black text-sm">{new Date(selected.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                      </div>
                   </div>
                   <div className="pt-6">
-                     <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest mb-3">Subject</p>
+                     <p className="text-[10px] font-bold text-black/80 uppercase tracking-widest mb-3">Subject</p>
                      <p className="text-black font-semibold text-base mb-6">{selected.subject || 'No Subject'}</p>
                      
-                     <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest mb-3">Message Content</p>
+                     <p className="text-[10px] font-bold text-black/80 uppercase tracking-widest mb-3">Message Content</p>
                      <div className="bg-gray-50 rounded-3xl p-8 text-black font-medium leading-relaxed text-[15px] border border-gray-200">
                         {selected.message}
                      </div>

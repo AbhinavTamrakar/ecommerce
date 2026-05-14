@@ -235,12 +235,12 @@ export default function ProductForm({ productId }: Props) {
     }
   }
 
-  if (fetching) return <div className="text-gray-400 text-sm p-8">Loading...</div>
+  if (fetching) return <div className="text-gray-600 text-sm p-8">Loading...</div>
 
   return (
     <div>
       <div className="mb-6">
-        <Link href="/admin/products" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 mb-4 transition-colors">
+        <Link href="/admin/products" className="inline-flex items-center gap-1.5 text-sm text-gray-700 hover:text-gray-800 mb-4 transition-colors">
           <ChevronLeft size={15} /> Back to Products
         </Link>
         <h1 className="text-xl md:text-2xl font-bold text-gray-900">
@@ -255,18 +255,18 @@ export default function ProductForm({ productId }: Props) {
           <h2 className="font-semibold text-gray-700 mb-4 text-sm uppercase tracking-wider">Basic Info</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1.5">Name *</label>
+              <label className="block text-xs uppercase tracking-wider text-gray-700 mb-1.5">Name *</label>
               <input value={form.name}
                 onChange={e => setForm({ ...form, name: e.target.value, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400" />
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1.5">Slug</label>
+              <label className="block text-xs uppercase tracking-wider text-gray-700 mb-1.5">Slug</label>
               <input value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400" />
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1.5">Category *</label>
+              <label className="block text-xs uppercase tracking-wider text-gray-700 mb-1.5">Category *</label>
               <select value={form.category_id} onChange={e => setForm({ ...form, category_id: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400">
                 <option value="">Select category</option>
@@ -274,7 +274,7 @@ export default function ProductForm({ productId }: Props) {
               </select>
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1.5">Type *</label>
+              <label className="block text-xs uppercase tracking-wider text-gray-700 mb-1.5">Type *</label>
               <select value={form.type_id} onChange={e => setForm({ ...form, type_id: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400">
                 <option value="">Select type</option>
@@ -289,31 +289,31 @@ export default function ProductForm({ productId }: Props) {
               </select>
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1.5">Price *</label>
+              <label className="block text-xs uppercase tracking-wider text-gray-700 mb-1.5">Price *</label>
               <input type="number" step="0.01" value={form.price}
                 onChange={e => setForm({ ...form, price: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400" />
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1.5">Stock *</label>
+              <label className="block text-xs uppercase tracking-wider text-gray-700 mb-1.5">Stock *</label>
               <input type="number" value={form.stock}
                 onChange={e => setForm({ ...form, stock: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400" />
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1.5">Discount %</label>
+              <label className="block text-xs uppercase tracking-wider text-gray-700 mb-1.5">Discount %</label>
               <input type="number" step="0.01" value={form.discount_percentage}
                 onChange={e => setForm({ ...form, discount_percentage: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400" />
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1.5">Delivery Charge</label>
+              <label className="block text-xs uppercase tracking-wider text-gray-700 mb-1.5">Delivery Charge</label>
               <input type="number" step="0.01" value={form.delivery_charge}
                 onChange={e => setForm({ ...form, delivery_charge: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400" />
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1.5">Status</label>
+              <label className="block text-xs uppercase tracking-wider text-gray-700 mb-1.5">Status</label>
               <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400">
                 <option value="active">Active</option>
@@ -321,18 +321,18 @@ export default function ProductForm({ productId }: Props) {
               </select>
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1.5">Image</label>
+              <label className="block text-xs uppercase tracking-wider text-gray-700 mb-1.5">Image</label>
               <input type="file" accept="image/*" onChange={e => setImage(e.target.files?.[0] || null)}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400" />
             </div>
           </div>
           <div className="mt-4">
-            <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1.5">Short Description</label>
+            <label className="block text-xs uppercase tracking-wider text-gray-700 mb-1.5">Short Description</label>
             <input value={form.short_description} onChange={e => setForm({ ...form, short_description: e.target.value })}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400" />
           </div>
           <div className="mt-4">
-            <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1.5">Description</label>
+            <label className="block text-xs uppercase tracking-wider text-gray-700 mb-1.5">Description</label>
             <textarea rows={3} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400 resize-none" />
           </div>
@@ -349,11 +349,11 @@ export default function ProductForm({ productId }: Props) {
           </div>
 
           {variants.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-6">No variants. Click "Add Variant" to add color/size options.</p>
+            <p className="text-sm text-gray-600 text-center py-6">No variants. Click "Add Variant" to add color/size options.</p>
           ) : (
             <div className="space-y-3">
               {/* Header */}
-              <div className="hidden sm:grid grid-cols-6 gap-2 text-xs uppercase tracking-wider text-gray-400 font-medium px-1">
+              <div className="hidden sm:grid grid-cols-6 gap-2 text-xs uppercase tracking-wider text-gray-600 font-medium px-1">
                 <span>Color</span>
                 <span>Size</span>
                 <span>SKU</span>
@@ -394,7 +394,7 @@ export default function ProductForm({ productId }: Props) {
                   </div>
                   <div className="flex justify-end">
                     <button type="button" onClick={() => removeVariant(i)}
-                      className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors">
+                      className="p-1.5 text-gray-600 hover:text-red-500 hover:bg-red-50 rounded transition-colors">
                       <Trash2 size={14} />
                     </button>
                   </div>

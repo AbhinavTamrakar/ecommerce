@@ -135,7 +135,7 @@ export default function AttributesPage() {
              </div>
              Attributes
           </h1>
-          <p className="text-[10px] font-bold text-black/40 mt-1 uppercase tracking-[0.3em] ml-1">Variation Schema Registry</p>
+          <p className="text-[10px] font-bold text-black/80 mt-1 uppercase tracking-[0.3em] ml-1">Variation Schema Registry</p>
         </div>
         <button 
           onClick={() => setShowCreate(true)} 
@@ -154,7 +154,7 @@ export default function AttributesPage() {
 
       {showCreate && (
         <div className="bg-white border border-[#96b1d8]/30 rounded-[2.5rem] p-8 mb-10 shadow-sm animate-in zoom-in-95 duration-200">
-          <p className="text-[10px] uppercase tracking-[0.3em] font-black text-black/20 mb-6">Initialize New Descriptor Node</p>
+          <p className="text-[10px] uppercase tracking-[0.3em] font-black text-black mb-6">Initialize New Descriptor Node</p>
           <div className="flex gap-4 items-center">
             <div className="flex-1 space-y-2">
                <label className="text-[10px] font-black text-black uppercase tracking-widest ml-1">Attribute Name *</label>
@@ -172,7 +172,7 @@ export default function AttributesPage() {
         {loading && attributes.length === 0 ? (
           Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-20 bg-gray-50 rounded-[2.5rem] animate-pulse border border-gray-100" />)
         ) : displayData.length === 0 ? (
-          <div className="py-32 text-center opacity-10 flex flex-col items-center gap-6">
+          <div className="py-32 text-center opacity-70 flex flex-col items-center gap-6">
              <Sliders size={64} strokeWidth={1} />
              <p className="text-xs font-black uppercase tracking-[0.4em]">Registry Empty</p>
           </div>
@@ -182,7 +182,7 @@ export default function AttributesPage() {
               <div className="flex items-center gap-6 px-8 py-6">
                 <button 
                   onClick={() => setExpanded(expanded === attr.id ? null : attr.id)} 
-                  className={`p-3 rounded-2xl transition-all ${expanded === attr.id ? 'bg-[#96b1d8] text-white shadow-xl shadow-[#96b1d8]/30' : 'text-black/20 hover:text-black hover:bg-gray-50'}`}
+                  className={`p-3 rounded-2xl transition-all ${expanded === attr.id ? 'bg-[#96b1d8] text-white shadow-xl shadow-[#96b1d8]/30' : 'text-black hover:text-black hover:bg-gray-50'}`}
                 >
                   {expanded === attr.id ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
                 </button>
@@ -191,19 +191,19 @@ export default function AttributesPage() {
                 ) : (
                   <div className="flex-1">
                      <span className="font-black text-black text-xl tracking-tighter leading-none block">{attr.name}</span>
-                     <span className="text-[10px] font-bold text-black/20 uppercase tracking-[0.2em] mt-2 block">{attr.values?.length ?? 0} active selections</span>
+                     <span className="text-[10px] font-bold text-black uppercase tracking-[0.2em] mt-2 block">{attr.values?.length ?? 0} active selections</span>
                   </div>
                 )}
                 <div className="flex gap-1">
                   {editId === attr.id ? (
                     <>
                       <button onClick={() => handleSave(attr.id)} disabled={saving} className="p-3.5 rounded-2xl bg-black text-white hover:bg-gray-800 transition-all shadow-lg active:scale-95"><Check size={18} /></button>
-                      <button onClick={() => setEditId(null)} className="p-3.5 rounded-2xl bg-gray-50 text-black/20 hover:text-black transition-all"><X size={18} /></button>
+                      <button onClick={() => setEditId(null)} className="p-3.5 rounded-2xl bg-gray-50 text-black hover:text-black transition-all"><X size={18} /></button>
                     </>
                   ) : (
                     <>
-                      <button onClick={() => { setEditId(attr.id); setEditName(attr.name) }} className="p-3 rounded-2xl text-black/40 hover:text-[#96b1d8] hover:bg-white transition-all outline-none" title="Modify descriptor"><Pencil size={18} /></button>
-                      <button onClick={() => setDeleteId(attr.id)} className="p-3 rounded-2xl text-black/40 hover:text-red-500 hover:bg-red-50 transition-all outline-none" title="Extract descriptor"><Trash2 size={18} /></button>
+                      <button onClick={() => { setEditId(attr.id); setEditName(attr.name) }} className="p-3 rounded-2xl text-black/80 hover:text-[#96b1d8] hover:bg-white transition-all outline-none" title="Modify descriptor"><Pencil size={18} /></button>
+                      <button onClick={() => setDeleteId(attr.id)} className="p-3 rounded-2xl text-black/80 hover:text-red-500 hover:bg-red-50 transition-all outline-none" title="Extract descriptor"><Trash2 size={18} /></button>
                     </>
                   )}
                 </div>
@@ -219,16 +219,16 @@ export default function AttributesPage() {
                           <div className="flex-1 flex gap-2">
                             <input value={editValue} onChange={e => setEditValue(e.target.value)} className="flex-1 text-sm font-bold border-b-2 border-[#96b1d8] pb-0.5 outline-none bg-transparent" />
                             <button onClick={() => handleSaveValue(v.id, attr.id)} className="p-2.5 rounded-xl bg-black text-white"><Check size={14} /></button>
-                            <button onClick={() => setEditValueId(null)} className="p-2.5 rounded-xl bg-gray-100 text-black/40"><X size={14} /></button>
+                            <button onClick={() => setEditValueId(null)} className="p-2.5 rounded-xl bg-gray-100 text-black/80"><X size={14} /></button>
                           </div>
                         ) : (
                           <>
                             <div className="flex-1 min-w-0">
                                <p className="font-bold text-black text-base leading-none group-hover/val:text-[#96b1d8] transition-colors truncate">{v.value}</p>
-                               {v.color_code && <p className="text-[9px] font-mono font-bold text-black/20 uppercase tracking-widest mt-1.5">{v.color_code}</p>}
+                               {v.color_code && <p className="text-[9px] font-mono font-bold text-black uppercase tracking-widest mt-1.5">{v.color_code}</p>}
                             </div>
-                            <button onClick={() => { setEditValueId(v.id); setEditValue(v.value); setEditColorCode(v.color_code || '') }} className="p-2.5 rounded-xl text-black/20 hover:text-black hover:bg-gray-100 transition-all opacity-0 group-hover/val:opacity-100"><Pencil size={14} /></button>
-                            <button onClick={() => handleDeleteValue(v.id, attr.id)} className="p-2.5 rounded-xl text-black/20 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover/val:opacity-100"><Trash2 size={14} /></button>
+                            <button onClick={() => { setEditValueId(v.id); setEditValue(v.value); setEditColorCode(v.color_code || '') }} className="p-2.5 rounded-xl text-black hover:text-black hover:bg-gray-100 transition-all opacity-0 group-hover/val:opacity-700"><Pencil size={14} /></button>
+                            <button onClick={() => handleDeleteValue(v.id, attr.id)} className="p-2.5 rounded-xl text-black hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover/val:opacity-700"><Trash2 size={14} /></button>
                           </>
                         )}
                       </div>
@@ -236,16 +236,16 @@ export default function AttributesPage() {
                   </div>
                   {addValueAttrId === attr.id ? (
                     <div className="bg-white p-6 rounded-[2.5rem] border border-[#96b1d8]/30 shadow-2xl animate-in zoom-in-95 space-y-4">
-                      <p className="text-[9px] font-black uppercase tracking-[0.3em] text-black/20 ml-2">Append New Variation Option</p>
+                      <p className="text-[9px] font-black uppercase tracking-[0.3em] text-black ml-2">Append New Variation Option</p>
                       <div className="flex gap-3">
                          <input autoFocus value={newValue} onChange={e => setNewValue(e.target.value)} placeholder="Entry Label *" className="flex-1 text-sm font-bold border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:border-[#96b1d8] bg-gray-50/50" />
                          <input value={newColorCode} onChange={e => setNewColorCode(e.target.value)} placeholder="#hex" className="w-28 text-sm font-mono border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:border-[#96b1d8] bg-gray-50/50" />
                          <button onClick={() => handleAddValue(attr.id)} disabled={addingValue || !newValue.trim()} className="bg-black hover:bg-gray-800 text-white text-[10px] font-black uppercase tracking-widest px-8 rounded-2xl disabled:opacity-50 shadow-xl shadow-black/20 active:scale-95 transition-all">{addingValue ? '…' : 'Finalize'}</button>
                       </div>
-                      <button onClick={() => setAddValueAttrId(null)} className="w-full py-3 text-[10px] font-black text-black/20 hover:text-black uppercase tracking-[0.2em] transition-all">Cancel Entry</button>
+                      <button onClick={() => setAddValueAttrId(null)} className="w-full py-3 text-[10px] font-black text-black hover:text-black uppercase tracking-[0.2em] transition-all">Cancel Entry</button>
                     </div>
                   ) : (
-                    <button onClick={() => setAddValueAttrId(attr.id)} className="flex items-center gap-3 text-[11px] font-black text-black/30 hover:text-[#96b1d8] uppercase tracking-[0.3em] transition-all px-8 py-4 rounded-2xl hover:bg-white hover:shadow-xl border border-transparent hover:border-gray-50">
+                    <button onClick={() => setAddValueAttrId(attr.id)} className="flex items-center gap-3 text-[11px] font-black text-black/70 hover:text-[#96b1d8] uppercase tracking-[0.3em] transition-all px-8 py-4 rounded-2xl hover:bg-white hover:shadow-xl border border-transparent hover:border-gray-50">
                       <Plus size={16} strokeWidth={4} /> Append Option
                     </button>
                   )}
@@ -278,12 +278,12 @@ export default function AttributesPage() {
                <Trash2 size={28} />
             </div>
             <h2 className="text-2xl font-black text-black mb-2 tracking-tighter leading-none">Strip Node?</h2>
-            <p className="text-[10px] font-black text-black/20 mb-10 leading-relaxed uppercase tracking-[0.3em]">
-              The schema <span className="text-black/50">"{attributes.find(a => a.id === deleteId)?.name}"</span> will be purged from the cluster.
+            <p className="text-[10px] font-black text-black mb-10 leading-relaxed uppercase tracking-[0.3em]">
+              The schema <span className="text-black/90">"{attributes.find(a => a.id === deleteId)?.name}"</span> will be purged from the cluster.
             </p>
             <div className="flex gap-3">
               <button onClick={() => handleDelete(deleteId)} disabled={deleting} className="flex-[2] bg-red-500 hover:bg-red-600 font-black uppercase tracking-widest text-[11px] py-4.5 rounded-3xl text-white shadow-2xl shadow-red-500/30 h-14">{deleting ? 'Purging…' : 'Confirm Wipe'}</button>
-              <button onClick={() => setDeleteId(null)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-black/20 text-[11px] font-black uppercase tracking-widest py-4.5 rounded-3xl transition-all h-14">Abort</button>
+              <button onClick={() => setDeleteId(null)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-black text-[11px] font-black uppercase tracking-widest py-4.5 rounded-3xl transition-all h-14">Abort</button>
             </div>
           </div>
         </div>

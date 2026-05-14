@@ -157,7 +157,7 @@ export default function TypesPage() {
             </div>
             Catalog Types
           </h1>
-          <p className="text-sm text-black/60 mt-1 uppercase tracking-wider ml-1">Universal Classification Registry</p>
+          <p className="text-sm text-black mt-1 uppercase tracking-wider ml-1">Universal Classification Registry</p>
         </div>
         <button
           onClick={() => { setShowCreate(true); setCreateName(''); setCreateSlug('') }}
@@ -243,7 +243,7 @@ export default function TypesPage() {
               ) : displayData.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-20 text-center">
-                    <div className="flex flex-col items-center gap-3 opacity-20">
+                    <div className="flex flex-col items-center gap-3 opacity-50">
                        <Layers size={48} />
                        <p className="text-xs font-bold uppercase tracking-widest">No types available</p>
                     </div>
@@ -252,7 +252,7 @@ export default function TypesPage() {
               ) : (
                 displayData.map((type, idx) => (
                   <tr key={type.id} className="group hover:bg-gray-50/50 transition-all">
-                    <td className="px-6 py-5 text-black/20 font-black text-[10px]">
+                    <td className="px-6 py-5 text-black font-black text-[10px]">
                        {(page - 1) * pageSize + idx + 1}
                     </td>
                     <td className="px-6 py-5">
@@ -283,7 +283,7 @@ export default function TypesPage() {
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-5 text-[10px] font-bold text-black/40 uppercase tracking-widest">
+                    <td className="px-6 py-5 text-[10px] font-bold text-black/80 uppercase tracking-widest">
                       {type.created_at ? new Date(type.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
                     </td>
                     <td className="px-6 py-5 text-right">
@@ -300,7 +300,7 @@ export default function TypesPage() {
                             </button>
                             <button
                               onClick={() => setEditId(null)}
-                              className="p-2.5 rounded-xl bg-gray-50 text-black/40 hover:text-black transition-all"
+                              className="p-2.5 rounded-xl bg-gray-50 text-black/80 hover:text-black transition-all"
                               title="Discard"
                             >
                               <X size={16} />
@@ -310,14 +310,14 @@ export default function TypesPage() {
                           <>
                             <button
                               onClick={() => startEdit(type)}
-                              className="p-2.5 rounded-xl text-black/40 hover:text-[#96b1d8] hover:bg-[#96b1d8]/5 transition-all outline-none"
+                              className="p-2.5 rounded-xl text-black/80 hover:text-[#96b1d8] hover:bg-[#96b1d8]/5 transition-all outline-none"
                               title="Modify Type"
                             >
                               <Pencil size={16} />
                             </button>
                             <button
                               onClick={() => setDeleteId(type.id)}
-                              className="p-2.5 rounded-xl text-black/40 hover:text-red-500 hover:bg-red-50 transition-all outline-none"
+                              className="p-2.5 rounded-xl text-black/80 hover:text-red-500 hover:bg-red-50 transition-all outline-none"
                               title="Delete Type"
                             >
                               <Trash2 size={16} />
@@ -357,7 +357,7 @@ export default function TypesPage() {
                <Trash2 size={28} />
             </div>
             <h2 className="text-xl font-bold text-black mb-2">Remove Type?</h2>
-            <p className="text-sm font-medium text-black/50 mb-8 leading-relaxed">
+            <p className="text-sm font-medium text-black/90 mb-8 leading-relaxed">
               Are you sure you want to delete <strong className="text-black font-bold uppercase tracking-tighter">"{types.find(t => t.id === deleteId)?.name}"</strong>? This will impact all linked products.
             </p>
             <div className="flex gap-3">

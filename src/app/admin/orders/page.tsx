@@ -94,7 +94,7 @@ export default function AdminOrdersPage() {
              </div>
              Recent Orders
           </h1>
-          <p className="text-[10px] font-bold text-black/40 mt-1 uppercase tracking-[0.3em] ml-1">
+          <p className="text-[10px] font-bold text-black/80 mt-1 uppercase tracking-[0.3em] ml-1">
             {loading ? 'Checking cloud registry…' : `${orders.length} transactions managed in current view`}
           </p>
         </div>
@@ -103,18 +103,18 @@ export default function AdminOrdersPage() {
       {/* Filter Row */}
       <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-3 mb-8 flex flex-wrap items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-700">
         <div className="flex-1 min-w-[300px] relative">
-           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black/20" size={18} />
+           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black" size={18} />
            <input 
               type="text" 
               placeholder="Search by ID, Customer Name, Order Status or Payment..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-gray-50/50 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold text-black placeholder:text-black/20 focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-inner"
+              className="w-full bg-gray-50/50 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold text-black placeholder:text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-inner"
            />
         </div>
         
         <div className="flex items-center gap-2 px-6 h-14 bg-gray-50/30 rounded-2xl border border-gray-50">
-           <Filter size={16} className="text-black/20" />
+           <Filter size={16} className="text-black" />
            <select 
              value={statusFilter}
              onChange={(e) => setStatusFilter(e.target.value)}
@@ -155,7 +155,7 @@ export default function AdminOrdersPage() {
               ) : displayData.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-8 py-32 text-center">
-                    <div className="flex flex-col items-center gap-4 opacity-20">
+                    <div className="flex flex-col items-center gap-4 opacity-50">
                       <Package size={56} className="stroke-[1px]" />
                       <p className="text-sm font-black uppercase tracking-[0.4em]">Registry Empty</p>
                     </div>
@@ -164,7 +164,7 @@ export default function AdminOrdersPage() {
               ) : (
                 displayData.map((order: any, i: number) => (
                   <tr key={order.id} className="hover:bg-gray-50/50 transition-all cursor-pointer group">
-                    <td className="px-8 py-6 text-black/20 font-black text-[10px]">
+                    <td className="px-8 py-6 text-black font-black text-[10px]">
                        {(page - 1) * pageSize + i + 1}
                     </td>
                     <td className="px-8 py-6">
@@ -172,9 +172,9 @@ export default function AdminOrdersPage() {
                     </td>
                     <td className="px-8 py-6">
                       <p className="font-black text-black text-base tracking-tighter leading-none">{order.user?.name || `Guest Node`}</p>
-                      <p className="text-[10px] font-black text-black/30 uppercase tracking-widest mt-2">{order.user?.email || 'external entity'}</p>
+                      <p className="text-[10px] font-black text-black/70 uppercase tracking-widest mt-2">{order.user?.email || 'external entity'}</p>
                     </td>
-                    <td className="px-8 py-6 text-[10px] font-black text-black/30 uppercase tracking-[0.2em] whitespace-nowrap">
+                    <td className="px-8 py-6 text-[10px] font-black text-black/70 uppercase tracking-[0.2em] whitespace-nowrap">
                       {order.created_at
                         ? new Date(order.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
                         : '—'}

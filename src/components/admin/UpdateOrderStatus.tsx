@@ -69,7 +69,7 @@ export function UpdateOrderStatus({ orderId, currentStatus, currentPaymentStatus
           <option key={s} value={s}>{s}</option>
         ))}
       </select>
-      <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-black/60 pointer-events-none" />
+      <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-black pointer-events-none" />
     </div>
   )
 }

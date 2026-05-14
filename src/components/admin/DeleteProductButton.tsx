@@ -28,7 +28,7 @@ export function DeleteProductButton({ id }: { id: number }) {
   return (
     <button
       onClick={handleDelete}
-      className="p-2.5 rounded-xl text-black/40 hover:text-red-500 hover:bg-red-50 transition-all transition-colors"
+      className="p-2.5 rounded-xl text-black/80 hover:text-red-500 hover:bg-red-50 transition-all transition-colors"
     >
       <Trash2 size={16} />
     </button>

@@ -66,19 +66,19 @@ export default function AdminUsersPage() {
              </div>
              Directory
           </h1>
-          <p className="text-[10px] font-bold text-black/40 mt-1 uppercase tracking-[0.3em] ml-1">Member Registry Access</p>
+          <p className="text-[10px] font-bold text-black/80 mt-1 uppercase tracking-[0.3em] ml-1">Member Registry Access</p>
         </div>
       </div>
 
       <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-3 mb-8 flex items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-700">
         <div className="flex-1 relative">
-           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black/20" size={18} />
+           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black" size={18} />
            <input 
               type="text" 
               placeholder="Search by Identity or Alias..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-gray-50/50 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold text-black placeholder:text-black/20 focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-inner"
+              className="w-full bg-gray-50/50 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold text-black placeholder:text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-inner"
            />
         </div>
       </div>
@@ -107,7 +107,7 @@ export default function AdminUsersPage() {
               ) : displayData.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-8 py-32 text-center">
-                    <div className="flex flex-col items-center gap-4 opacity-20">
+                    <div className="flex flex-col items-center gap-4 opacity-50">
                        <Users size={56} className="stroke-[1px]" />
                        <p className="text-sm font-black uppercase tracking-[0.4em]">No Entities Detected</p>
                     </div>
@@ -115,7 +115,7 @@ export default function AdminUsersPage() {
                 </tr>
               ) : displayData.map((user: any, i: number) => (
                 <tr key={user.id} className="group hover:bg-gray-50/50 transition-all cursor-pointer">
-                  <td className="px-8 py-6 text-black/20 font-black text-[10px]">
+                  <td className="px-8 py-6 text-black font-black text-[10px]">
                      {(page - 1) * pageSize + i + 1}
                   </td>
                   <td className="px-8 py-6">
@@ -127,7 +127,7 @@ export default function AdminUsersPage() {
                         <p className="font-black text-black text-base tracking-tighter leading-none">{user.name}</p>
                         <div className="flex items-center gap-2 mt-2 grayscale group-hover:grayscale-0 transition-all">
                            <Mail size={12} className="text-[#96b1d8]" />
-                           <p className="text-xs font-black text-black/30 group-hover:text-black transition-colors lowercase">{user.email}</p>
+                           <p className="text-xs font-black text-black/70 group-hover:text-black transition-colors lowercase">{user.email}</p>
                         </div>
                       </div>
                     </div>
@@ -136,8 +136,8 @@ export default function AdminUsersPage() {
                     {user.phone || '——'}
                   </td>
                   <td className="px-8 py-6">
-                     <div className="flex items-center gap-2 text-[10px] font-black text-black/20 uppercase tracking-widest group-hover:text-black/40 transition-colors">
-                        <Calendar size={14} className="opacity-40" />
+                     <div className="flex items-center gap-2 text-[10px] font-black text-black uppercase tracking-widest group-hover:text-black/80 transition-colors">
+                        <Calendar size={14} className="opacity-70" />
                         {user.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
                      </div>
                   </td>

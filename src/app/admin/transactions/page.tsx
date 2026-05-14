@@ -114,14 +114,14 @@ export default function TransactionsPage() {
             </div>
             Financial Ledger
           </h1>
-          <p className="text-[10px] font-bold text-black/40 mt-1 uppercase tracking-[0.3em] ml-1">Universal Asset Acquisition Registry</p>
+          <p className="text-[10px] font-bold text-black/80 mt-1 uppercase tracking-[0.3em] ml-1">Universal Asset Acquisition Registry</p>
         </div>
       </div>
 
       {/* Filters */}
       <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-3 mb-8 flex flex-wrap items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-700">
         <div className="flex-1 min-w-[280px] relative">
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black/20" size={18} />
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black" size={18} />
           <input
             type="text"
             placeholder="Filter by Transaction ID, Order # or Identity Node"
@@ -170,7 +170,7 @@ export default function TransactionsPage() {
               ) : displayData.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="px-8 py-32 text-center">
-                    <div className="flex flex-col items-center gap-4 opacity-20">
+                    <div className="flex flex-col items-center gap-4 opacity-50">
                       <CreditCard size={56} className="stroke-[1px]" />
                       <p className="text-xs font-black uppercase tracking-[0.3em]">No Registry Data</p>
                     </div>
@@ -179,35 +179,35 @@ export default function TransactionsPage() {
               ) : (
                 displayData.map((p, i) => (
                   <tr key={p.id} className="group hover:bg-gray-50/50 transition-all cursor-pointer" onClick={() => setSelectedPayment(p)}>
-                    <td className="px-8 py-6 text-black/20 font-black text-[10px]">{(page - 1) * pageSize + i + 1}</td>
+                    <td className="px-8 py-6 text-black font-black text-[10px]">{(page - 1) * pageSize + i + 1}</td>
                     <td className="px-8 py-6">
                       {p.transaction_id
                         ? <span className="font-mono text-[9px] font-bold text-[#96b1d8] bg-[#96b1d8]/5 px-2 py-0.5 rounded-lg uppercase tracking-tighter" title={p.transaction_id}>{p.transaction_id.slice(0, 10)}…</span>
-                        : <span className="text-black/10 font-bold text-[9px]">NULL_REF</span>}
+                        : <span className="text-black/90 font-bold text-[9px]">NULL_REF</span>}
                     </td>
                     <td className="px-8 py-6 font-black text-black text-xs tracking-widest leading-none">ORD-{p.order_id}</td>
                     <td className="px-8 py-6">
                       <p className="font-black text-black text-base tracking-tighter leading-none truncate max-w-[150px]">{p.order?.user?.name || '—'}</p>
-                      <p className="text-[10px] font-black text-black/30 truncate max-w-[150px] uppercase tracking-widest mt-2">{p.order?.user?.email || ''}</p>
+                      <p className="text-[10px] font-black text-black/70 truncate max-w-[150px] uppercase tracking-widest mt-2">{p.order?.user?.email || ''}</p>
                     </td>
                     <td className="px-8 py-6 font-black text-black text-lg tracking-tighter">${Number(p.amount).toLocaleString()}</td>
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-3">
                         <span className="p-2 rounded-xl bg-gray-50 border border-gray-100 group-hover:bg-white transition-all shadow-sm">{METHOD_ICON[p.payment_method?.code] || '💳'}</span>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-black/40">{p.payment_method?.name || 'GENERIC'}</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-black/80">{p.payment_method?.name || 'GENERIC'}</span>
                       </div>
                     </td>
                     <td className="px-8 py-6">
                       <StatusBadge status={p.status} />
                     </td>
-                    <td className="px-8 py-6 text-[10px] font-black text-black/30 uppercase tracking-[0.2em] whitespace-nowrap">
+                    <td className="px-8 py-6 text-[10px] font-black text-black/70 uppercase tracking-[0.2em] whitespace-nowrap">
                       {new Date(p.paid_at || p.created_at).toLocaleDateString('en-US', {
                         month: 'short', day: 'numeric', year: 'numeric',
                       })}
                     </td>
                     <td className="px-8 py-6 text-right">
                       <button
-                        className="p-3 rounded-2xl text-black/20 group-hover:text-black group-hover:bg-white transition-all shadow-sm border border-transparent group-hover:border-gray-100"
+                        className="p-3 rounded-2xl text-black group-hover:text-black group-hover:bg-white transition-all shadow-sm border border-transparent group-hover:border-gray-100"
                         title="Analyze Transaction"
                       >
                         <Eye size={18} />
@@ -253,7 +253,7 @@ export default function TransactionsPage() {
               </div>
               <button 
                 onClick={() => setSelectedPayment(null)} 
-                className="text-black/10 hover:text-black p-4 bg-white rounded-3xl shadow-sm transition-all"
+                className="text-black/90 hover:text-black p-4 bg-white rounded-3xl shadow-sm transition-all"
               >
                 <X size={24} />
               </button>
@@ -270,7 +270,7 @@ export default function TransactionsPage() {
                 ['Log Timestamp', new Date(selectedPayment.paid_at || selectedPayment.created_at).toLocaleString()],
               ].map(([label, value]) => (
                 <div key={label} className="flex justify-between items-center py-5 border-b border-gray-50 last:border-0">
-                  <span className="text-[10px] font-black text-black/20 uppercase tracking-[0.2em]">{label}</span>
+                  <span className="text-[10px] font-black text-black uppercase tracking-[0.2em]">{label}</span>
                   <span className={`text-sm font-black text-right break-all ml-8 tracking-tighter ${label === 'Lifecycle' ? (selectedPayment.status === 'success' ? 'text-green-600' : 'text-red-500') : 'text-black'}`}>
                     {value}
                   </span>
@@ -278,7 +278,7 @@ export default function TransactionsPage() {
               ))}
             </div>
             <div className="bg-gray-50 px-12 py-8 text-center border-t border-gray-100">
-               <button onClick={() => setSelectedPayment(null)} className="text-[11px] font-black text-black/20 uppercase tracking-[0.4em] hover:text-black transition-all">Dismiss Internal Audit</button>
+               <button onClick={() => setSelectedPayment(null)} className="text-[11px] font-black text-black uppercase tracking-[0.4em] hover:text-black transition-all">Dismiss Internal Audit</button>
             </div>
           </div>
         </div>

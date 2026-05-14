@@ -73,7 +73,7 @@ export default function AdminSidebar() {
     <nav className="flex-1 px-3 py-4 overflow-y-auto hide-scrollbar">
       {navGroups.map((group) => (
         <div key={group.label} className="mb-4">
-          <p className="px-3 mb-1 text-[10px] uppercase tracking-widest font-bold text-black/40">
+          <p className="px-3 mb-1 text-[10px] uppercase tracking-widest font-bold text-black/80">
             {group.label}
           </p>
           <div className="space-y-0.5">
@@ -87,7 +87,7 @@ export default function AdminSidebar() {
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                     active
                       ? 'bg-[#f97316] text-white font-medium'
-                      : 'text-black/60 hover:text-black hover:bg-black/10'
+                      : 'text-black hover:text-black hover:bg-black/10'
                   }`}
                 >
                   <Icon size={17} />
@@ -126,7 +126,7 @@ export default function AdminSidebar() {
       {!isMobile && (
         <aside className="fixed top-0 left-0 h-full w-64 bg-[#96b1d8] text-black flex flex-col z-50">
           <div className="px-6 py-5 border-b border-white/10">
-            <p className="text-[20px] uppercase tracking-widest font-bold text-black/40 mb-0.5">ShakTa</p>
+            <p className="text-[20px] uppercase tracking-widest font-bold text-black/80 mb-0.5">ShakTa</p>
             <h1 className="text-lg font-bold">Admin Panel</h1>
           </div>
           <NavLinks />
@@ -138,7 +138,7 @@ export default function AdminSidebar() {
       {isMobile && (
         <div className="fixed top-0 left-0 right-0 h-14 bg-[#96b1d8] text-black flex items-center justify-between px-4 z-50 shadow-sm">
           <div>
-            <p className="text-[10px] uppercase tracking-widest font-bold text-black/40 leading-none">ShakTa</p>
+            <p className="text-[10px] uppercase tracking-widest font-bold text-black/80 leading-none">ShakTa</p>
             <h1 className="text-sm font-bold leading-tight">Admin Panel</h1>
           </div>
           <button
@@ -166,7 +166,7 @@ export default function AdminSidebar() {
           style={{ transform: open ? 'translateX(0)' : 'translateX(-100%)' }}
         >
           <div className="px-6 py-5 border-b border-white/10">
-            <p className="text-[11px] uppercase tracking-widest font-bold text-black/40 mb-0.5">ShakTa</p>
+            <p className="text-[11px] uppercase tracking-widest font-bold text-black/80 mb-0.5">ShakTa</p>
             <h1 className="text-lg font-bold">Admin Panel</h1>
           </div>
           <NavLinks />

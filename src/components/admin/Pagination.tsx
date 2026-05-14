@@ -26,8 +26,8 @@ export default function Pagination({
         <p className="text-[10px] font-black text-black uppercase tracking-[0.2em] leading-none">
           Registry Navigation
         </p>
-        <p className="text-[9px] font-bold text-black/30 uppercase tracking-widest mt-1">
-          Showing Page {currentPage} <span className="opacity-40">of</span> {totalPages}
+        <p className="text-[9px] font-bold text-black/70 uppercase tracking-widest mt-1">
+          Showing Page {currentPage} <span className="opacity-70">of</span> {totalPages}
         </p>
       </div>
 
@@ -35,9 +35,9 @@ export default function Pagination({
         {/* Index Control */}
         {onPageSizeChange && (
            <div className="flex items-center gap-3 bg-gray-50/50 border border-gray-100/50 rounded-2xl px-4 h-12 shadow-inner">
-              <SlidersHorizontal size={14} className="text-black/20" />
+              <SlidersHorizontal size={14} className="text-black" />
               <div className="flex items-center gap-2">
-                 <span className="text-[9px] font-black text-black/20 uppercase tracking-widest">Index Control</span>
+                 <span className="text-[9px] font-black text-black uppercase tracking-widest">Index Control</span>
                  <select 
                    value={pageSize} 
                    onChange={(e) => onPageSizeChange(Number(e.target.value))}
@@ -56,7 +56,7 @@ export default function Pagination({
           <button
             onClick={() => onPageChange(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
-            className="p-3 rounded-2xl bg-white border border-gray-100 text-black/40 hover:text-[#96b1d8] hover:border-[#96b1d8]/30 hover:shadow-lg hover:shadow-[#96b1d8]/5 disabled:opacity-10 disabled:cursor-not-allowed transition-all active:scale-95 shadow-sm"
+            className="p-3 rounded-2xl bg-white border border-gray-100 text-black/80 hover:text-[#96b1d8] hover:border-[#96b1d8]/30 hover:shadow-lg hover:shadow-[#96b1d8]/5 disabled:opacity-70 disabled:cursor-not-allowed transition-all active:scale-95 shadow-sm"
           >
             <ChevronLeft size={16} strokeWidth={3} />
           </button>
@@ -79,7 +79,7 @@ export default function Pagination({
                     className={`w-8 h-8 rounded-xl text-[10px] font-black transition-all ${
                       currentPage === pageNum 
                       ? 'bg-black text-white shadow-lg' 
-                      : 'text-black/30 hover:text-black hover:bg-white'
+                      : 'text-black/70 hover:text-black hover:bg-white'
                     }`}
                   >
                     {pageNum}
@@ -91,7 +91,7 @@ export default function Pagination({
           <button
             onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages}
-            className="p-3 rounded-2xl bg-white border border-gray-100 text-black/40 hover:text-[#96b1d8] hover:border-[#96b1d8]/30 hover:shadow-lg hover:shadow-[#96b1d8]/5 disabled:opacity-10 disabled:cursor-not-allowed transition-all active:scale-95 shadow-sm"
+            className="p-3 rounded-2xl bg-white border border-gray-100 text-black/80 hover:text-[#96b1d8] hover:border-[#96b1d8]/30 hover:shadow-lg hover:shadow-[#96b1d8]/5 disabled:opacity-70 disabled:cursor-not-allowed transition-all active:scale-95 shadow-sm"
           >
             <ChevronRight size={16} strokeWidth={3} />
           </button>
