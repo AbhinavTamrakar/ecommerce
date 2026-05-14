@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { PlusCircle, MinusCircle } from "lucide-react";
 
 export function PriceSlider({
@@ -12,6 +12,7 @@ export function PriceSlider({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [minPrice, setMinPrice] = useState(Number(initialMin ?? 0));
   const [maxPrice, setMaxPrice] = useState(Number(initialMax ?? 1000));
   const MAX = 2000;
@@ -21,7 +22,7 @@ export function PriceSlider({
     params.set("minPrice", String(minPrice));
     params.set("maxPrice", String(maxPrice));
     params.delete("page");
-    router.push(`/products?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const minPct = (minPrice / MAX) * 100;

@@ -3,6 +3,7 @@ import { Product } from "@/types";
 import { notFound } from "next/navigation";
 import { ProductDetail } from "@/components/product/ProductDetail";
 import { SimilarProducts } from "@/components/product/SimilarProducts";
+import { ProductReviews } from "@/components/product/ProductReviews";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -24,8 +25,9 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div className="min-h-screen pb-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         <ProductDetail product={product} />
+        <ProductReviews productId={product.id} />
         <SimilarProducts
           categorySlug={product.category.slug}
           excludeId={product.id}

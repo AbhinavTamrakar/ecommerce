@@ -63,7 +63,7 @@ export function Navbar() {
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/products", label: "Shop" },
-    { href: "/products?type=new", label: "New In" },
+    { href: "/new-arrivals", label: "New Arrivals" },
   ];
 
   const categories = [
@@ -98,7 +98,7 @@ export function Navbar() {
 
       {/* ── DESKTOP ── 3-column grid */}
       {!isMobile && (
-        <div className="max-w-7xl mx-auto px-6 py-2 grid grid-cols-[auto_1fr_auto] items-center gap-6 text-black">
+        <div className="max-w-7xl mx-auto px-6 py-3 grid grid-cols-[auto_1fr_auto] items-center gap-6 text-black">
 
           {/* Col 1: Logo */}
           <Link href="/" className="flex items-center flex-shrink-0">
@@ -186,7 +186,7 @@ export function Navbar() {
 
       {/* ── MOBILE ── */}
       {isMobile && (
-        <div className="px-4 py-2 flex items-center gap-3 text-black">
+        <div className="px-4 py-3 flex items-center gap-3 text-black">
           <Link href="/" className="flex items-center flex-shrink-0">
             <LogoContent />
           </Link>

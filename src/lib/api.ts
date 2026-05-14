@@ -14,19 +14,18 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
     ...(options.headers as Record<string, string>),
   }
 
-  // Only set Content-Type if it's not FormData (let browser set boundary)
   if (!isFormData && !headers['Content-Type']) {
     headers['Content-Type'] = 'application/json'
   }
 
+  // Remove credentials: 'include' — incompatible with wildcard CORS on backend
   const res = await fetch(`${BASE}${endpoint}`, {
     ...options,
     headers,
-    credentials: 'include',
   })
 
   const data = await res.json()
-  
+
   if (!res.ok) {
     throw { response: { data } }
   }

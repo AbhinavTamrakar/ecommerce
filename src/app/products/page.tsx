@@ -16,11 +16,11 @@ interface Props {
   }>;
 }
 
-const TYPE_LABELS: Record<string, string> = {
-  mens: "Men",
-  women: "Women",
-  unisex: "Unisex",
-};
+function parseList(json: any): any[] {
+  if (Array.isArray(json)) return json;
+  if (json?.data && Array.isArray(json.data)) return json.data;
+  return [];
+}
 
 async function getProducts(params: {
   search?: string;
@@ -37,7 +37,7 @@ async function getProducts(params: {
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) return [];
 
-    let data = (await res.json()).data ?? [];
+    let data = parseList(await res.json());
 
     // Filter by type slug (mens / women / unisex)
     if (params.type) {
@@ -76,13 +76,22 @@ async function getProducts(params: {
 
 async function getCategories(): Promise<Category[]> {
   try {
-    const res = await fetch(`${BASE}/api/public/categories`, {
-      cache: "no-store",
-    });
+    const res = await fetch(`${BASE}/api/public/categories`, { cache: "no-store" });
     if (!res.ok) return [];
-    return (await res.json()).data ?? [];
+    return parseList(await res.json());
   } catch (error) {
     console.error("Fetch Categories Error:", error);
+    return [];
+  }
+}
+
+async function getTypes(): Promise<{ id: number; name: string; slug: string }[]> {
+  try {
+    const res = await fetch(`${BASE}/api/public/types`, { cache: "no-store" });
+    if (!res.ok) return [];
+    return parseList(await res.json());
+  } catch (error) {
+    console.error("Fetch Types Error:", error);
     return [];
   }
 }
@@ -90,20 +99,23 @@ async function getCategories(): Promise<Category[]> {
 export default async function ProductsPage({ searchParams }: Props) {
   const sp = await searchParams;
 
-  const [products, categories] = await Promise.all([
+  const [products, categories, types] = await Promise.all([
     getProducts(sp),
     getCategories(),
+    getTypes(),
   ]);
+
+  const typeLabel = types.find((t: any) => t.slug === sp.type)?.name;
 
   const title = sp.search
     ? `Results for "${sp.search}"`
-    : sp.type && TYPE_LABELS[sp.type]
-    ? `${TYPE_LABELS[sp.type]}'s Collection`
+    : sp.type && typeLabel
+    ? `${typeLabel}'s Collection`
     : "All Products";
 
   return (
     <div className="min-h-screen pt-0 pb-20 bg-[var(--color-cream)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-12 items-start pt-6">
 
           {/* Sidebar */}
@@ -115,7 +127,7 @@ export default async function ProductsPage({ searchParams }: Props) {
                 </h3>
                 <PriceSlider initialMax={sp.maxPrice} />
               </div>
-              <ProductFilters categories={categories} currentParams={sp} />
+              <ProductFilters categories={categories} types={types} currentParams={sp} />
             </div>
           </SidebarWrapper>
 

@@ -22,7 +22,6 @@ export default function LoginPage() {
     try {
       const res = await fetch(`${BASE}/api/login`, {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",

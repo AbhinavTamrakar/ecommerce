@@ -197,7 +197,7 @@ export function ProductDetail({ product }: { product: Product }) {
 
               <div className="flex gap-3 pt-2">
                 <button
-                  onClick={() => addItem(selectedVariant?.id ?? product.id, qty)}
+                  onClick={() => addItem(product.id, qty, selectedVariant?.id)}
                   className="btn-primary flex-1 flex items-center justify-center gap-2"
                   disabled={isOutOfStock}
                 >
