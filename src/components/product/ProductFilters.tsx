@@ -44,44 +44,28 @@ export function ProductFilters({ categories, types = [], currentParams }: Props)
               All Products
             </button>
           </li>
-          {categories.map((cat) => (
-            <li key={cat.id}>
-              <button
-                onClick={() => setParam("category", String(cat.id))}
-                className={`text-sm w-full text-left py-1 transition-colors ${
-                  currentParams.category === String(cat.id)
-                    ? "font-semibold text-[var(--color-charcoal)]"
-                    : "text-[var(--color-muted)] hover:text-[var(--color-charcoal)]"
-                }`}
-              >
-                {cat.name}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
 
-      <div>
-        <h3 className="text-xs uppercase tracking-widest mb-4 text-[var(--color-muted)]">
-          Type
-        </h3>
-        <ul className="space-y-2">
-          {types.map(({ slug, name }) => (
-            <li key={slug}>
-              <button
-                onClick={() =>
-                  setParam("type", currentParams.type === slug ? null : slug)
-                }
-                className={`text-sm w-full text-left py-1 transition-colors ${
-                  currentParams.type === slug
-                    ? "font-semibold text-[var(--color-charcoal)]"
-                    : "text-[var(--color-muted)] hover:text-[var(--color-charcoal)]"
-                }`}
-              >
-                {name}
-              </button>
+          {categories.length === 0 ? (
+            // Remove this block once categories are confirmed to be passing correctly
+            <li className="text-xs text-red-400 italic">
+              No categories received — check that categories prop is being fetched and passed from the parent page.
             </li>
-          ))}
+          ) : (
+            categories.map((cat) => (
+              <li key={cat.id}>
+                <button
+                  onClick={() => setParam("category", String(cat.id))}
+                  className={`text-sm w-full text-left py-1 transition-colors ${
+                    currentParams.category === String(cat.id)
+                      ? "font-semibold text-[var(--color-charcoal)]"
+                      : "text-[var(--color-muted)] hover:text-[var(--color-charcoal)]"
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              </li>
+            ))
+          )}
         </ul>
       </div>
     </div>

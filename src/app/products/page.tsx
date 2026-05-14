@@ -16,7 +16,11 @@ interface Props {
   }>;
 }
 
-
+function parseList(json: any): any[] {
+  if (Array.isArray(json)) return json;
+  if (json?.data && Array.isArray(json.data)) return json.data;
+  return [];
+}
 
 async function getProducts(params: {
   search?: string;
@@ -33,7 +37,7 @@ async function getProducts(params: {
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) return [];
 
-    let data = (await res.json()).data ?? [];
+    let data = parseList(await res.json());
 
     // Filter by type slug (mens / women / unisex)
     if (params.type) {
@@ -74,7 +78,7 @@ async function getCategories(): Promise<Category[]> {
   try {
     const res = await fetch(`${BASE}/api/public/categories`, { cache: "no-store" });
     if (!res.ok) return [];
-    return (await res.json()).data ?? [];
+    return parseList(await res.json());
   } catch (error) {
     console.error("Fetch Categories Error:", error);
     return [];
@@ -85,7 +89,7 @@ async function getTypes(): Promise<{ id: number; name: string; slug: string }[]>
   try {
     const res = await fetch(`${BASE}/api/public/types`, { cache: "no-store" });
     if (!res.ok) return [];
-    return (await res.json()).data ?? [];
+    return parseList(await res.json());
   } catch (error) {
     console.error("Fetch Types Error:", error);
     return [];
