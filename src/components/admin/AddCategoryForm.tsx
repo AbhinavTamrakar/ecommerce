@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 
 const API = 'http://194.146.12.71:8008'
 
-export function AddCategoryForm() {
+export function AddCategoryForm({ onCategoryAdded }: { onCategoryAdded?: () => void }) {
   const [name, setName] = useState('')
   const [image, setImage] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
@@ -42,6 +42,7 @@ export function AddCategoryForm() {
       toast.success('Category added!')
       setName('')
       setImage(null)
+      onCategoryAdded?.()
       router.refresh()
     } catch {
       toast.error('Failed to add category')
@@ -51,40 +52,40 @@ export function AddCategoryForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5 text-black">
       <div>
-        <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1.5">Name *</label>
+        <label className="block text-[10px] font-bold uppercase tracking-widest text-black/40 mb-2 ml-1">Category Name *</label>
         <input
           required
           value={name}
           onChange={e => setName(e.target.value)}
           placeholder="e.g. Summer Collection"
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+          className="w-full border border-gray-100 rounded-2xl px-4 py-3 text-sm font-medium outline-none focus:border-[#96b1d8] focus:ring-1 focus:ring-[#96b1d8]/20 shadow-sm transition-all"
         />
       </div>
       <div>
-        <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1.5">Slug (auto)</label>
+        <label className="block text-[10px] font-bold uppercase tracking-widest text-black/40 mb-2 ml-1">Slug (auto-generated)</label>
         <input
           disabled
           value={name.toLowerCase().replace(/\s+/g, '-')}
-          className="w-full border border-gray-100 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-400"
+          className="w-full border border-gray-50 rounded-2xl px-4 py-3 text-sm bg-gray-50 text-black/30 font-mono shadow-inner"
         />
       </div>
       <div>
-        <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1.5">Image (optional)</label>
+        <label className="block text-[10px] font-bold uppercase tracking-widest text-black/40 mb-2 ml-1">Brand Illustration (optional)</label>
         <input
           type="file"
           accept="image/*"
           onChange={e => setImage(e.target.files?.[0] || null)}
-          className="w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+          className="w-full text-[11px] text-black/50 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:uppercase file:bg-black/5 file:text-black hover:file:bg-black/10 transition-all cursor-pointer"
         />
       </div>
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-[#1a1a1a] text-white py-2.5 rounded-lg text-sm font-medium hover:bg-[#f97316] transition-colors disabled:opacity-50"
+        className="w-full bg-black text-white py-3.5 rounded-[1.2rem] text-[11px] font-bold uppercase tracking-[0.2em] shadow-lg hover:shadow-black/20 hover:bg-gray-900 transition-all active:scale-95 disabled:opacity-50 mt-4"
       >
-        {loading ? 'Adding...' : 'Add Category'}
+        {loading ? 'Processing…' : 'Finalize Category'}
       </button>
     </form>
   )

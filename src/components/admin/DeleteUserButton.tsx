@@ -28,9 +28,9 @@ export function DeleteUserButton({ id }: { id: number }) {
   return (
     <button
       onClick={handleDelete}
-      className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+      className="p-2.5 rounded-xl text-black/40 hover:text-red-500 hover:bg-red-50 transition-all"
     >
-      <Trash2 size={15} />
+      <Trash2 size={16} />
     </button>
   )
 }

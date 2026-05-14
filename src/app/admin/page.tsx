@@ -40,10 +40,10 @@ function last7DayKeys() {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  delivered: '#3d9e63',
-  pending: '#e07c3a',
-  cancelled: '#d94f4f',
-  processing: '#3a7fd9',
+  delivered: '#000000', 
+  pending: '#96b1d8',   
+  cancelled: '#ef4444', 
+  processing: '#3b82f6', 
 }
 
 export default function AdminDashboard() {
@@ -80,14 +80,12 @@ export default function AdminDashboard() {
         ? reviews
         : reviews?.data?.data ?? reviews?.data ?? reviews?.reviews ?? []
 
-      // Status counts
       const statusCounts: Record<string, number> = {}
       orderArr.forEach((o) => {
         const s = (o.status || 'unknown').toLowerCase()
         statusCounts[s] = (statusCounts[s] || 0) + 1
       })
 
-      // Revenue last 7 days
       const keys = last7DayKeys()
       const revenueByDay = keys.map((day) =>
         orderArr
@@ -99,7 +97,6 @@ export default function AdminDashboard() {
           .reduce((sum, o) => sum + parseFloat(o.total_amount || o.total || 0), 0)
       )
 
-      // Top 5 products by order count
       const productCounts: Record<string, number> = {}
       orderArr.forEach((o) => {
         const items: any[] = o.items ?? o.order_items ?? []
@@ -136,19 +133,10 @@ export default function AdminDashboard() {
   const lowStock = extraStats?.lowStock || stats?.low_stock || []
 
   const kpiCards = [
-    { label: 'Total Revenue', value: `$${Number(kpis.total_revenue || 0).toFixed(2)}`, icon: DollarSign, color: 'bg-green-50 text-green-700' },
-    { label: "Today's Revenue", value: `$${Number(kpis.today_revenue || 0).toFixed(2)}`, icon: TrendingUp, color: 'bg-blue-50 text-blue-700' },
-    { label: 'Total Orders', value: extraStats?.totalOrders ?? kpis.total_orders ?? 0, icon: ShoppingBag, color: 'bg-orange-50 text-orange-700' },
-    { label: 'New Customers', value: kpis.new_customers || 0, icon: Users, color: 'bg-purple-50 text-purple-700' },
-  ]
-
-  const extraCards = [
-    { label: 'Pending', value: extraStats?.statusCounts?.pending ?? '—', icon: Clock, color: 'bg-yellow-50 text-yellow-700' },
-    { label: 'Delivered', value: extraStats?.statusCounts?.delivered ?? '—', icon: CheckCircle, color: 'bg-green-50 text-green-700' },
-    { label: 'Cancelled', value: extraStats?.statusCounts?.cancelled ?? '—', icon: XCircle, color: 'bg-red-50 text-red-700' },
-    { label: 'Products', value: extraStats?.totalProducts ?? '—', icon: Package, color: 'bg-orange-50 text-orange-700' },
-    { label: 'Customers', value: extraStats?.totalCustomers ?? '—', icon: Users, color: 'bg-blue-50 text-blue-700' },
-    { label: 'Reviews', value: extraStats?.totalReviews ?? '—', icon: Star, color: 'bg-purple-50 text-purple-700' },
+    { label: 'Total Revenue', value: `$${Number(kpis.total_revenue || 0).toFixed(2)}`, icon: DollarSign, color: 'bg-black text-white shadow-lg' },
+    { label: "Today's Yield", value: `$${Number(kpis.today_revenue || 0).toFixed(2)}`, icon: TrendingUp, color: 'bg-[#96b1d8] text-black shadow-md' },
+    { label: 'Orders Volume', value: extraStats?.totalOrders ?? kpis.total_orders ?? 0, icon: ShoppingBag, color: 'bg-white border border-gray-100 text-black shadow-sm' },
+    { label: 'Cloud Entities', value: kpis.new_customers || 0, icon: Users, color: 'bg-white border border-gray-100 text-black shadow-sm' },
   ]
 
   const revenueChartData = last7DayLabels().map((label, i) => ({
@@ -161,97 +149,94 @@ export default function AdminDashboard() {
   )
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-900 py-10">Dashboard</h1>
-        <p className="text-gray-500 text-sm mt-1">Welcome back. Here's what's happening.</p>
+    <div className="text-black">
+      <div className="mb-10">
+        <h1 className="text-3xl font-black text-black tracking-tighter">Terminal</h1>
+        <p className="text-black/40 text-[10px] font-bold mt-1 uppercase tracking-[0.3em]">System Intelligence & Commerce Audit</p>
       </div>
 
       {/* Main KPI cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '24px' }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         {kpiCards.map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-[10px] uppercase tracking-wider text-gray-400 font-medium leading-tight">{label}</p>
-              <div className={`p-1.5 rounded-lg ${color} shrink-0`}>
-                <Icon size={14} />
-              </div>
+          <div key={label} className={`rounded-[2rem] p-8 ${color} transition-all hover:scale-[1.02] duration-300 group`}>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">{label}</span>
+              <Icon size={20} className="opacity-40 group-hover:opacity-100 transition-opacity" />
             </div>
-            <p className="text-xl font-bold text-gray-900">{value}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Extra stat cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px', marginBottom: '24px' }}>
-        {extraCards.map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-[10px] uppercase tracking-wider text-gray-400 font-medium">{label}</p>
-              <div className={`p-1.5 rounded-lg ${color} shrink-0`}>
-                <Icon size={13} />
-              </div>
-            </div>
-            <p className="text-xl font-bold text-gray-900">{loading ? '…' : value}</p>
+            <p className="text-3xl font-black tracking-tighter">{value}</p>
           </div>
         ))}
       </div>
 
       {/* Charts row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
 
         {/* Revenue line chart */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-          <p className="text-sm font-semibold text-gray-800 mb-1">Revenue — last 7 days</p>
-          <p className="text-xs text-gray-400 mb-4">Delivered orders only</p>
+        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8">
+          <div className="mb-8">
+            <p className="text-xs font-black text-black uppercase tracking-[0.2em]">Revenue Velocity</p>
+            <p className="text-[9px] text-black/30 font-bold uppercase tracking-widest">7-Day Trajectory</p>
+          </div>
           {loading ? (
-            <div className="h-48 flex items-center justify-center text-gray-300 text-sm">Loading…</div>
+            <div className="h-[240px] bg-gray-50/50 rounded-3xl" />
           ) : (
-            <ResponsiveContainer width="100%" height={180}>
+            <ResponsiveContainer width="100%" height={240}>
               <LineChart data={revenueChartData}>
-                <XAxis dataKey="label" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
-                <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={(v) => `$${v}`} />
-                <Tooltip formatter={(v: any) => [`$${v}`, 'Revenue']} />
-                <Line type="monotone" dataKey="revenue" stroke="#e07c3a" strokeWidth={2} dot={{ r: 3, fill: '#e07c3a' }} />
+                <XAxis dataKey="label" tick={{ fontSize: 9, fontWeight: 900, fill: '#000' }} tickLine={false} axisLine={false} />
+                <YAxis hide />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', padding: '15px' }}
+                  itemStyle={{ fontWeight: 900, fontSize: '14px', color: '#000' }}
+                  cursor={{ stroke: '#000', strokeWidth: 1 }}
+                />
+                <Line type="step" dataKey="revenue" stroke="#000" strokeWidth={4} dot={false} activeDot={{ r: 8, fill: '#fff', stroke: '#000', strokeWidth: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           )}
         </div>
 
         {/* Orders by status pie */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-          <p className="text-sm font-semibold text-gray-800 mb-1">Orders by status</p>
-          <p className="text-xs text-gray-400 mb-4">Current distribution</p>
-          {loading || statusPieData.length === 0 ? (
-            <div className="h-48 flex items-center justify-center text-gray-300 text-sm">Loading…</div>
+        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8">
+          <div className="mb-8">
+            <p className="text-xs font-black text-black uppercase tracking-[0.2em]">Asset Distribution</p>
+            <p className="text-[9px] text-black/30 font-bold uppercase tracking-widest">Global Status Map</p>
+          </div>
+          {loading ? (
+            <div className="h-[240px] bg-gray-50/50 rounded-3xl" />
           ) : (
-            <ResponsiveContainer width="100%" height={180}>
+            <ResponsiveContainer width="100%" height={240}>
               <PieChart>
-                <Pie data={statusPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} innerRadius={40} paddingAngle={3}>
+                <Pie data={statusPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={85} innerRadius={55} paddingAngle={2}>
                   {statusPieData.map((entry) => (
-                    <Cell key={entry.name} fill={STATUS_COLORS[entry.name] || '#888'} />
+                    <Cell key={entry.name} fill={STATUS_COLORS[entry.name] || '#eee'} stroke="#fff" strokeWidth={4} />
                   ))}
                 </Pie>
-                <Tooltip />
-                <Legend iconType="square" iconSize={10} wrapperStyle={{ fontSize: 11 }} />
+                <Tooltip 
+                   contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}
+                />
+                <Legend iconType="rect" align="center" verticalAlign="bottom" wrapperStyle={{ fontSize: 9, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', paddingTop: '20px' }} />
               </PieChart>
             </ResponsiveContainer>
           )}
         </div>
 
         {/* Top products bar chart */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-          <p className="text-sm font-semibold text-gray-800 mb-1">Top 5 products</p>
-          <p className="text-xs text-gray-400 mb-4">By units ordered</p>
-          {loading || !extraStats?.topProducts?.length ? (
-            <div className="h-48 flex items-center justify-center text-gray-300 text-sm">Loading…</div>
+        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8">
+           <div className="mb-8">
+            <p className="text-xs font-black text-black uppercase tracking-[0.2em]">High Performance</p>
+            <p className="text-[9px] text-black/30 font-bold uppercase tracking-widest">Top SKU Flux</p>
+          </div>
+          {loading ? (
+            <div className="h-[240px] bg-gray-50/50 rounded-3xl" />
           ) : (
-            <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={extraStats.topProducts} layout="vertical" margin={{ left: 8 }}>
-                <XAxis type="number" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
-                <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} width={90} />
-                <Tooltip />
-                <Bar dataKey="count" fill="#e07c3a" radius={[0, 4, 4, 0]} />
+            <ResponsiveContainer width="100%" height={240}>
+              <BarChart data={extraStats.topProducts} layout="vertical">
+                <XAxis type="number" hide />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 9, fontWeight: 900, fill: '#000' }} tickLine={false} axisLine={false} width={100} />
+                <Tooltip 
+                   contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}
+                />
+                <Bar dataKey="count" fill="#96b1d8" radius={[0, 20, 20, 0]} barSize={20} />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -259,53 +244,53 @@ export default function AdminDashboard() {
 
       </div>
 
-      {/* Recent Orders + Low Stock */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
-          <div className="px-4 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="font-semibold text-gray-800">Recent Orders</h2>
-            <a href="/admin/orders" className="text-xs text-orange-500 hover:underline">View all</a>
+      {/* Footer Details */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+          <div className="px-8 py-6 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
+            <h2 className="text-xs font-black text-black uppercase tracking-[0.25em]">Recent Traffic</h2>
+            <a href="/admin/orders" className="text-[9px] font-black uppercase tracking-widest bg-black text-white px-3 py-1.5 rounded-full hover:bg-gray-800 transition-all">Audit Gate →</a>
           </div>
           <div className="divide-y divide-gray-50">
             {recentOrders.length === 0 ? (
-              <p className="px-4 py-8 text-sm text-gray-400 text-center">No orders yet</p>
+              <p className="px-8 py-16 text-[10px] font-bold text-black/20 uppercase tracking-widest text-center italic">Awaiting connection…</p>
             ) : recentOrders.slice(0, 5).map((order: any) => (
-              <div key={order.id} className="px-4 py-3 flex items-center justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-gray-800 truncate">Order #{order.id}</p>
-                  <p className="text-xs text-gray-400">{new Date(order.created_at).toLocaleDateString()}</p>
+              <div key={order.id} className="px-8 py-5 flex items-center justify-between gap-4 hover:bg-gray-50 transition-all cursor-pointer">
+                <div>
+                  <p className="text-sm font-black text-black tracking-tighter">REF-{order.id}</p>
+                  <p className="text-[9px] font-bold text-black/30 uppercase tracking-widest">{new Date(order.created_at).toLocaleDateString()}</p>
                 </div>
-                <div className="text-right shrink-0">
-                  <p className="text-sm font-semibold">${Number(order.total_amount || 0).toFixed(2)}</p>
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${
-                    order.status === 'delivered' ? 'bg-green-100 text-green-700' :
-                    order.status === 'processing' ? 'bg-blue-100 text-blue-700' :
-                    order.status === 'cancelled' ? 'bg-red-100 text-red-700' :
-                    'bg-gray-100 text-gray-600'
-                  }`}>{order.status}</span>
+                <div className="text-right">
+                  <p className="text-sm font-black text-black tracking-tighter">${Number(order.total_amount || 0).toLocaleString()}</p>
+                  <span className="text-[8px] font-black uppercase tracking-widest text-[#96b1d8]">{order.status}</span>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
-          <div className="px-4 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="font-semibold text-gray-800 flex items-center gap-2">
-              <AlertTriangle size={15} className="text-orange-500" />
-              Low Stock
+        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+          <div className="px-8 py-6 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
+             <h2 className="text-xs font-black text-black uppercase tracking-[0.25em] flex items-center gap-2">
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-ping" />
+              Critical Stock
             </h2>
-            <a href="/admin/products" className="text-xs text-orange-500 hover:underline">View all</a>
+            <a href="/admin/products" className="text-[9px] font-black uppercase tracking-widest bg-black text-white px-3 py-1.5 rounded-full hover:bg-gray-800 transition-all">Restock Registry →</a>
           </div>
           <div className="divide-y divide-gray-50">
             {lowStock.length === 0 ? (
-              <p className="px-4 py-8 text-sm text-gray-400 text-center">All products well stocked</p>
+              <p className="px-8 py-16 text-[10px] font-bold text-black/20 uppercase tracking-widest text-center italic">Vault Healthy</p>
             ) : lowStock.slice(0, 5).map((product: any) => (
-              <div key={product.id} className="px-4 py-3 flex items-center justify-between gap-2">
-                <p className="text-sm font-medium text-gray-800 truncate">{product.name}</p>
-                <span className="text-xs font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full shrink-0">
-                  {product.stock} left
-                </span>
+              <div key={product.id} className="px-8 py-5 flex items-center justify-between gap-4 hover:bg-gray-50 transition-all">
+                <p className="text-sm font-black text-black tracking-tighter truncate">{product.name}</p>
+                <div className="flex items-center gap-4">
+                   <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-black rounded-full" style={{ width: `${(product.stock / 10) * 100}%` }} />
+                   </div>
+                   <span className="text-[10px] font-black text-black bg-[#96b1d8] px-3 py-1.5 rounded-xl shrink-0 uppercase tracking-tighter shadow-sm">
+                     {product.stock} Units
+                   </span>
+                </div>
               </div>
             ))}
           </div>

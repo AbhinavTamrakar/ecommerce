@@ -45,7 +45,7 @@ const navGroups = [
     label: 'System',
     links: [
       { href: '/admin/settings', label: 'Settings', icon: Settings },
-      { href: '/admin/banners', label: 'Banners', icon: Image },
+      { href: '/admin/banners', label: 'Media', icon: Image },
     ],
   },
 ]
@@ -70,7 +70,7 @@ export default function AdminSidebar() {
   }
 
   const NavLinks = () => (
-    <nav className="flex-1 px-3 py-4 overflow-y-auto">
+    <nav className="flex-1 px-3 py-4 overflow-y-auto hide-scrollbar">
       {navGroups.map((group) => (
         <div key={group.label} className="mb-4">
           <p className="px-3 mb-1 text-[10px] uppercase tracking-widest font-bold text-black/40">

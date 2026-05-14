@@ -1,8 +1,10 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { ShoppingCart, ChevronUp } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 
 export function ScrollToTop() {
+  const pathname = usePathname()
   const [isVisible, setIsVisible] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
 
@@ -12,7 +14,7 @@ export function ScrollToTop() {
         setIsVisible(true)
       } else {
         setIsVisible(false)
-        setIsAnimating(false) // Reset animation if we scroll back to top manually
+        setIsAnimating(false)
       }
     }
 
@@ -27,13 +29,12 @@ export function ScrollToTop() {
       behavior: 'smooth',
     })
     
-    // Duration of animation should match or be slightly longer than scroll time
     setTimeout(() => {
       setIsAnimating(false)
     }, 1000)
   }
 
-  if (!isVisible) return null
+  if (!isVisible || (pathname && pathname.startsWith('/admin'))) return null
 
   return (
     <button
@@ -44,12 +45,10 @@ export function ScrollToTop() {
       aria-label="Scroll to top"
     >
       <div className="relative">
-        {/* Default Arrow */}
         <div className={`transition-all duration-500 ${isAnimating ? 'opacity-0 -translate-y-10' : 'opacity-100'}`}>
           <ChevronUp size={24} />
         </div>
 
-        {/* Floating Cart Animation */}
         <div 
           className={`absolute inset-0 flex items-center justify-center transition-all duration-700 ease-in-out ${
             isAnimating 
@@ -61,7 +60,6 @@ export function ScrollToTop() {
         </div>
       </div>
       
-      {/* Visual background ripple/pulse */}
       <span className="absolute inset-0 bg-white/10 scale-0 group-hover:scale-100 rounded-full transition-transform duration-500" />
     </button>
   )

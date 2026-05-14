@@ -63,13 +63,13 @@ export function UpdateOrderStatus({ orderId, currentStatus, currentPaymentStatus
         value={status}
         onChange={e => handleChange(e.target.value)}
         disabled={loading}
-        className="appearance-none text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 pr-7 bg-white focus:outline-none focus:border-gray-400 disabled:opacity-50 cursor-pointer"
+        className="appearance-none text-[10px] font-bold uppercase tracking-wider border border-gray-100 rounded-lg px-3 py-1.5 pr-8 bg-white focus:outline-none focus:border-[#96b1d8] focus:ring-1 focus:ring-[#96b1d8]/20 disabled:opacity-50 cursor-pointer shadow-sm transition-all"
       >
         {STATUSES.map(s => (
-          <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+          <option key={s} value={s}>{s}</option>
         ))}
       </select>
-      <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+      <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-black/60 pointer-events-none" />
     </div>
   )
 }

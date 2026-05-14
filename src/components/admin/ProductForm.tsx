@@ -235,15 +235,15 @@ export default function ProductForm({ productId }: Props) {
     }
   }
 
-  if (fetching) return <div className="text-gray-400 text-sm p-8">Loading...</div>
+  if (fetching) return <div className="text-gray-400 text-sm py-8">Loading...</div>
 
   return (
     <div>
-      <div className="mb-6">
+      <div className="mb-8">
         <Link href="/admin/products" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 mb-4 transition-colors">
           <ChevronLeft size={15} /> Back to Products
         </Link>
-        <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-gray-900">
           {productId ? 'Edit Product' : 'Add New Product'}
         </h1>
       </div>

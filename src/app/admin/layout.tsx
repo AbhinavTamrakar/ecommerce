@@ -8,11 +8,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!token) redirect('/login?redirect=/admin')
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-[#96b1d8] flex">
       <AdminSidebar />
       {/* Desktop: ml-64 for sidebar, Mobile: pt-14 for top bar */}
-      <main className="flex-1 md:ml-64 pt-14 md:pt-0 p-4 md:p-8 w-full min-w-0">
-        {children}
+      <main className="flex-1 md:ml-64 pt-16 md:pt-0 p-6 md:p-10 w-full min-w-0">
+        <div className="max-w-7xl mx-auto">
+          {children}
+        </div>
       </main>
     </div>
   )

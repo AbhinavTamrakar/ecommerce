@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { Plus, Pencil, Trash2, X, Check, Sliders, ChevronDown, ChevronRight } from 'lucide-react'
+import Pagination from '@/components/admin/Pagination'
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://194.146.12.71:8008'
 
@@ -15,6 +16,10 @@ export default function AttributesPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [expanded, setExpanded] = useState<number | null>(null)
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const [totalPages, setTotalPages] = useState(1)
+  const [isServerPaginated, setIsServerPaginated] = useState(false)
 
   // Attribute CRUD
   const [showCreate, setShowCreate] = useState(false)
@@ -38,23 +43,37 @@ export default function AttributesPage() {
 
   const h = { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `Bearer ${token}` }
 
-  async function load() {
+  async function load(p = 1, limit = 10) {
     setLoading(true)
-    const res = await fetch(`${BASE}/api/attributes`, { headers: h })
-    const json = await res.json()
-    const raw = json?.data?.data ?? json?.data ?? json
-    setAttributes(Array.isArray(raw) ? raw : [])
-    setLoading(false)
+    try {
+      const res = await fetch(`${BASE}/api/attributes?page=${p}&per_page=${limit}&limit=${limit}&pageSize=${limit}`, { headers: h })
+      const json = await res.json()
+      const raw = json?.data?.data ?? json?.data ?? json
+      const lastPage = json?.data?.last_page || 0
+      
+      setAttributes(Array.isArray(raw) ? raw : [])
+      
+      if (lastPage > 0) {
+        setIsServerPaginated(true)
+        setTotalPages(lastPage)
+        setPage(json?.data?.current_page || p)
+      } else {
+        setIsServerPaginated(false)
+        setTotalPages(Math.ceil(raw.length / limit) || 1)
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
-  useEffect(() => { load() }, [token])
+  useEffect(() => { if (token) load(page, pageSize) }, [token, page, pageSize])
 
   async function handleCreate() {
     if (!createName.trim()) return
     setCreating(true)
     const res = await fetch(`${BASE}/api/attributes`, { method: 'POST', headers: h, body: JSON.stringify({ name: createName }) })
     const json = await res.json()
-    if (res.ok) { setAttributes(p => [...p, { ...json.data, values: [] }]); setCreateName(''); setShowCreate(false) }
+    if (res.ok) { load(page, pageSize); setCreateName(''); setShowCreate(false) }
     else setError(json.message || 'Failed')
     setCreating(false)
   }
@@ -102,108 +121,169 @@ export default function AttributesPage() {
     setDeleteValueId(null)
   }
 
+  const displayData = isServerPaginated 
+    ? attributes.slice(0, pageSize) 
+    : attributes.slice((page - 1) * pageSize, page * pageSize)
+
   return (
-    <div className="max-w-3xl mx-auto px-6 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2"><Sliders size={20} className="text-orange-500" /> Attributes</h1>
-          <p className="text-sm text-gray-400 mt-0.5">{attributes.length} attributes total</p>
+    <div className="max-w-3xl mx-auto px-6 py-8 text-black pb-24">
+      <div className="flex items-center justify-between mb-8">
+        <div className="animate-in fade-in slide-in-from-left-4 duration-500">
+          <h1 className="text-3xl font-black text-black tracking-tighter flex items-center gap-3">
+             <div className="p-2 bg-white rounded-xl shadow-sm border border-gray-100">
+                <Sliders size={22} className="text-[#96b1d8]" /> 
+             </div>
+             Attributes
+          </h1>
+          <p className="text-[10px] font-bold text-black/40 mt-1 uppercase tracking-[0.3em] ml-1">Variation Schema Registry</p>
         </div>
-        <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
-          <Plus size={15} /> Add Attribute
+        <button 
+          onClick={() => setShowCreate(true)} 
+          className="flex items-center gap-2 bg-black hover:bg-gray-800 text-white text-[11px] font-bold uppercase tracking-[0.2em] px-8 py-4 rounded-2xl transition-all shadow-lg active:scale-95"
+        >
+          <Plus size={16} /> New Attribute
         </button>
       </div>
 
-      {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg mb-4 flex items-center justify-between">{error}<button onClick={() => setError('')}><X size={14} /></button></div>}
-
-      {showCreate && (
-        <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-4 flex gap-3">
-          <input type="text" placeholder="Attribute name *" value={createName} onChange={e => setCreateName(e.target.value)} className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-400" />
-          <button onClick={handleCreate} disabled={creating || !createName.trim()} className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white text-sm px-4 py-2 rounded-lg">{creating ? 'Creating…' : 'Create'}</button>
-          <button onClick={() => setShowCreate(false)} className="text-gray-400 hover:text-gray-600 px-2"><X size={16} /></button>
+      {error && (
+        <div className="bg-red-50 border border-red-100 text-red-700 text-sm px-6 py-5 rounded-3xl mb-8 flex items-center justify-between animate-in slide-in-from-top-2 shadow-sm">
+          <span className="font-bold tracking-tight">{error}</span>
+          <button onClick={() => setError('')} className="p-2 bg-white rounded-xl shadow-sm hover:bg-red-100 transition-colors"><X size={16} /></button>
         </div>
       )}
 
-      <div className="space-y-2">
-        {loading ? Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-14 bg-gray-100 rounded-xl animate-pulse" />) :
-          attributes.map(attr => (
-            <div key={attr.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-              <div className="flex items-center gap-3 px-4 py-3">
-                <button onClick={() => setExpanded(expanded === attr.id ? null : attr.id)} className="text-gray-400 hover:text-gray-600">
-                  {expanded === attr.id ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+      {showCreate && (
+        <div className="bg-white border border-[#96b1d8]/30 rounded-[2.5rem] p-8 mb-10 shadow-sm animate-in zoom-in-95 duration-200">
+          <p className="text-[10px] uppercase tracking-[0.3em] font-black text-black/20 mb-6">Initialize New Descriptor Node</p>
+          <div className="flex gap-4 items-center">
+            <div className="flex-1 space-y-2">
+               <label className="text-[10px] font-black text-black uppercase tracking-widest ml-1">Attribute Name *</label>
+               <input type="text" placeholder="e.g. Fabric Composition" value={createName} onChange={e => setCreateName(e.target.value)} className="w-full text-sm font-bold border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:border-[#96b1d8] transition-all bg-gray-50/50" />
+            </div>
+            <div className="flex gap-3 self-end mb-0.5">
+               <button onClick={handleCreate} disabled={creating || !createName.trim()} className="bg-black hover:bg-gray-800 disabled:opacity-50 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4.5 rounded-2xl transition-all shadow-xl shadow-black/10">{creating ? '…' : 'Manifest'}</button>
+               <button onClick={() => setShowCreate(false)} className="bg-gray-50 hover:bg-gray-100 text-black p-4.5 rounded-2xl transition-all"><X size={18} /></button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-6 mb-12">
+        {loading && attributes.length === 0 ? (
+          Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-20 bg-gray-50 rounded-[2.5rem] animate-pulse border border-gray-100" />)
+        ) : displayData.length === 0 ? (
+          <div className="py-32 text-center opacity-10 flex flex-col items-center gap-6">
+             <Sliders size={64} strokeWidth={1} />
+             <p className="text-xs font-black uppercase tracking-[0.4em]">Registry Empty</p>
+          </div>
+        ) : (
+          displayData.map(attr => (
+            <div key={attr.id} className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden group hover:border-[#96b1d8] transition-all duration-500">
+              <div className="flex items-center gap-6 px-8 py-6">
+                <button 
+                  onClick={() => setExpanded(expanded === attr.id ? null : attr.id)} 
+                  className={`p-3 rounded-2xl transition-all ${expanded === attr.id ? 'bg-[#96b1d8] text-white shadow-xl shadow-[#96b1d8]/30' : 'text-black/20 hover:text-black hover:bg-gray-50'}`}
+                >
+                  {expanded === attr.id ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
                 </button>
                 {editId === attr.id ? (
-                  <input value={editName} onChange={e => setEditName(e.target.value)} className="flex-1 text-sm border border-orange-300 rounded px-2 py-1 outline-none" autoFocus />
+                  <input value={editName} onChange={e => setEditName(e.target.value)} className="flex-1 text-base font-black border-b-2 border-[#96b1d8] pb-1 outline-none bg-transparent" autoFocus />
                 ) : (
-                  <span className="flex-1 font-medium text-gray-800">{attr.name}</span>
+                  <div className="flex-1">
+                     <span className="font-black text-black text-xl tracking-tighter leading-none block">{attr.name}</span>
+                     <span className="text-[10px] font-bold text-black/20 uppercase tracking-[0.2em] mt-2 block">{attr.values?.length ?? 0} active selections</span>
+                  </div>
                 )}
-                <span className="text-xs text-gray-400 mr-2">{attr.values?.length ?? 0} values</span>
                 <div className="flex gap-1">
                   {editId === attr.id ? (
                     <>
-                      <button onClick={() => handleSave(attr.id)} disabled={saving} className="p-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-100"><Check size={14} /></button>
-                      <button onClick={() => setEditId(null)} className="p-1.5 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100"><X size={14} /></button>
+                      <button onClick={() => handleSave(attr.id)} disabled={saving} className="p-3.5 rounded-2xl bg-black text-white hover:bg-gray-800 transition-all shadow-lg active:scale-95"><Check size={18} /></button>
+                      <button onClick={() => setEditId(null)} className="p-3.5 rounded-2xl bg-gray-50 text-black/20 hover:text-black transition-all"><X size={18} /></button>
                     </>
                   ) : (
                     <>
-                      <button onClick={() => { setEditId(attr.id); setEditName(attr.name) }} className="p-1.5 rounded-lg text-gray-400 hover:text-orange-500 hover:bg-orange-50"><Pencil size={14} /></button>
-                      <button onClick={() => setDeleteId(attr.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50"><Trash2 size={14} /></button>
+                      <button onClick={() => { setEditId(attr.id); setEditName(attr.name) }} className="p-3 rounded-2xl text-black/40 hover:text-[#96b1d8] hover:bg-white transition-all outline-none" title="Modify descriptor"><Pencil size={18} /></button>
+                      <button onClick={() => setDeleteId(attr.id)} className="p-3 rounded-2xl text-black/40 hover:text-red-500 hover:bg-red-50 transition-all outline-none" title="Extract descriptor"><Trash2 size={18} /></button>
                     </>
                   )}
                 </div>
               </div>
 
               {expanded === attr.id && (
-                <div className="border-t border-gray-50 px-4 py-3 bg-gray-50/50">
-                  <div className="space-y-2 mb-3">
+                <div className="border-t border-gray-50 px-12 py-10 bg-gray-50/30 animate-in slide-in-from-top-6 duration-500">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
                     {(attr.values || []).map(v => (
-                      <div key={v.id} className="flex items-center gap-3">
-                        {v.color_code && <span className="w-4 h-4 rounded-full border border-gray-200 shrink-0" style={{ background: v.color_code }} />}
+                      <div key={v.id} className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm group/val transition-all hover:shadow-lg">
+                        {v.color_code && <span className="w-8 h-8 rounded-xl border border-white shadow-xl shrink-0" style={{ background: v.color_code }} />}
                         {editValueId === v.id ? (
-                          <>
-                            <input value={editValue} onChange={e => setEditValue(e.target.value)} className="flex-1 text-sm border border-orange-300 rounded px-2 py-1 outline-none" />
-                            <input value={editColorCode} onChange={e => setEditColorCode(e.target.value)} placeholder="#hex" className="w-20 text-sm border border-gray-200 rounded px-2 py-1 outline-none font-mono" />
-                            <button onClick={() => handleSaveValue(v.id, attr.id)} className="p-1 rounded bg-green-50 text-green-600 hover:bg-green-100"><Check size={13} /></button>
-                            <button onClick={() => setEditValueId(null)} className="p-1 rounded bg-gray-100 text-gray-500"><X size={13} /></button>
-                          </>
+                          <div className="flex-1 flex gap-2">
+                            <input value={editValue} onChange={e => setEditValue(e.target.value)} className="flex-1 text-sm font-bold border-b-2 border-[#96b1d8] pb-0.5 outline-none bg-transparent" />
+                            <button onClick={() => handleSaveValue(v.id, attr.id)} className="p-2.5 rounded-xl bg-black text-white"><Check size={14} /></button>
+                            <button onClick={() => setEditValueId(null)} className="p-2.5 rounded-xl bg-gray-100 text-black/40"><X size={14} /></button>
+                          </div>
                         ) : (
                           <>
-                            <span className="flex-1 text-sm text-gray-700">{v.value}</span>
-                            {v.color_code && <span className="text-xs font-mono text-gray-400">{v.color_code}</span>}
-                            <button onClick={() => { setEditValueId(v.id); setEditValue(v.value); setEditColorCode(v.color_code || '') }} className="p-1 rounded text-gray-400 hover:text-orange-500 hover:bg-orange-50"><Pencil size={13} /></button>
-                            <button onClick={() => handleDeleteValue(v.id, attr.id)} className="p-1 rounded text-gray-400 hover:text-red-500 hover:bg-red-50"><Trash2 size={13} /></button>
+                            <div className="flex-1 min-w-0">
+                               <p className="font-bold text-black text-base leading-none group-hover/val:text-[#96b1d8] transition-colors truncate">{v.value}</p>
+                               {v.color_code && <p className="text-[9px] font-mono font-bold text-black/20 uppercase tracking-widest mt-1.5">{v.color_code}</p>}
+                            </div>
+                            <button onClick={() => { setEditValueId(v.id); setEditValue(v.value); setEditColorCode(v.color_code || '') }} className="p-2.5 rounded-xl text-black/20 hover:text-black hover:bg-gray-100 transition-all opacity-0 group-hover/val:opacity-100"><Pencil size={14} /></button>
+                            <button onClick={() => handleDeleteValue(v.id, attr.id)} className="p-2.5 rounded-xl text-black/20 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover/val:opacity-100"><Trash2 size={14} /></button>
                           </>
                         )}
                       </div>
                     ))}
                   </div>
                   {addValueAttrId === attr.id ? (
-                    <div className="flex gap-2">
-                      <input value={newValue} onChange={e => setNewValue(e.target.value)} placeholder="Value *" className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:border-orange-400" />
-                      <input value={newColorCode} onChange={e => setNewColorCode(e.target.value)} placeholder="#hex" className="w-20 text-sm border border-gray-200 rounded-lg px-2 py-1.5 outline-none font-mono" />
-                      <button onClick={() => handleAddValue(attr.id)} disabled={addingValue || !newValue.trim()} className="bg-orange-500 text-white text-xs px-3 py-1.5 rounded-lg disabled:opacity-50">{addingValue ? '…' : 'Add'}</button>
-                      <button onClick={() => setAddValueAttrId(null)} className="text-gray-400 px-1"><X size={14} /></button>
+                    <div className="bg-white p-6 rounded-[2.5rem] border border-[#96b1d8]/30 shadow-2xl animate-in zoom-in-95 space-y-4">
+                      <p className="text-[9px] font-black uppercase tracking-[0.3em] text-black/20 ml-2">Append New Variation Option</p>
+                      <div className="flex gap-3">
+                         <input autoFocus value={newValue} onChange={e => setNewValue(e.target.value)} placeholder="Entry Label *" className="flex-1 text-sm font-bold border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:border-[#96b1d8] bg-gray-50/50" />
+                         <input value={newColorCode} onChange={e => setNewColorCode(e.target.value)} placeholder="#hex" className="w-28 text-sm font-mono border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:border-[#96b1d8] bg-gray-50/50" />
+                         <button onClick={() => handleAddValue(attr.id)} disabled={addingValue || !newValue.trim()} className="bg-black hover:bg-gray-800 text-white text-[10px] font-black uppercase tracking-widest px-8 rounded-2xl disabled:opacity-50 shadow-xl shadow-black/20 active:scale-95 transition-all">{addingValue ? '…' : 'Finalize'}</button>
+                      </div>
+                      <button onClick={() => setAddValueAttrId(null)} className="w-full py-3 text-[10px] font-black text-black/20 hover:text-black uppercase tracking-[0.2em] transition-all">Cancel Entry</button>
                     </div>
                   ) : (
-                    <button onClick={() => setAddValueAttrId(attr.id)} className="flex items-center gap-1 text-xs text-orange-500 hover:text-orange-600 font-medium">
-                      <Plus size={13} /> Add value
+                    <button onClick={() => setAddValueAttrId(attr.id)} className="flex items-center gap-3 text-[11px] font-black text-black/30 hover:text-[#96b1d8] uppercase tracking-[0.3em] transition-all px-8 py-4 rounded-2xl hover:bg-white hover:shadow-xl border border-transparent hover:border-gray-50">
+                      <Plus size={16} strokeWidth={4} /> Append Option
                     </button>
                   )}
                 </div>
               )}
             </div>
           ))
-        }
+        )}
       </div>
 
+      {!loading && totalPages > 0 && (
+        <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-sm">
+           <Pagination 
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+              pageSize={pageSize}
+              onPageSizeChange={(newSize) => {
+                setPageSize(newSize);
+                setPage(1);
+              }}
+            />
+        </div>
+      )}
+
       {deleteId && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full">
-            <h2 className="text-base font-semibold text-gray-900 mb-2">Delete Attribute</h2>
-            <p className="text-sm text-gray-500 mb-5">Delete <strong>{attributes.find(a => a.id === deleteId)?.name}</strong> and all its values?</p>
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50 p-4" onClick={() => setDeleteId(null)}>
+          <div className="bg-white rounded-[3.5rem] shadow-2xl p-12 max-w-sm w-full animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+            <div className="w-16 h-16 bg-red-50 rounded-[2rem] flex items-center justify-center text-red-500 mb-8 border-4 border-white shadow-xl shadow-red-500/10">
+               <Trash2 size={28} />
+            </div>
+            <h2 className="text-2xl font-black text-black mb-2 tracking-tighter leading-none">Strip Node?</h2>
+            <p className="text-[10px] font-black text-black/20 mb-10 leading-relaxed uppercase tracking-[0.3em]">
+              The schema <span className="text-black/50">"{attributes.find(a => a.id === deleteId)?.name}"</span> will be purged from the cluster.
+            </p>
             <div className="flex gap-3">
-              <button onClick={() => handleDelete(deleteId)} disabled={deleting} className="flex-1 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white text-sm font-medium py-2 rounded-lg">{deleting ? 'Deleting…' : 'Delete'}</button>
-              <button onClick={() => setDeleteId(null)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium py-2 rounded-lg">Cancel</button>
+              <button onClick={() => handleDelete(deleteId)} disabled={deleting} className="flex-[2] bg-red-500 hover:bg-red-600 font-black uppercase tracking-widest text-[11px] py-4.5 rounded-3xl text-white shadow-2xl shadow-red-500/30 h-14">{deleting ? 'Purging…' : 'Confirm Wipe'}</button>
+              <button onClick={() => setDeleteId(null)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-black/20 text-[11px] font-black uppercase tracking-widest py-4.5 rounded-3xl transition-all h-14">Abort</button>
             </div>
           </div>
         </div>

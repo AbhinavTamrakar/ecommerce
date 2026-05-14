@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { Plus, Pencil, Trash2, X, Check, Layers } from 'lucide-react'
+import Pagination from '@/components/admin/Pagination'
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://194.146.12.71:8008'
 
@@ -23,6 +24,10 @@ export default function TypesPage() {
   const [types, setTypes] = useState<Type[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const [totalPages, setTotalPages] = useState(1)
+  const [isServerPaginated, setIsServerPaginated] = useState(false)
 
   // Create form
   const [showCreate, setShowCreate] = useState(false)
@@ -46,13 +51,24 @@ export default function TypesPage() {
     Authorization: `Bearer ${token}`,
   }
 
-  async function fetchTypes() {
+  async function fetchTypes(p = 1, limit = 10) {
     setLoading(true)
     try {
-      const res = await fetch(`${BASE}/api/types`, { headers })
+      const res = await fetch(`${BASE}/api/types?page=${p}&per_page=${limit}&limit=${limit}&pageSize=${limit}`, { headers })
       const json = await res.json()
       const raw = json?.data?.data ?? json?.data ?? json
+      const lastPage = json?.data?.last_page || 0
+      
       setTypes(Array.isArray(raw) ? raw : [])
+      
+      if (lastPage > 0) {
+        setIsServerPaginated(true)
+        setTotalPages(lastPage)
+        setPage(json?.data?.current_page || p)
+      } else {
+        setIsServerPaginated(false)
+        setTotalPages(Math.ceil(raw.length / limit) || 1)
+      }
     } catch {
       setError('Failed to load types.')
     } finally {
@@ -60,7 +76,7 @@ export default function TypesPage() {
     }
   }
 
-  useEffect(() => { fetchTypes() }, [token])
+  useEffect(() => { fetchTypes(page, pageSize) }, [token, page, pageSize])
 
   async function handleCreate() {
     if (!createName.trim()) return
@@ -73,7 +89,7 @@ export default function TypesPage() {
       })
       const json = await res.json()
       if (res.ok) {
-        setTypes((prev) => [...prev, json.data])
+        fetchTypes(page, pageSize)
         setCreateName('')
         setCreateSlug('')
         setShowCreate(false)
@@ -127,201 +143,236 @@ export default function TypesPage() {
     }
   }
 
-  return (
-    <div className="max-w-3xl mx-auto px-6 py-8">
+  const displayData = isServerPaginated 
+    ? types.slice(0, pageSize) 
+    : types.slice((page - 1) * pageSize, page * pageSize)
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            <Layers size={20} className="text-orange-500" /> Types
+  return (
+    <div className="text-black">
+      <div className="flex items-center justify-between mb-8">
+        <div className="animate-in fade-in slide-in-from-left-4 duration-500">
+          <h1 className="text-2xl font-bold text-black flex items-center gap-3">
+            <div className="p-2 bg-white rounded-xl shadow-sm border border-gray-100">
+               <Layers size={22} className="text-black" /> 
+            </div>
+            Catalog Types
           </h1>
-          <p className="text-sm text-gray-400 mt-0.5">{types.length} types total</p>
+          <p className="text-sm text-black/60 mt-1 uppercase tracking-wider ml-1">Universal Classification Registry</p>
         </div>
         <button
           onClick={() => { setShowCreate(true); setCreateName(''); setCreateSlug('') }}
-          className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          className="flex items-center gap-2 bg-black hover:bg-gray-800 text-white text-[11px] font-bold uppercase tracking-[0.1em] px-6 py-3 rounded-2xl transition-all shadow-lg active:scale-95"
         >
-          <Plus size={15} /> Add Type
+          <Plus size={16} /> New Type
         </button>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg mb-4 flex items-center justify-between">
-          {error}
-          <button onClick={() => setError('')}><X size={14} /></button>
+        <div className="bg-red-50 border border-red-100 text-red-700 text-sm px-5 py-4 rounded-2xl mb-6 flex items-center justify-between animate-in slide-in-from-top-2 duration-300">
+          <span className="font-medium">{error}</span>
+          <button onClick={() => setError('')} className="p-1 hover:bg-red-100 rounded-lg transition-colors"><X size={16} /></button>
         </div>
       )}
 
       {/* Create form */}
       {showCreate && (
-        <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-4">
-          <p className="text-sm font-semibold text-gray-700 mb-3">New Type</p>
-          <div className="flex gap-3 flex-wrap">
+        <div className="bg-white border border-[#96b1d8]/30 rounded-[2rem] p-6 mb-8 shadow-sm flex flex-col md:flex-row gap-4 items-end animate-in zoom-in-95 duration-200">
+          <div className="flex-1 w-full space-y-1.5">
+            <label className="text-[10px] font-bold text-black uppercase tracking-widest ml-1">Type Label *</label>
             <input
               type="text"
-              placeholder="Name *"
+              placeholder="e.g. Menswear"
               value={createName}
               onChange={(e) => {
                 setCreateName(e.target.value)
                 setCreateSlug(slugify(e.target.value))
               }}
-              className="flex-1 min-w-[140px] text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-400"
+              className="w-full text-sm font-bold border border-gray-100 rounded-2xl px-4 py-3 outline-none focus:border-[#96b1d8] transition-all"
             />
+          </div>
+          <div className="flex-1 w-full space-y-1.5">
+            <label className="text-[10px] font-bold text-black uppercase tracking-widest ml-1">Public Slug (auto)</label>
             <input
               type="text"
-              placeholder="Slug (auto)"
+              placeholder="mens-wear"
               value={createSlug}
               onChange={(e) => setCreateSlug(e.target.value)}
-              className="flex-1 min-w-[140px] text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-400 font-mono"
+              className="w-full text-sm font-mono border border-gray-100 rounded-2xl px-4 py-3 outline-none focus:border-[#96b1d8] bg-gray-50/50"
             />
+          </div>
+          <div className="flex gap-2 mb-[2px]">
             <button
               onClick={handleCreate}
               disabled={creating || !createName.trim()}
-              className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white text-sm px-4 py-2 rounded-lg transition-colors"
+              className="bg-[#96b1d8] hover:bg-[#86a1c8] disabled:opacity-50 text-black text-[11px] font-bold uppercase tracking-widest px-8 py-3.5 rounded-2xl transition-all shadow-md active:scale-95"
             >
-              {creating ? 'Creating…' : 'Create'}
+              {creating ? 'Saving…' : 'Create Type'}
             </button>
             <button
               onClick={() => setShowCreate(false)}
-              className="text-gray-400 hover:text-gray-600 px-2 py-2"
+              className="bg-gray-100 hover:bg-gray-200 text-black text-[11px] font-bold uppercase tracking-widest px-4 py-3.5 rounded-2xl transition-all"
             >
-              <X size={16} />
+              Cancel
             </button>
           </div>
         </div>
       )}
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-100">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">ID</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Name</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Slug</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Created</th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {loading ? (
-              Array.from({ length: 4 }).map((_, i) => (
-                <tr key={i} className="animate-pulse">
-                  {Array.from({ length: 5 }).map((_, j) => (
-                    <td key={j} className="px-4 py-3">
-                      <div className="h-4 bg-gray-100 rounded w-full" />
-                    </td>
-                  ))}
-                </tr>
-              ))
-            ) : types.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="px-4 py-12 text-center text-gray-400">
-                  No types yet. Click "Add Type" to create one.
-                </td>
+      <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden mb-12 animate-in fade-in zoom-in-95 duration-1000">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-gray-50/80 border-b border-gray-100 text-black">
+                <th className="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em]">S.N</th>
+                <th className="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em]">Label</th>
+                <th className="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em]">Slug</th>
+                <th className="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em]">Created</th>
+                <th className="px-6 py-4 text-right text-[10px] font-bold uppercase tracking-[0.2em]">Actions</th>
               </tr>
-            ) : (
-              types.map((type) => (
-                <tr key={type.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="px-4 py-3 text-gray-400 text-xs">{type.id}</td>
-                  <td className="px-4 py-3">
-                    {editId === type.id ? (
-                      <input
-                        value={editName}
-                        onChange={(e) => {
-                          setEditName(e.target.value)
-                          setEditSlug(slugify(e.target.value))
-                        }}
-                        className="text-sm border border-orange-300 rounded px-2 py-1 outline-none w-full"
-                        autoFocus
-                      />
-                    ) : (
-                      <span className="font-medium text-gray-800">{type.name}</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    {editId === type.id ? (
-                      <input
-                        value={editSlug}
-                        onChange={(e) => setEditSlug(e.target.value)}
-                        className="text-sm border border-orange-300 rounded px-2 py-1 outline-none font-mono w-full"
-                      />
-                    ) : (
-                      <span className="font-mono text-xs text-gray-500">{type.slug || '—'}</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-xs text-gray-400">
-                    {type.created_at ? new Date(type.created_at).toLocaleDateString() : '—'}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-1">
-                      {editId === type.id ? (
-                        <>
-                          <button
-                            onClick={() => handleSave(type.id)}
-                            disabled={saving}
-                            className="p-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
-                            title="Save"
-                          >
-                            <Check size={14} />
-                          </button>
-                          <button
-                            onClick={() => setEditId(null)}
-                            className="p-1.5 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100 transition-colors"
-                            title="Cancel"
-                          >
-                            <X size={14} />
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            onClick={() => startEdit(type)}
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-orange-500 hover:bg-orange-50 transition-colors"
-                            title="Edit"
-                          >
-                            <Pencil size={14} />
-                          </button>
-                          <button
-                            onClick={() => setDeleteId(type.id)}
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </>
-                      )}
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {loading && types.length === 0 ? (
+                Array.from({ length: 10 }).map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    {Array.from({ length: 5 }).map((_, j) => (
+                      <td key={j} className="px-6 py-6"><div className="h-4 bg-gray-100 rounded-full w-full" /></td>
+                    ))}
+                  </tr>
+                ))
+              ) : displayData.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-20 text-center">
+                    <div className="flex flex-col items-center gap-3 opacity-20">
+                       <Layers size={48} />
+                       <p className="text-xs font-bold uppercase tracking-widest">No types available</p>
                     </div>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                displayData.map((type, idx) => (
+                  <tr key={type.id} className="group hover:bg-gray-50/50 transition-all">
+                    <td className="px-6 py-5 text-black/20 font-black text-[10px]">
+                       {(page - 1) * pageSize + idx + 1}
+                    </td>
+                    <td className="px-6 py-5">
+                      {editId === type.id ? (
+                        <input
+                          value={editName}
+                          onChange={(e) => {
+                            setEditName(e.target.value)
+                            setEditSlug(slugify(e.target.value))
+                          }}
+                          className="text-sm font-bold border border-[#96b1d8] rounded-xl px-4 py-2 outline-none w-full shadow-sm"
+                          autoFocus
+                        />
+                      ) : (
+                        <span className="font-bold text-black text-[15px]">{type.name}</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-5">
+                      {editId === type.id ? (
+                        <input
+                          value={editSlug}
+                          onChange={(e) => setEditSlug(e.target.value)}
+                          className="text-sm font-mono border border-[#96b1d8] rounded-xl px-4 py-2 outline-none w-full shadow-sm"
+                        />
+                      ) : (
+                        <span className="font-bold text-[11px] text-[#96b1d8] bg-[#96b1d8]/10 px-2.5 py-1 rounded-lg uppercase tracking-wider">
+                           {type.slug || '—'}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-5 text-[10px] font-bold text-black/40 uppercase tracking-widest">
+                      {type.created_at ? new Date(type.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
+                    </td>
+                    <td className="px-6 py-5 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        {editId === type.id ? (
+                          <>
+                            <button
+                              onClick={() => handleSave(type.id)}
+                              disabled={saving}
+                              className="p-2.5 rounded-xl bg-black text-white hover:bg-gray-800 transition-all shadow-sm"
+                              title="Update"
+                            >
+                              <Check size={16} />
+                            </button>
+                            <button
+                              onClick={() => setEditId(null)}
+                              className="p-2.5 rounded-xl bg-gray-50 text-black/40 hover:text-black transition-all"
+                              title="Discard"
+                            >
+                              <X size={16} />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => startEdit(type)}
+                              className="p-2.5 rounded-xl text-black/40 hover:text-[#96b1d8] hover:bg-[#96b1d8]/5 transition-all outline-none"
+                              title="Modify Type"
+                            >
+                              <Pencil size={16} />
+                            </button>
+                            <button
+                              onClick={() => setDeleteId(type.id)}
+                              className="p-2.5 rounded-xl text-black/40 hover:text-red-500 hover:bg-red-50 transition-all outline-none"
+                              title="Delete Type"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+        
+        {!loading && totalPages > 0 && (
+          <div className="px-10 py-8 border-t border-gray-50 bg-gray-50/10">
+            <Pagination 
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+              pageSize={pageSize}
+              onPageSizeChange={(newSize) => {
+                setPageSize(newSize);
+                setPage(1);
+              }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Delete confirm modal */}
       {deleteId && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full">
-            <h2 className="text-base font-semibold text-gray-900 mb-2">Delete Type</h2>
-            <p className="text-sm text-gray-500 mb-5">
-              Are you sure you want to delete <strong>{types.find(t => t.id === deleteId)?.name}</strong>? This cannot be undone.
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setDeleteId(null)}>
+          <div className="bg-white rounded-[2rem] shadow-2xl p-8 max-w-sm w-full animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+            <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center text-red-500 mb-6">
+               <Trash2 size={28} />
+            </div>
+            <h2 className="text-xl font-bold text-black mb-2">Remove Type?</h2>
+            <p className="text-sm font-medium text-black/50 mb-8 leading-relaxed">
+              Are you sure you want to delete <strong className="text-black font-bold uppercase tracking-tighter">"{types.find(t => t.id === deleteId)?.name}"</strong>? This will impact all linked products.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => handleDelete(deleteId)}
                 disabled={deleting}
-                className="flex-1 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white text-sm font-medium py-2 rounded-lg transition-colors"
+                className="flex-1 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white text-[11px] font-bold uppercase tracking-widest py-3.5 rounded-2xl transition-all shadow-lg shadow-red-500/20"
               >
-                {deleting ? 'Deleting…' : 'Delete'}
+                {deleting ? 'Removing…' : 'Delete Now'}
               </button>
               <button
                 onClick={() => setDeleteId(null)}
-                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium py-2 rounded-lg transition-colors"
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-black text-[11px] font-bold uppercase tracking-widest py-3.5 rounded-2xl transition-all"
               >
-                Cancel
+                Go Back
               </button>
             </div>
           </div>

@@ -14,15 +14,14 @@ export function formatPrice(amount: number | string | null): string {
 
 export function getImageUrl(path: any): string {
   if (!path) return '/placeholder.png'
-  // If it's an object (e.g. image object from API), try common fields
-  if (typeof path === 'object') {
-    path = path.url || path.path || path.image || path.src || ''
+  let urlPath = path
+  if (typeof urlPath === 'object') {
+    urlPath = urlPath.url || urlPath.path || urlPath.image || urlPath.src || ''
   }
-  if (!path) return '/placeholder.png'
-  // If already a full URL, return as-is
-  if (path.startsWith('http')) return path
-  // Otherwise prepend your API base URL
-  return `${process.env.NEXT_PUBLIC_API_URL}/storage/${path}`
+  if (typeof urlPath !== 'string' || !urlPath) return '/placeholder.png'
+  if (urlPath.startsWith('http')) return urlPath
+  const base = process.env.NEXT_PUBLIC_API_URL || 'http://194.146.12.71:8008'
+  return `${base}/storage/${urlPath}`
 }
 
 export function truncate(text: string, length: number): string {

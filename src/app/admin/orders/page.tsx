@@ -1,35 +1,60 @@
 'use client'
+
 import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { UpdateOrderStatus } from '@/components/admin/UpdateOrderStatus'
-import { Package } from 'lucide-react'
+import { Package, ShoppingBag, Search, Filter } from 'lucide-react'
+import Pagination from '@/components/admin/Pagination'
 
-const API = 'http://194.146.12.71:8008'
+const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://194.146.12.71:8008'
 
 const statusColor: Record<string, string> = {
-  delivered: 'bg-green-100 text-green-700',
-  processing: 'bg-blue-100 text-blue-700',
-  shipped: 'bg-purple-100 text-purple-700',
-  pending: 'bg-amber-100 text-amber-700',
-  cancelled: 'bg-red-100 text-red-700',
-  refunded: 'bg-gray-100 text-gray-600',
+  delivered: 'bg-green-500 text-white shadow-sm',
+  processing: 'bg-blue-500 text-white shadow-sm',
+  shipped: 'bg-purple-500 text-white shadow-sm',
+  pending: 'bg-black text-white shadow-sm',
+  cancelled: 'bg-red-500 text-white shadow-sm',
+  refunded: 'bg-gray-400 text-white shadow-sm',
 }
 
 export default function AdminOrdersPage() {
+  const token = useAuthStore((s) => s.token) ?? ''
   const [orders, setOrders] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const [totalPages, setTotalPages] = useState(1)
+  const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [isServerPaginated, setIsServerPaginated] = useState(false)
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (p = 1, limit = 10) => {
+    if (!token) return
     setLoading(true)
     try {
-      const token = useAuthStore.getState().token ||
-        JSON.parse(localStorage.getItem('auth') || '{}')?.state?.token
-      const res = await fetch(`${API}/api/admin/orders`, {
+      // Trying multiple parameter names to force server-side volume control
+      const res = await fetch(`${BASE}/api/admin/orders?page=${p}&per_page=${limit}&limit=${limit}&pageSize=${limit}`, {
         headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
       })
       if (!res.ok) throw new Error(`${res.status}`)
       const data = await res.json()
-      setOrders(data.data || data || [])
+      
+      // Determine response structure
+      const raw = data?.data?.data ?? data?.data ?? data
+      const lastPage = data?.data?.last_page || data?.last_page || 0
+      
+      setOrders(Array.isArray(raw) ? raw : [])
+      
+      if (lastPage > 0) {
+        setIsServerPaginated(true)
+        setTotalPages(lastPage)
+        setPage(data?.data?.current_page || data?.current_page || p)
+      } else {
+        // Fallback: implement local pagination if server doesn't support it
+        setIsServerPaginated(false)
+        const totalItems = Array.isArray(raw) ? raw.length : 0
+        setTotalPages(Math.ceil(totalItems / limit) || 1)
+      }
     } catch (err) {
       console.error('Failed to fetch orders:', err)
       setOrders([])
@@ -38,91 +63,168 @@ export default function AdminOrdersPage() {
     }
   }
 
-  useEffect(() => { fetchOrders() }, [])
+  useEffect(() => { fetchOrders(page, pageSize) }, [token, page, pageSize])
+
+  const filtered = orders.filter((order) => {
+    const searchLower = search.toLowerCase()
+    const matchSearch = 
+      !search ||
+      String(order.id).includes(searchLower) ||
+      (order.user?.name || '').toLowerCase().includes(searchLower) ||
+      (order.status || '').toLowerCase().includes(searchLower) ||
+      (order.payment_status || '').toLowerCase().includes(searchLower)
+
+    const matchStatus = statusFilter === 'all' || order.status?.toLowerCase() === statusFilter
+    
+    return matchSearch && matchStatus
+  })
+
+  // Display logic: only slice if server didn't paginate
+  const displayData = isServerPaginated 
+    ? filtered.slice(0, pageSize) // Extra safety slice for current page
+    : filtered.slice((page - 1) * pageSize, page * pageSize)
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-900 py-10">Orders</h1>
-        <p className="text-gray-500 text-sm mt-1">
-          {loading ? 'Loading...' : `${orders.length} orders total`}
-        </p>
+    <div className="text-black">
+      <div className="flex items-center justify-between mb-8">
+        <div className="animate-in fade-in slide-in-from-left-4 duration-500">
+          <h1 className="text-3xl font-black text-black tracking-tighter flex items-center gap-3">
+             <div className="p-2 bg-white rounded-xl shadow-sm border border-gray-100">
+                <ShoppingBag size={22} className="text-black" /> 
+             </div>
+             Recent Orders
+          </h1>
+          <p className="text-[10px] font-bold text-black/40 mt-1 uppercase tracking-[0.3em] ml-1">
+            {loading ? 'Checking cloud registry…' : `${orders.length} transactions managed in current view`}
+          </p>
+        </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
-        <table className="w-full min-w-[600px]">
-          <thead>
-            <tr className="border-b border-gray-100 bg-gray-50">
-              <th className="text-left px-4 py-3 text-xs uppercase tracking-wider text-gray-400 font-medium">Order</th>
-              <th className="text-left px-4 py-3 text-xs uppercase tracking-wider text-gray-400 font-medium">Customer</th>
-              <th className="text-left px-4 py-3 text-xs uppercase tracking-wider text-gray-400 font-medium">Date</th>
-              <th className="text-left px-4 py-3 text-xs uppercase tracking-wider text-gray-400 font-medium">Total</th>
-              <th className="text-left px-4 py-3 text-xs uppercase tracking-wider text-gray-400 font-medium">Payment</th>
-              <th className="text-left px-4 py-3 text-xs uppercase tracking-wider text-gray-400 font-medium">Status</th>
-              <th className="px-4 py-3"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {loading ? (
-              [...Array(4)].map((_, i) => (
-                <tr key={i}>
-                  {[...Array(7)].map((_, j) => (
-                    <td key={j} className="px-4 py-3">
-                      <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
-                    </td>
-                  ))}
+      {/* Filter Row */}
+      <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-3 mb-8 flex flex-wrap items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-700">
+        <div className="flex-1 min-w-[300px] relative">
+           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black/20" size={18} />
+           <input 
+              type="text" 
+              placeholder="Search by ID, Customer Name, Order Status or Payment..." 
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-gray-50/50 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold text-black placeholder:text-black/20 focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-inner"
+           />
+        </div>
+        
+        <div className="flex items-center gap-2 px-6 h-14 bg-gray-50/30 rounded-2xl border border-gray-50">
+           <Filter size={16} className="text-black/20" />
+           <select 
+             value={statusFilter}
+             onChange={(e) => setStatusFilter(e.target.value)}
+             className="bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-[#96b1d8] hover:text-black outline-none cursor-pointer"
+           >
+              <option value="all">Global Visibility</option>
+              {Object.keys(statusColor).map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+           </select>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden mb-12 animate-in fade-in zoom-in-95 duration-1000">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-gray-50/80 border-b border-gray-100 text-black">
+                <th className="px-8 py-6 text-left text-[10px] font-bold uppercase tracking-[0.2em] whitespace-nowrap">S.N</th>
+                {['Order', 'Customer', 'Date', 'Total', 'Payment', 'Status', 'Actions'].map((h) => (
+                  <th key={h} className="px-8 py-6 text-left text-[10px] font-bold uppercase tracking-[0.2em] whitespace-nowrap">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {loading && orders.length === 0 ? (
+                Array.from({ length: 10 }).map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    {Array.from({ length: 8 }).map((_, j) => (
+                      <td key={j} className="px-8 py-7">
+                        <div className="h-4 bg-gray-100 rounded-full w-full" />
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : displayData.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="px-8 py-32 text-center">
+                    <div className="flex flex-col items-center gap-4 opacity-20">
+                      <Package size={56} className="stroke-[1px]" />
+                      <p className="text-sm font-black uppercase tracking-[0.4em]">Registry Empty</p>
+                    </div>
+                  </td>
                 </tr>
-              ))
-            ) : orders.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="px-6 py-16 text-center">
-                  <Package className="mx-auto mb-3 text-gray-300" size={32} />
-                  <p className="text-gray-400 text-sm">No orders yet</p>
-                </td>
-              </tr>
-            ) : orders.map((order: any) => (
-              <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-4 py-3">
-                  <p className="text-sm font-medium text-gray-900">#{order.id}</p>
-                </td>
-                <td className="px-4 py-3">
-                  <p className="text-sm text-gray-700">{order.user?.name || `User #${order.user_id}`}</p>
-                  <p className="text-xs text-gray-400">{order.user?.email || ''}</p>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-600">
-                  {order.created_at
-                    ? new Date(order.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                    : '—'}
-                </td>
-                <td className="px-4 py-3 text-sm font-semibold text-gray-900">
-                  ${Number(order.total_amount || order.subtotal || 0).toFixed(2)}
-                </td>
-                <td className="px-4 py-3">
-                  <span className={`text-xs px-2.5 py-1 rounded-full font-medium capitalize ${
-                    order.payment_status === 'paid' ? 'bg-green-100 text-green-700' :
-                    order.payment_status === 'refunded' ? 'bg-gray-100 text-gray-600' :
-                    'bg-amber-100 text-amber-700'
-                  }`}>
-                    {order.payment_status || 'pending'}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <span className={`text-xs px-2.5 py-1 rounded-full font-medium capitalize ${statusColor[order.status] || 'bg-gray-100 text-gray-600'}`}>
-                    {order.status || '—'}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <UpdateOrderStatus
-                    orderId={order.id}
-                    currentStatus={order.status}
-                    currentPaymentStatus={order.payment_status}
-                    onUpdated={fetchOrders}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+              ) : (
+                displayData.map((order: any, i: number) => (
+                  <tr key={order.id} className="hover:bg-gray-50/50 transition-all cursor-pointer group">
+                    <td className="px-8 py-6 text-black/20 font-black text-[10px]">
+                       {(page - 1) * pageSize + i + 1}
+                    </td>
+                    <td className="px-8 py-6">
+                      <span className="font-black text-black group-hover:text-[#96b1d8] transition-colors text-xs tracking-widest leading-none block">#{order.id}</span>
+                    </td>
+                    <td className="px-8 py-6">
+                      <p className="font-black text-black text-base tracking-tighter leading-none">{order.user?.name || `Guest Node`}</p>
+                      <p className="text-[10px] font-black text-black/30 uppercase tracking-widest mt-2">{order.user?.email || 'external entity'}</p>
+                    </td>
+                    <td className="px-8 py-6 text-[10px] font-black text-black/30 uppercase tracking-[0.2em] whitespace-nowrap">
+                      {order.created_at
+                        ? new Date(order.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                        : '—'}
+                    </td>
+                    <td className="px-8 py-6 font-black text-black text-lg tracking-tighter">
+                      ${Number(order.total_amount || order.subtotal || 0).toLocaleString()}
+                    </td>
+                    <td className="px-8 py-6">
+                      <span className={`text-[9px] px-3.5 py-1.5 rounded-full font-black uppercase tracking-[0.1em] shadow-sm ${
+                        order.payment_status === 'paid' ? 'bg-green-500 text-white' :
+                        order.payment_status === 'refunded' ? 'bg-black text-white' :
+                        'bg-[#96b1d8] text-white'
+                      }`}>
+                        {order.payment_status || 'unpaid'}
+                      </span>
+                    </td>
+                    <td className="px-8 py-6">
+                      <span className={`text-[9px] px-3.5 py-1.5 rounded-full font-black uppercase tracking-[0.1em] shadow-sm ${statusColor[order.status] || 'bg-gray-100 text-black'}`}>
+                        {order.status || 'pending'}
+                      </span>
+                    </td>
+                    <td className="px-8 py-6 text-right whitespace-nowrap">
+                       <UpdateOrderStatus
+                        orderId={order.id}
+                        currentStatus={order.status}
+                        currentPaymentStatus={order.payment_status}
+                        onUpdated={() => fetchOrders(page, pageSize)}
+                      />
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {!loading && totalPages > 0 && (
+          <div className="px-10 py-8 border-t border-gray-50 bg-gray-50/10">
+            <Pagination 
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+              pageSize={pageSize}
+              onPageSizeChange={(newSize) => {
+                setPageSize(newSize);
+                setPage(1);
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   )

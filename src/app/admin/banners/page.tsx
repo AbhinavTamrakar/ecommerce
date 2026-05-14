@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
-import { Image as ImageIcon, Plus, Trash2, X, Pencil, Check, ToggleLeft, ToggleRight } from 'lucide-react'
+import { Image as ImageIcon, Plus, Trash2, X, Pencil, Check } from 'lucide-react'
 import { getImageUrl } from '@/lib/utils'
+import Pagination from '@/components/admin/Pagination'
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://194.146.12.71:8008'
 
@@ -21,6 +22,10 @@ export default function BannersPage() {
   const [banners, setBanners] = useState<Banner[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(6)
+  const [totalPages, setTotalPages] = useState(1)
+  const [isServerPaginated, setIsServerPaginated] = useState(false)
 
   // Create
   const [showCreate, setShowCreate] = useState(false)
@@ -44,16 +49,34 @@ export default function BannersPage() {
 
   const authHeader = { Authorization: `Bearer ${token}` }
 
-  useEffect(() => {
-    fetch(`${BASE}/api/banners`, { headers: { ...authHeader, Accept: 'application/json' } })
-      .then(r => r.json())
-      .then(json => {
-        const raw = json?.data?.data ?? json?.data ?? json
-        setBanners(Array.isArray(raw) ? raw : [])
-        setLoading(false)
+  async function fetchBanners(p: number, limit = 6) {
+    setLoading(true)
+    try {
+      const res = await fetch(`${BASE}/api/banners?page=${p}&per_page=${limit}&limit=${limit}&pageSize=${limit}`, { 
+        headers: { ...authHeader, Accept: 'application/json' } 
       })
-      .catch(() => setLoading(false))
-  }, [token])
+      const json = await res.json()
+      const raw = json?.data?.data ?? json?.data ?? json
+      const lastPage = json?.data?.last_page || 0
+
+      setBanners(Array.isArray(raw) ? raw : [])
+
+      if (lastPage > 0) {
+        setIsServerPaginated(true)
+        setTotalPages(lastPage)
+        setPage(json?.data?.current_page || p)
+      } else {
+        setIsServerPaginated(false)
+        setTotalPages(Math.ceil(raw.length / limit) || 1)
+      }
+    } catch {
+      setBanners([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { if (token) fetchBanners(page, pageSize) }, [token, page, pageSize])
 
   async function handleCreate() {
     if (!createName.trim() || !createPosition.trim()) return
@@ -66,7 +89,7 @@ export default function BannersPage() {
     const res = await fetch(`${BASE}/api/banners`, { method: 'POST', headers: authHeader, body: fd })
     const json = await res.json()
     if (res.ok) {
-      setBanners(p => [...p, json.data || json])
+      fetchBanners(page, pageSize)
       setShowCreate(false); setCreateName(''); setCreatePosition(''); setCreateFiles(null)
     } else setError(json.message || 'Failed to create.')
     setCreating(false)
@@ -81,7 +104,7 @@ export default function BannersPage() {
     if (editFiles) Array.from(editFiles).forEach(f => fd.append('images[]', f))
     const res = await fetch(`${BASE}/api/banners/${id}`, { method: 'POST', headers: authHeader, body: fd })
     const json = await res.json()
-    if (res.ok) { setBanners(p => p.map(b => b.id === id ? { ...b, ...json.data } : b)); setEditId(null) }
+    if (res.ok) { fetchBanners(page, pageSize); setEditId(null) }
     else setError(json.message || 'Failed to update.')
     setSaving(false)
   }
@@ -89,7 +112,7 @@ export default function BannersPage() {
   async function handleDelete(id: number) {
     setDeleting(true)
     const res = await fetch(`${BASE}/api/banners/${id}`, { method: 'DELETE', headers: authHeader })
-    if (res.ok) { setBanners(p => p.filter(b => b.id !== id)); setDeleteId(null) }
+    if (res.ok) { fetchBanners(page, pageSize); setDeleteId(null) }
     else setError('Failed to delete.')
     setDeleting(false)
   }
@@ -98,107 +121,163 @@ export default function BannersPage() {
     setEditId(b.id); setEditName(b.name); setEditPosition(b.position); setEditActive(b.is_active ?? true); setEditFiles(null)
   }
 
+  const displayData = isServerPaginated 
+    ? banners.slice(0, pageSize) 
+    : banners.slice((page - 1) * pageSize, page * pageSize)
+
   return (
-    <div className="max-w-4xl mx-auto px-6 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2"><ImageIcon size={20} className="text-orange-500" /> Banners</h1>
-          <p className="text-sm text-gray-400 mt-0.5">{banners.length} banners total</p>
+    <div className="text-black pb-24">
+      <div className="flex items-center justify-between mb-12">
+        <div className="animate-in fade-in slide-in-from-left-4 duration-500">
+          <h1 className="text-3xl font-black text-black tracking-tighter flex items-center gap-3">
+             <div className="p-2 bg-white rounded-xl shadow-sm border border-gray-100">
+               <ImageIcon size={22} className="text-black" /> 
+            </div>
+            Display Vault
+          </h1>
+          <p className="text-[10px] font-bold text-black/40 mt-1 uppercase tracking-[0.3em] ml-1">Creative Asset Registry</p>
         </div>
-        <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
-          <Plus size={15} /> Add Banner
+        <button 
+          onClick={() => setShowCreate(true)} 
+          className="flex items-center gap-2 bg-black hover:bg-gray-800 text-white text-[11px] font-black uppercase tracking-[0.2em] px-8 py-4 rounded-2xl transition-all shadow-xl active:scale-95"
+        >
+          <Plus size={16} /> Deploy New
         </button>
       </div>
 
-      {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg mb-4 flex items-center justify-between">{error}<button onClick={() => setError('')}><X size={14} /></button></div>}
+      {error && (
+        <div className="bg-red-50 border border-red-100 text-red-700 text-sm px-8 py-6 rounded-[2rem] mb-12 flex items-center justify-between shadow-sm animate-in slide-in-from-top-4">
+          <span className="font-bold tracking-tight">{error}</span>
+          <button onClick={() => setError('')} className="p-3 bg-white rounded-2xl shadow-sm hover:bg-red-100 transition-colors"><X size={18} /></button>
+        </div>
+      )}
 
       {/* Create form */}
       {showCreate && (
-        <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-4">
-          <p className="text-sm font-semibold text-gray-700 mb-3">New Banner</p>
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <input type="text" placeholder="Name *" value={createName} onChange={e => setCreateName(e.target.value)} className="text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-400" />
-            <input type="text" placeholder="Position * (e.g. hero, sidebar)" value={createPosition} onChange={e => setCreatePosition(e.target.value)} className="text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-orange-400" />
-          </div>
-          <div className="flex items-center gap-4 mb-3">
-            <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-              <input type="checkbox" checked={createActive} onChange={e => setCreateActive(e.target.checked)} className="accent-orange-500" />
-              Active
-            </label>
-            <div className="flex-1">
-              <input type="file" multiple accept="image/*" onChange={e => setCreateFiles(e.target.files)} className="text-sm text-gray-500 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100" />
+        <div className="bg-white border border-[#96b1d8]/30 rounded-[3rem] p-10 mb-12 shadow-2xl animate-in zoom-in-95 duration-300">
+          <p className="text-[10px] uppercase tracking-[0.4em] font-black text-black/20 mb-8 ml-1">Manifest New Visual Unit</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-black uppercase tracking-widest ml-2">Asset Alias *</label>
+              <input type="text" placeholder="e.g. Autumnal Pivot" value={createName} onChange={e => setCreateName(e.target.value)} className="w-full text-sm font-bold border border-gray-100 rounded-[1.5rem] px-6 py-5 outline-none focus:border-[#96b1d8] transition-all bg-gray-50/50" />
+            </div>
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-black uppercase tracking-widest ml-2">Spatial Index *</label>
+              <input type="text" placeholder="e.g. HERO_ALPHA" value={createPosition} onChange={e => setCreatePosition(e.target.value)} className="w-full text-sm font-black border border-gray-100 rounded-[1.5rem] px-6 py-5 outline-none focus:border-[#96b1d8] transition-all bg-gray-50/50 uppercase tracking-widest" />
             </div>
           </div>
-          <div className="flex gap-2">
-            <button onClick={handleCreate} disabled={creating || !createName.trim() || !createPosition.trim()} className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white text-sm px-4 py-2 rounded-lg">{creating ? 'Creating…' : 'Create'}</button>
-            <button onClick={() => setShowCreate(false)} className="text-gray-400 hover:text-gray-600 px-3 py-2"><X size={16} /></button>
+          <div className="flex flex-wrap items-center gap-10 mb-10 bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 shadow-inner">
+            <label className="flex items-center gap-4 text-[11px] font-black text-black uppercase tracking-[0.2em] cursor-pointer group">
+              <input type="checkbox" checked={createActive} onChange={e => setCreateActive(e.target.checked)} className="w-6 h-6 rounded-xl border-gray-200 accent-black transition-all shadow-sm" />
+              <span className="group-hover:text-[#96b1d8] transition-colors">Immediate Broadcast</span>
+            </label>
+            <div className="flex-1 min-w-[280px]">
+              <input type="file" multiple accept="image/*" onChange={e => setCreateFiles(e.target.files)} className="text-[10px] text-black/30 font-bold uppercase w-full file:mr-8 file:py-4 file:px-8 file:rounded-2xl file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-widest file:bg-black file:text-white hover:file:bg-[#96b1d8] transition-all cursor-pointer shadow-sm" />
+            </div>
+          </div>
+          <div className="flex gap-4 pt-8 border-t border-gray-50">
+            <button onClick={handleCreate} disabled={creating || !createName.trim() || !createPosition.trim()} className="bg-black hover:bg-gray-800 text-white font-black uppercase tracking-widest text-[11px] px-10 py-5 rounded-[1.5rem] transition-all disabled:opacity-50 shadow-2xl shadow-black/20 active:scale-95">{creating ? 'Processing manifest…' : 'Finalize Deployment'}</button>
+            <button onClick={() => setShowCreate(false)} className="text-black/30 hover:text-black px-8 py-5 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all border border-transparent hover:border-gray-100">Discard Manifest</button>
           </div>
         </div>
       )}
 
       {/* Banners grid */}
-      {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-48 bg-gray-100 rounded-xl animate-pulse" />)}
-        </div>
-      ) : banners.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-100 p-12 text-center text-gray-400">No banners yet.</div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {banners.map(b => (
-            <div key={b.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-              {/* Image preview */}
-              <div className="relative h-36 bg-gray-50">
-                {b.images?.[0] ? (
-                  <img src={getImageUrl(b.images[0])} alt={b.name} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-300"><ImageIcon size={32} /></div>
-                )}
-                <span className={`absolute top-2 left-2 text-xs px-2 py-0.5 rounded-full font-medium ${b.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                  {b.is_active ? 'Active' : 'Inactive'}
-                </span>
-              </div>
+      <div className="mb-16">
+        {loading && banners.length === 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+            {Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-80 bg-gray-50 rounded-[3rem] animate-pulse border border-gray-100" />)}
+          </div>
+        ) : displayData.length === 0 ? (
+          <div className="bg-white rounded-[4rem] border border-gray-100 p-40 text-center text-black/10 flex flex-col items-center gap-8 shadow-sm">
+            <ImageIcon size={80} className="stroke-[1px]" />
+            <p className="font-black uppercase tracking-[0.5em] text-[10px]">Registry Clean</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+            {displayData.map(b => (
+              <div key={b.id} className="bg-white rounded-[3rem] border border-gray-100 shadow-sm overflow-hidden group hover:shadow-2xl hover:border-[#96b1d8]/50 transition-all duration-700">
+                {/* Image preview */}
+                <div className="relative h-64 bg-gray-50 overflow-hidden">
+                  {b.images?.[0] ? (
+                    <img src={getImageUrl(b.images[0])} alt={b.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s]" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-black/5 opacity-20"><ImageIcon size={64} strokeWidth={1} /></div>
+                  )}
+                  <div className="absolute top-6 right-6 flex items-center">
+                     <span className={`text-[10px] px-4 py-2 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl backdrop-blur-md border border-white/20 transition-all ${b.is_active ? 'bg-black text-white' : 'bg-white text-black/20'}`}>
+                      {b.is_active ? 'Streaming' : 'Internal'}
+                    </span>
+                  </div>
+                </div>
 
-              <div className="p-3">
-                {editId === b.id ? (
-                  <div className="space-y-2">
-                    <input value={editName} onChange={e => setEditName(e.target.value)} className="w-full text-sm border border-orange-300 rounded-lg px-2 py-1.5 outline-none" placeholder="Name" />
-                    <input value={editPosition} onChange={e => setEditPosition(e.target.value)} className="w-full text-sm border border-orange-300 rounded-lg px-2 py-1.5 outline-none" placeholder="Position" />
-                    <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-                      <input type="checkbox" checked={editActive} onChange={e => setEditActive(e.target.checked)} className="accent-orange-500" /> Active
-                    </label>
-                    <input type="file" multiple accept="image/*" onChange={e => setEditFiles(e.target.files)} className="text-xs text-gray-500 w-full file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-orange-50 file:text-orange-600" />
-                    <div className="flex gap-2 pt-1">
-                      <button onClick={() => handleSave(b.id)} disabled={saving} className="flex items-center gap-1 bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white text-xs px-3 py-1.5 rounded-lg"><Check size={12} /> {saving ? 'Saving…' : 'Save'}</button>
-                      <button onClick={() => setEditId(null)} className="flex items-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs px-3 py-1.5 rounded-lg"><X size={12} /> Cancel</button>
+                <div className="p-10">
+                  {editId === b.id ? (
+                    <div className="space-y-5">
+                      <input value={editName} onChange={e => setEditName(e.target.value)} className="w-full text-base font-black border-b-2 border-black pb-2 outline-none bg-transparent" placeholder="Name" />
+                      <input value={editPosition} onChange={e => setEditPosition(e.target.value)} className="w-full text-[11px] font-black border-b-2 border-black/10 pb-2 outline-none bg-transparent uppercase tracking-widest text-[#96b1d8]" placeholder="Position" />
+                      <div className="flex items-center justify-between py-4">
+                         <label className="flex items-center gap-4 text-[11px] font-black text-black uppercase tracking-widest cursor-pointer">
+                          <input type="checkbox" checked={editActive} onChange={e => setEditActive(e.target.checked)} className="w-6 h-6 rounded-xl accent-black" /> Live
+                        </label>
+                        <input type="file" multiple accept="image/*" onChange={e => setEditFiles(e.target.files)} className="text-[9px] text-black/20 w-36 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-gray-100 file:text-[9px] file:font-black file:uppercase file:tracking-tighter" />
+                      </div>
+                      <div className="flex gap-3 pt-6 border-t border-gray-50">
+                        <button onClick={() => handleSave(b.id)} disabled={saving} className="flex-1 flex items-center justify-center gap-3 bg-black hover:bg-gray-800 disabled:opacity-50 text-white text-[10px] font-black uppercase tracking-widest py-4.5 rounded-2xl shadow-xl shadow-black/20 transition-all active:scale-95"><Check size={16} /> {saving ? 'Syncing…' : 'Commit'}</button>
+                        <button onClick={() => setEditId(null)} className="flex-1 flex items-center justify-center gap-3 bg-gray-100 hover:bg-gray-200 text-black/30 text-[10px] font-black uppercase tracking-widest py-4.5 rounded-2xl transition-all">Abort</button>
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="font-medium text-gray-800 text-sm">{b.name}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">Position: <span className="font-mono">{b.position}</span></p>
+                  ) : (
+                    <div className="flex items-start justify-between gap-6">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-black text-black text-xl tracking-tighter truncate pr-4 group-hover:text-[#96b1d8] transition-colors leading-none">{b.name}</p>
+                        <div className="flex items-center gap-3 mt-4">
+                           <span className="text-[10px] font-black text-black/20 uppercase tracking-[0.3em]">Locator:</span>
+                           <span className="text-[10px] font-black text-black/40 bg-gray-50 px-3 py-1.5 rounded-xl uppercase tracking-widest border border-gray-100 group-hover:bg-black group-hover:text-white transition-all duration-500">{b.position}</span>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 shrink-0 flex-col">
+                        <button onClick={() => startEdit(b)} className="p-4 rounded-2xl text-black/20 hover:text-black hover:bg-gray-50 transition-all border border-transparent hover:border-gray-100 shadow-sm hover:shadow-md" title="Modify asset"><Pencil size={20} /></button>
+                        <button onClick={() => setDeleteId(b.id)} className="p-4 rounded-2xl text-black/20 hover:text-red-500 hover:bg-red-50 transition-all border border-transparent hover:border-red-100 shadow-sm hover:shadow-md" title="Extract asset"><Trash2 size={20} /></button>
+                      </div>
                     </div>
-                    <div className="flex gap-1 shrink-0">
-                      <button onClick={() => startEdit(b)} className="p-1.5 rounded-lg text-gray-400 hover:text-orange-500 hover:bg-orange-50"><Pencil size={14} /></button>
-                      <button onClick={() => setDeleteId(b.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50"><Trash2 size={14} /></button>
-                    </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        )}
+      </div>
+
+      {!loading && totalPages > 0 && (
+        <div className="bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm">
+           <Pagination 
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+              pageSize={pageSize}
+              onPageSizeChange={(newSize) => {
+                setPageSize(newSize);
+                setPage(page);
+              }}
+            />
         </div>
       )}
 
+      {/* Delete confirm modal */}
       {deleteId && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full">
-            <h2 className="text-base font-semibold text-gray-900 mb-2">Delete Banner</h2>
-            <p className="text-sm text-gray-500 mb-5">Delete <strong>{banners.find(b => b.id === deleteId)?.name}</strong>? This cannot be undone.</p>
-            <div className="flex gap-3">
-              <button onClick={() => handleDelete(deleteId)} disabled={deleting} className="flex-1 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white text-sm font-medium py-2 rounded-lg">{deleting ? 'Deleting…' : 'Delete'}</button>
-              <button onClick={() => setDeleteId(null)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium py-2 rounded-lg">Cancel</button>
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50 p-4" onClick={() => setDeleteId(null)}>
+          <div className="bg-white rounded-[4rem] shadow-2xl p-14 max-w-sm w-full animate-in zoom-in-95 duration-300" onClick={e => e.stopPropagation()}>
+            <div className="w-20 h-20 bg-red-50 rounded-[2.5rem] flex items-center justify-center text-red-500 mb-10 border-4 border-white shadow-2xl shadow-red-500/10">
+               <Trash2 size={32} />
+            </div>
+            <h2 className="text-3xl font-black text-black mb-3 tracking-tighter leading-none">Extract Asset?</h2>
+            <p className="text-[11px] font-black text-black/20 mb-12 leading-relaxed uppercase tracking-[0.3em]">
+              The creative manifest <span className="text-black/50">"{banners.find(b => b.id === deleteId)?.name}"</span> will be purged from the cluster.
+            </p>
+            <div className="flex gap-4">
+              <button onClick={() => handleDelete(deleteId)} disabled={deleting} className="flex-[2] bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white text-[11px] font-black uppercase tracking-[0.15em] py-5 rounded-[2rem] transition-all shadow-2xl shadow-red-500/30 active:scale-95 h-16">{deleting ? 'Liquidating…' : 'Confirm Wipe'}</button>
+              <button onClick={() => setDeleteId(null)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-black/30 text-[11px] font-black uppercase tracking-[0.15em] py-5 rounded-[2rem] transition-all h-16">Abort</button>
             </div>
           </div>
         </div>

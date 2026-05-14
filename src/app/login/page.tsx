@@ -5,10 +5,11 @@ import Link from 'next/link'
 import { useAuthStore } from '@/store/authStore'
 import toast from 'react-hot-toast'
 import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
   const { setAuth } = useAuthStore()
   const [form, setForm] = useState({ email: '', password: '' })
@@ -34,7 +35,6 @@ export default function LoginPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.message || 'Invalid credentials.')
 
-      // Your API might return: { message, user, token, token_type } OR { data: { user, token } }
       const payload = data.data || data
       const { token, user } = payload
       
@@ -43,8 +43,6 @@ export default function LoginPage() {
       }
 
       setAuth(user, token)
-      
-
       toast.success(`Welcome back, ${user.name}!`)
       router.push(redirect)
     } catch (err: any) {
@@ -55,6 +53,52 @@ export default function LoginPage() {
     }
   }
 
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="p-4 rounded-lg bg-white p-8 space-y-5 animate-fade-up opacity-0 animate-delay-100"
+      style={{ animationFillMode: 'forwards' }}
+    >
+      <div>
+        <label className="block text-xs uppercase tracking-wider mb-2 text-[var(--color-muted)]">
+          Email
+        </label>
+        <input
+          type="email"
+          required
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+          className="input"
+          placeholder="you@example.com"
+        />
+      </div>
+
+      <div>
+        <label className="block text-xs uppercase tracking-wider mb-2 text-[var(--color-muted)]">
+          Password
+        </label>
+        <input
+          type="password"
+          required
+          value={form.password}
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
+          className="input"
+          placeholder="••••••••"
+        />
+      </div>
+
+      <button
+        type="submit"
+        className="p-2 rounded-lg btn-primary w-full"
+        disabled={loading}
+      >
+        {loading ? 'Signing in…' : 'Sign In'}
+      </button>
+    </form>
+  )
+}
+
+export default function LoginPage() {
   return (
     <div className="min-h-screen pt-24 pb-24 flex items-center justify-center">
       <div className="w-full max-w-md px-6">
@@ -72,48 +116,10 @@ export default function LoginPage() {
             Sign in to your ShakTa account
           </p>
         </div>
-
-        <form
-          onSubmit={handleSubmit}
-          className="p-4 rounded-lg bg-white p-8 space-y-5 animate-fade-up opacity-0 animate-delay-100"
-          style={{ animationFillMode: 'forwards' }}
-        >
-          <div>
-            <label className="block text-xs uppercase tracking-wider mb-2 text-[var(--color-muted)]">
-              Email
-            </label>
-            <input
-              type="email"
-              required
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="input"
-              placeholder="you@example.com"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs uppercase tracking-wider mb-2 text-[var(--color-muted)]">
-              Password
-            </label>
-            <input
-              type="password"
-              required
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="input"
-              placeholder="••••••••"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="p-2 rounded-lg btn-primary w-full"
-            disabled={loading}
-          >
-            {loading ? 'Signing in…' : 'Sign In'}
-          </button>
-        </form>
+        
+        <Suspense fallback={<div className="p-8 text-center text-sm text-[var(--color-muted)]">Loading credentials hub...</div>}>
+          <LoginForm />
+        </Suspense>
 
         <p
           className="py-3 text-center text-sm text-[var(--color-muted)] mt-6 animate-fade-up opacity-0 animate-delay-200"

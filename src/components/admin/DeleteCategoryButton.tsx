@@ -6,11 +6,11 @@ import toast from 'react-hot-toast'
 
 const API = 'http://194.146.12.71:8008'
 
-export function DeleteCategoryButton({ id }: { id: number }) {
+export function DeleteCategoryButton({ id, onDeleted }: { id: number; onDeleted?: () => void }) {
   const router = useRouter()
 
   const handleDelete = async () => {
-    if (!confirm('Delete this category?')) return
+    if (!confirm('Are you sure you want to remove this category?')) return
     try {
       const token = useAuthStore.getState().token ||
         JSON.parse(localStorage.getItem('auth') || '{}')?.state?.token
@@ -23,7 +23,8 @@ export function DeleteCategoryButton({ id }: { id: number }) {
         },
       })
       if (!res.ok) throw new Error()
-      toast.success('Category deleted')
+      toast.success('Category removed')
+      onDeleted?.()
       router.refresh()
     } catch {
       toast.error('Failed to delete category')
@@ -33,9 +34,9 @@ export function DeleteCategoryButton({ id }: { id: number }) {
   return (
     <button
       onClick={handleDelete}
-      className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+      className="p-2.5 text-black/40 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
     >
-      <Trash2 size={15} />
+      <Trash2 size={16} />
     </button>
   )
 }
