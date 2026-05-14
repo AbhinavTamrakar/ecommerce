@@ -338,18 +338,17 @@ export default function AccountPage() {
                           <div className="flex flex-col gap-2 mb-4">
                             {order.items.map((item: any, i: number) => (
                               <div key={i} className="flex items-center gap-3">
-                                {item.image && (
+                                {item.product?.primary_image?.url ? (
                                   <img
-                                    src={item.image}
-                                    alt={item.name}
+                                    src={item.product.primary_image.url}
+                                    alt={item.product?.name}
                                     className="w-10 h-10 rounded-lg object-cover border border-[var(--color-border)] flex-shrink-0"
                                   />
-                                )}
-                                {!item.image && (
+                                ) : (
                                   <div className="w-10 h-10 rounded-lg border border-[var(--color-border)] bg-gray-100 flex-shrink-0" />
                                 )}
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium truncate">{item.name ?? item.product_name ?? 'Product'}</p>
+                                  <p className="text-sm font-medium truncate">{item.product?.name ?? 'Product'}</p>
                                   <p className="text-xs text-[var(--color-muted)]">
                                     Qty: {item.quantity ?? 1}
                                     {item.size ? ` · Size: ${item.size}` : ''}
@@ -357,7 +356,7 @@ export default function AccountPage() {
                                   </p>
                                 </div>
                                 <p className="text-sm font-medium flex-shrink-0">
-                                  {formatPrice(item.price ?? item.unit_price)}
+                                  {formatPrice(item.price_at_purchase)}
                                 </p>
                               </div>
                             ))}
@@ -369,8 +368,8 @@ export default function AccountPage() {
                         {/* Order Meta + Actions */}
                         <div className="flex items-center justify-between pt-3 border-t border-[var(--color-border)]">
                           <div className="text-xs text-[var(--color-muted)] space-y-0.5">
-                            {order.shipping_address_id && (
-                              <p>Ship to: {typeof order.shipping_address_id === 'string' ? order.shipping_address_id : order.shipping_address_id?.city ?? ''}</p>
+                            {order.shipping_address && (
+                              <p>Ship to: {order.shipping_address.city}, {order.shipping_address.country}</p>
                             )}
                             {order.payment_method && (
                               <p>Payment: {order.payment_method}</p>
