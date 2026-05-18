@@ -12,6 +12,10 @@ const guestOnlyRoutes = [
   '/register',
 ]
 
+const adminRoutes = [
+  '/admin',
+]
+
 function isValidToken(token: string | undefined): boolean {
   if (!token) return false
   if (token.trim() === '') return false
@@ -36,6 +40,24 @@ function isValidToken(token: string | undefined): boolean {
   return true
 }
 
+function getTokenPayload(token: string): Record<string, unknown> | null {
+  try {
+    const parts = token.split('.')
+    return JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
+  } catch {
+    return null
+  }
+}
+
+function isAdmin(token: string | undefined): boolean {
+  if (!token) return false
+  const payload = getTokenPayload(token)
+  if (!payload) return false
+
+  // Adjust 'role' / 'ADMIN' to match whatever your Java backend puts in the JWT
+  return payload.role === 'ADMIN'
+}
+
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
 
@@ -49,6 +71,19 @@ export function proxy(req: NextRequest) {
     const response = NextResponse.redirect(loginUrl)
     response.cookies.delete('token')
     return response
+  }
+
+  // Admin route protection: must be logged in AND have admin role
+  const isAdminRoute = adminRoutes.some((route) => pathname.startsWith(route))
+  if (isAdminRoute) {
+    if (!isLoggedIn) {
+      const loginUrl = new URL('/login', req.url)
+      loginUrl.searchParams.set('redirect', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+    if (!isAdmin(token)) {
+      return NextResponse.redirect(new URL('/account', req.url))
+    }
   }
 
   const isProtected = protectedRoutes.some((route) => pathname.startsWith(route))
@@ -75,5 +110,7 @@ export const config = {
     '/login',
     '/register',
     '/paypal/return',
+    '/admin/:path*',
+    '/admin',
   ],
 }
