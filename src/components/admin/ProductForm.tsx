@@ -4,7 +4,8 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
-import { ChevronLeft, Plus, Trash2 } from 'lucide-react'
+import { ChevronLeft, Plus, Trash2, X, ImageIcon as ImageIconLucide, CheckCircle } from 'lucide-react'
+import { getImageUrl } from '@/lib/utils'
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://194.146.12.71:8008'
 
@@ -35,6 +36,8 @@ export default function ProductForm({ productId }: Props) {
   })
   const [variants, setVariants] = useState<Variant[]>([])
   const [image, setImage] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [removeExistingImage, setRemoveExistingImage] = useState(false)
 
   useEffect(() => {
     // Wait for Zustand to hydrate from localStorage
@@ -124,6 +127,9 @@ export default function ProductForm({ productId }: Props) {
               attributeValueIds: (v.options || []).map((o: any) => o.attribute_value_id ?? o.id).filter(Boolean),
             })))
           }
+          if (p.primary_image) {
+            setPreviewUrl(getImageUrl(p.primary_image))
+          }
         })
         .catch(err => {
           console.error('Failed to load product:', err)
@@ -178,6 +184,7 @@ export default function ProductForm({ productId }: Props) {
       // Always explicitly send status
       formData.set('status', form.status)
       if (image) formData.append('image', image)
+      else if (removeExistingImage) formData.append('remove_image', '1')
 
       // Append variants
       let variantIndex = 0
@@ -320,10 +327,65 @@ export default function ProductForm({ productId }: Props) {
                 <option value="inactive">Inactive</option>
               </select>
             </div>
-            <div>
-              <label className="block text-xs uppercase tracking-wider text-gray-700 mb-1.5">Image</label>
-              <input type="file" accept="image/*" onChange={e => setImage(e.target.files?.[0] || null)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400" />
+            <div className="col-span-full">
+              <label className="block text-xs uppercase tracking-wider text-gray-700 mb-3 ml-1 font-bold">Product Asset (Image)</label>
+              <div className="relative group">
+                {previewUrl ? (
+                  <div className="relative w-full h-80 bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden shadow-inner group animate-in zoom-in-95 duration-500">
+                     <img 
+                       src={previewUrl} 
+                       alt="Preview" 
+                       className="w-full h-full object-contain p-4" 
+                     />
+                     <button 
+                        type="button" 
+                        onClick={() => {
+                          setImage(null)
+                          setPreviewUrl(null)
+                          setRemoveExistingImage(true)
+                        }}
+                        className="absolute top-4 right-4 bg-red-500 text-white flex items-center gap-2 px-5 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-2xl hover:bg-red-600 transition-all active:scale-95 z-20"
+                      >
+                         <Trash2 size={16} />
+                         Remove
+                      </button>
+                     {image && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md p-4 border-t border-gray-100 flex items-center justify-between">
+                           <div className="flex flex-col">
+                              <span className="text-[10px] font-black text-black uppercase tracking-widest truncate max-w-[200px]">{image.name}</span>
+                              <span className="text-[9px] font-bold text-black/60 uppercase">{(image.size / 1024).toFixed(1)} KB</span>
+                           </div>
+                           <CheckCircle size={18} className="text-black" />
+                        </div>
+                     )}
+                  </div>
+                ) : (
+                  <div className="relative group/upload">
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={e => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          setImage(file)
+                          setPreviewUrl(URL.createObjectURL(file))
+                          setRemoveExistingImage(false)
+                        }
+                      }}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+                    />
+                    <div className="w-full h-48 bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-4 group-hover/upload:border-black group-hover/upload:bg-gray-50 transition-all">
+                       <div className="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 group-hover/upload:scale-110 transition-transform">
+                          <ImageIconLucide size={24} className="text-black/40" />
+                       </div>
+                       <div className="text-center">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-black/60 group-hover/upload:text-black transition-colors">Select Product Asset</p>
+                          <p className="text-[9px] font-bold text-black/30 uppercase mt-1">PNG, JPG up to 5MB</p>
+                       </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <div className="mt-4">

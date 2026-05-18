@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Plus, Pencil, Database, Search, ImageIcon } from 'lucide-react'
+import { Plus, Pencil, Database, Search, ImageIcon, Filter, Calendar, X } from 'lucide-react'
 import { DeleteProductButton } from '@/components/admin/DeleteProductButton'
 import { useAuthStore } from '@/store/authStore'
 import { getImageUrl } from '@/lib/utils'
@@ -21,6 +21,11 @@ export default function AdminProductsPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [totalProducts, setTotalProducts] = useState(0)
   const [isServerPaginated, setIsServerPaginated] = useState(false)
+  const [categories, setCategories] = useState<any[]>([])
+  const [categoryFilter, setCategoryFilter] = useState('all')
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
+  const [dateSort, setDateSort] = useState('desc')
 
   async function fetchProducts(p: number, limit: number) {
     setLoading(true)
@@ -50,12 +55,38 @@ export default function AdminProductsPage() {
     }
   }
 
+  async function fetchCategories() {
+    try {
+      const res = await fetch(`${BASE}/api/public/categories`, {
+        headers: { Accept: 'application/json' },
+      })
+      const data = await res.json()
+      setCategories(data.data?.data || data.data || data || [])
+    } catch {
+      setCategories([])
+    }
+  }
+
+  useEffect(() => { fetchCategories() }, [])
   useEffect(() => { if (token) fetchProducts(page, pageSize) }, [token, page, pageSize])
 
-  const filtered = products.filter(p => 
-    p.name?.toLowerCase().includes(search.toLowerCase()) || 
-    p.slug?.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = products
+    .filter(p => {
+      const matchesSearch = (p.name?.toLowerCase().includes(search.toLowerCase()) || 
+        p.slug?.toLowerCase().includes(search.toLowerCase()));
+      const matchesCategory = (categoryFilter === 'all' || p.category_id === Number(categoryFilter) || p.category?.id === Number(categoryFilter));
+      
+      const pDateStr = p.created_at ? new Date(p.created_at).toISOString().split('T')[0] : '';
+      const matchesFromDate = !fromDate || pDateStr >= fromDate;
+      const matchesToDate = !toDate || pDateStr <= toDate;
+      
+      return matchesSearch && matchesCategory && matchesFromDate && matchesToDate;
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.created_at).getTime()
+      const dateB = new Date(b.created_at).getTime()
+      return dateSort === 'desc' ? dateB - dateA : dateA - dateB
+    })
 
   // Hybrid display logic
   const displayData = isServerPaginated 
@@ -83,29 +114,76 @@ export default function AdminProductsPage() {
         </Link>
       </div>
 
-      <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-3 mb-8 flex items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-700">
-        <div className="flex-1 relative">
-           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black" size={18} />
-           <input 
-              type="text" 
-              placeholder="Filter by Stock Unit ID, Name or Asset Tag..." 
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-gray-50/50 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold text-black placeholder:text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-inner"
-           />
+      <div className="flex items-center gap-3 mb-8 flex-wrap animate-in fade-in slide-in-from-top-4 duration-700">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-1.5 flex items-center flex-1 min-w-[240px]">
+           <div className="flex-1 relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-black/30" size={16} />
+              <input 
+                 type="text" 
+                 placeholder="Search assets..." 
+                 value={search}
+                 onChange={(e) => setSearch(e.target.value)}
+                 className="w-full bg-gray-50/50 border-none rounded-xl py-2.5 pl-11 pr-4 text-[11px] font-bold text-black placeholder:text-black/30 focus:ring-2 focus:ring-black/5 outline-none transition-all"
+              />
+           </div>
+        </div>
+        
+        <select 
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="bg-white border border-gray-100 rounded-2xl py-3 px-6 text-[10px] font-black uppercase tracking-widest text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-sm cursor-pointer hover:border-gray-200"
+        >
+          <option value="all">Categories</option>
+          {categories.map(cat => (
+            <option key={cat.id} value={cat.id}>{cat.name}</option>
+          ))}
+        </select>
+
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <span className="absolute -top-2.5 left-3 px-1 bg-white text-[7px] font-black text-black/40 uppercase tracking-widest z-10">From</span>
+            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-black/30" size={12} />
+            <input 
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="bg-white border border-gray-100 rounded-2xl py-3 pl-10 pr-4 text-[9px] font-black uppercase tracking-widest text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-sm hover:border-gray-200"
+            />
+          </div>
+          <div className="relative group">
+            <span className="absolute -top-2.5 left-3 px-1 bg-white text-[8px] font-black text-black/40 uppercase tracking-widest z-10">To</span>
+            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-black/30" size={12} />
+            <input 
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="bg-white border border-gray-100 rounded-2xl py-3 pl-10 pr-4 text-[9px] font-black uppercase tracking-widest text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-sm hover:border-gray-200"
+            />
+            <button 
+              onClick={() => {
+                setCategoryFilter('all');
+                setFromDate('');
+                setToDate('');
+                setSearch('');
+              }}
+              className="absolute -bottom-4 right-2 text-[9px] font-black uppercase tracking-[0.2em] text-black/40 hover:text-red-500 transition-colors whitespace-nowrap"
+            >
+              Clear All Filters
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden mb-12 animate-in fade-in zoom-in-95 duration-1000">
+      <div className="bg-white rounded-[2rem] border border-gray-200 shadow-sm overflow-hidden mb-12 animate-in fade-in zoom-in-95 duration-1000">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[800px] text-sm">
+          <table className="w-full min-w-[800px] text-md">
             <thead>
               <tr className="bg-gray-50/80 border-b border-gray-100">
                 <th className="px-8 py-6 text-left text-[10px] font-bold text-black uppercase tracking-[0.2em]">S.N</th>
-                <th className="px-8 py-6 text-left text-[10px] font-bold text-black uppercase tracking-[0.2em]">Product Asset</th>
-                <th className="px-8 py-6 text-left text-[10px] font-bold text-black uppercase tracking-[0.2em]">Classification</th>
-                <th className="px-8 py-6 text-left text-[10px] font-bold text-black uppercase tracking-[0.2em]">Valuation</th>
-                <th className="px-8 py-6 text-left text-[10px] font-bold text-black uppercase tracking-[0.2em]">Capacity</th>
+                <th className="px-8 py-6 text-left text-[10px] font-bold text-black uppercase tracking-[0.2em]">Product Name</th>
+                <th className="px-8 py-6 text-left text-[10px] font-bold text-black uppercase tracking-[0.2em]">Categories</th>
+                <th className="px-8 py-6 text-left text-[10px] font-bold text-black uppercase tracking-[0.2em]">Price</th>
+                <th className="px-8 py-6 text-left text-[10px] font-bold text-black uppercase tracking-[0.2em]">Stock</th>
                 <th className="px-8 py-6 text-left text-[10px] font-bold text-black uppercase tracking-[0.2em]">Status</th>
                 <th className="px-8 py-6 text-right text-[10px] font-bold text-black uppercase tracking-[0.2em]">Actions</th>
               </tr>
@@ -141,8 +219,8 @@ export default function AdminProductsPage() {
                           )}
                        </div>
                        <div>
-                         <p className="font-black text-black text-base tracking-tighter leading-none">{product.name}</p>
-                         <p className="text-[10px] font-black text-black/70 uppercase tracking-widest mt-2 px-1">{product.slug}</p>
+                         <p className="font-black text-black text-sm tracking-tighter leading-none">{product.name}</p>
+                         <p className="text-[7px] font-black text-black/70 uppercase tracking-widest mt-2 px-1">{product.slug}</p>
                        </div>
                     </div>
                   </td>

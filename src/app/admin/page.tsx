@@ -151,17 +151,17 @@ export default function AdminDashboard() {
   return (
     <div className="text-black">
       <div className="mb-10">
-        <h1 className="text-3xl font-black text-black tracking-tighter">Terminal</h1>
-        <p className="text-black/80 text-[10px] font-bold mt-1 uppercase tracking-[0.3em]">System Intelligence & Commerce Audit</p>
+        <h1 className="text-3xl font-black text-black tracking-tighter">Dashboard</h1>
+        <p className="text-black/80 text-[10px] font-bold mt-1 uppercase tracking-[0.3em]">Welcome back Admin!!</p>
       </div>
 
       {/* Main KPI cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         {kpiCards.map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className={`rounded-[2rem] p-8 ${color} transition-all hover:scale-[1.02] duration-300 group`}>
+          <div key={label} className={`rounded-[2rem] p-8 ${color} transition-all duration-300`}>
             <div className="flex items-center justify-between mb-4">
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">{label}</span>
-              <Icon size={20} className="opacity-70 group-hover:opacity-700 transition-opacity" />
+              <Icon size={20} className="opacity-70 transition-opacity" />
             </div>
             <p className="text-3xl font-black tracking-tighter">{value}</p>
           </div>
@@ -248,20 +248,20 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
         <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
           <div className="px-8 py-6 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
-            <h2 className="text-xs font-black text-black uppercase tracking-[0.25em]">Recent Traffic</h2>
-            <a href="/admin/orders" className="text-[9px] font-black uppercase tracking-widest bg-black text-white px-3 py-1.5 rounded-full hover:bg-gray-800 transition-all">Audit Gate →</a>
+            <h2 className="text-xs font-black text-black uppercase tracking-[0.25em]">Recent Orders</h2>
+            <a href="/admin/orders" className="text-[9px] font-black uppercase tracking-widest bg-black text-white px-3 py-1.5 rounded-full transition-all">View Orders →</a>
           </div>
           <div className="divide-y divide-gray-50">
             {recentOrders.length === 0 ? (
               <p className="px-8 py-16 text-[10px] font-bold text-black uppercase tracking-widest text-center italic">Awaiting connection…</p>
             ) : recentOrders.slice(0, 5).map((order: any) => (
-              <div key={order.id} className="px-8 py-5 flex items-center justify-between gap-4 hover:bg-gray-50 transition-all cursor-pointer">
+              <div key={order.id} className="px-8 py-5 flex items-center justify-between gap-4 transition-all cursor-pointer">
                 <div>
-                  <p className="text-sm font-black text-black tracking-tighter">REF-{order.id}</p>
+                  <p className="text-[15px] font-black text-black tracking-tighter">REF-{order.id}</p>
                   <p className="text-[9px] font-bold text-black/70 uppercase tracking-widest">{new Date(order.created_at).toLocaleDateString()}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-black text-black tracking-tighter">${Number(order.total_amount || 0).toLocaleString()}</p>
+                  <p className="text-[15px] font-black text-black tracking-tighter">${Number(order.total_amount || 0).toLocaleString()}</p>
                   <span className="text-[8px] font-black uppercase tracking-widest text-[#96b1d8]">{order.status}</span>
                 </div>
               </div>
@@ -275,14 +275,14 @@ export default function AdminDashboard() {
               <div className="w-2 h-2 bg-red-500 rounded-full animate-ping" />
               Low Stock
             </h2>
-            <a href="/admin/products" className="text-[9px] font-black uppercase tracking-widest bg-black text-white px-3 py-1.5 rounded-full hover:bg-gray-800 transition-all">Restock Registry →</a>
+            <a href="/admin/products" className="text-[9px] font-black uppercase tracking-widest bg-black text-white px-3 py-1.5 rounded-full transition-all">Restock Registry →</a>
           </div>
           <div className="divide-y divide-gray-50">
             {lowStock.length === 0 ? (
-              <p className="px-8 py-16 text-[10px] font-bold text-black uppercase tracking-widest text-center italic">Vault Healthy</p>
+              <p className="px-8 py-16 text-[10px] font-bold text-black uppercase tracking-widest text-center italic">Products Fully Stocked</p>
             ) : lowStock.slice(0, 5).map((product: any) => (
-              <div key={product.id} className="px-8 py-5 flex items-center justify-between gap-4 hover:bg-gray-50 transition-all">
-                <p className="text-sm font-black text-black tracking-tighter truncate">{product.name}</p>
+              <div key={product.id} className="px-8 py-5 flex items-center justify-between gap-4 transition-all">
+                <p className="text-[15px] font-black text-black tracking-tighter truncate">{product.name}</p>
                 <div className="flex items-center gap-4">
                    <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                       <div className="h-full bg-black rounded-full" style={{ width: `${(product.stock / 10) * 100}%` }} />

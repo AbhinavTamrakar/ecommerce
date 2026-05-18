@@ -221,11 +221,11 @@ export default function TypesPage() {
       {/* Table */}
       <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden mb-12 animate-in fade-in zoom-in-95 duration-1000">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-[15px]">
             <thead>
               <tr className="bg-gray-50/80 border-b border-gray-100 text-black">
                 <th className="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em]">S.N</th>
-                <th className="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em]">Label</th>
+                <th className="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em]">Type Name</th>
                 <th className="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em]">Slug</th>
                 <th className="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em]">Created</th>
                 <th className="px-6 py-4 text-right text-[10px] font-bold uppercase tracking-[0.2em]">Actions</th>

@@ -101,7 +101,7 @@ export default function AdminContactsPage() {
 
       <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden mb-12 animate-in fade-in zoom-in-95 duration-1000">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm min-w-[1000px]">
+          <table className="w-full text-[15px] min-w-[1000px]">
           <thead>
             <tr className="bg-gray-50/80 border-b border-gray-100 text-black">
               <th className="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-[0.2em]">SN</th>

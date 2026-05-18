@@ -17,6 +17,8 @@ export default function AdminUsersPage() {
   const [pageSize, setPageSize] = useState(10)
   const [totalPages, setTotalPages] = useState(1)
   const [isServerPaginated, setIsServerPaginated] = useState(false)
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
 
   async function fetchUsers(p: number, limit: number) {
     setLoading(true)
@@ -47,10 +49,16 @@ export default function AdminUsersPage() {
 
   useEffect(() => { if (token) fetchUsers(page, pageSize) }, [token, page, pageSize])
 
-  const filtered = users.filter(u => 
-    u.name?.toLowerCase().includes(search.toLowerCase()) || 
-    u.email?.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = users.filter(u => {
+    const matchSearch = u.name?.toLowerCase().includes(search.toLowerCase()) || 
+      u.email?.toLowerCase().includes(search.toLowerCase());
+    
+    const uDateStr = u.created_at ? new Date(u.created_at).toISOString().split('T')[0] : '';
+    const matchFromDate = !fromDate || uDateStr >= fromDate;
+    const matchToDate = !toDate || uDateStr <= toDate;
+    
+    return matchSearch && matchFromDate && matchToDate;
+  })
 
   const displayData = isServerPaginated 
     ? filtered.slice(0, pageSize) 
@@ -70,28 +78,63 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-3 mb-8 flex items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-700">
-        <div className="flex-1 relative">
-           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black" size={18} />
-           <input 
-              type="text" 
-              placeholder="Search by Identity or Alias..." 
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-gray-50/50 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold text-black placeholder:text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-inner"
-           />
+      <div className="flex items-center gap-4 mb-8 flex-wrap animate-in fade-in slide-in-from-top-4 duration-700">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-1.5 flex items-center flex-1 min-w-[300px]">
+           <div className="flex-1 relative">
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black/30" size={18} />
+              <input 
+                 type="text" 
+                 placeholder="Search by Identity or Alias..." 
+                 value={search}
+                 onChange={(e) => setSearch(e.target.value)}
+                 className="w-full bg-gray-50/50 border-none rounded-xl py-3 pl-14 pr-6 text-sm font-bold text-black placeholder:text-black/30 focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-inner"
+              />
+           </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <span className="absolute -top-2.5 left-3 px-1 bg-white text-[8px] font-black text-black/40 uppercase tracking-widest z-10">From</span>
+            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-black/30" size={14} />
+            <input 
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="bg-white border border-gray-100 rounded-2xl py-3 pl-12 pr-4 text-[10px] font-black uppercase tracking-widest text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-sm hover:border-gray-200"
+            />
+          </div>
+          <div className="relative group">
+            <span className="absolute -top-2.5 left-3 px-1 bg-white text-[8px] font-black text-black/40 uppercase tracking-widest z-10">To</span>
+            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-black/30" size={14} />
+            <input 
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="bg-white border border-gray-100 rounded-2xl py-3 pl-12 pr-4 text-[10px] font-black uppercase tracking-widest text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-sm hover:border-gray-200"
+            />
+            <button 
+              onClick={() => {
+                setFromDate('');
+                setToDate('');
+                setSearch('');
+              }}
+              className="absolute -bottom-5 right-2 text-[8px] font-black uppercase tracking-[0.2em] text-black/40 hover:text-red-500 transition-colors whitespace-nowrap"
+            >
+              Clear Filters
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden mb-12 animate-in fade-in zoom-in-95 duration-1000">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[800px] text-sm">
+          <table className="w-full min-w-[800px] text-[15px]">
             <thead>
               <tr className="bg-gray-50/80 border-b border-gray-100 text-black">
                 <th className="px-8 py-6 text-left text-[10px] font-bold uppercase tracking-[0.2em]">S.N</th>
-                <th className="px-8 py-6 text-left text-[10px] font-bold uppercase tracking-[0.2em]">User Profile</th>
-                <th className="px-8 py-6 text-left text-[10px] font-bold uppercase tracking-[0.2em]">Connectivity</th>
-                <th className="px-8 py-6 text-left text-[10px] font-bold uppercase tracking-[0.2em]">Registration</th>
+                <th className="px-8 py-6 text-left text-[10px] font-bold uppercase tracking-[0.2em]">Customer Name</th>
+                <th className="px-8 py-6 text-left text-[10px] font-bold uppercase tracking-[0.2em]">Contact Number</th>
+                <th className="px-8 py-6 text-left text-[10px] font-bold uppercase tracking-[0.2em]">Registration Date</th>
                 <th className="px-8 py-6 text-right text-[10px] font-bold uppercase tracking-[0.2em]">Actions</th>
               </tr>
             </thead>

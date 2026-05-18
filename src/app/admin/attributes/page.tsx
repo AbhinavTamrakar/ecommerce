@@ -154,14 +154,14 @@ export default function AttributesPage() {
 
       {showCreate && (
         <div className="bg-white border border-[#96b1d8]/30 rounded-[2.5rem] p-8 mb-10 shadow-sm animate-in zoom-in-95 duration-200">
-          <p className="text-[10px] uppercase tracking-[0.3em] font-black text-black mb-6">Initialize New Descriptor Node</p>
+          <p className="text-[10px] uppercase tracking-[0.3em] font-black text-black mb-6">Initialize New Attribute</p>
           <div className="flex gap-4 items-center">
             <div className="flex-1 space-y-2">
                <label className="text-[10px] font-black text-black uppercase tracking-widest ml-1">Attribute Name *</label>
                <input type="text" placeholder="e.g. Fabric Composition" value={createName} onChange={e => setCreateName(e.target.value)} className="w-full text-sm font-bold border border-gray-100 rounded-2xl px-5 py-4 outline-none focus:border-[#96b1d8] transition-all bg-gray-50/50" />
             </div>
             <div className="flex gap-3 self-end mb-0.5">
-               <button onClick={handleCreate} disabled={creating || !createName.trim()} className="bg-black hover:bg-gray-800 disabled:opacity-50 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4.5 rounded-2xl transition-all shadow-xl shadow-black/10">{creating ? '…' : 'Manifest'}</button>
+               <button onClick={handleCreate} disabled={creating || !createName.trim()} className="bg-black hover:bg-gray-800 disabled:opacity-50 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4.5 rounded-2xl transition-all shadow-xl shadow-black/10">{creating ? '…' : 'Create'}</button>
                <button onClick={() => setShowCreate(false)} className="bg-gray-50 hover:bg-gray-100 text-black p-4.5 rounded-2xl transition-all"><X size={18} /></button>
             </div>
           </div>
@@ -277,13 +277,13 @@ export default function AttributesPage() {
             <div className="w-16 h-16 bg-red-50 rounded-[2rem] flex items-center justify-center text-red-500 mb-8 border-4 border-white shadow-xl shadow-red-500/10">
                <Trash2 size={28} />
             </div>
-            <h2 className="text-2xl font-black text-black mb-2 tracking-tighter leading-none">Strip Node?</h2>
+            <h2 className="text-2xl font-black text-black mb-2 tracking-tighter leading-none">Confirm Delete?</h2>
             <p className="text-[10px] font-black text-black mb-10 leading-relaxed uppercase tracking-[0.3em]">
-              The schema <span className="text-black/90">"{attributes.find(a => a.id === deleteId)?.name}"</span> will be purged from the cluster.
+              The Attribute <span className="text-black/90">"{attributes.find(a => a.id === deleteId)?.name}"</span> will be deleted.
             </p>
             <div className="flex gap-3">
-              <button onClick={() => handleDelete(deleteId)} disabled={deleting} className="flex-[2] bg-red-500 hover:bg-red-600 font-black uppercase tracking-widest text-[11px] py-4.5 rounded-3xl text-white shadow-2xl shadow-red-500/30 h-14">{deleting ? 'Purging…' : 'Confirm Wipe'}</button>
-              <button onClick={() => setDeleteId(null)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-black text-[11px] font-black uppercase tracking-widest py-4.5 rounded-3xl transition-all h-14">Abort</button>
+              <button onClick={() => handleDelete(deleteId)} disabled={deleting} className="flex-[2] bg-red-500 hover:bg-red-600 font-black uppercase tracking-widest text-[11px] py-4.5 rounded-3xl text-white shadow-2xl shadow-red-500/30 h-14">{deleting ? 'Deleting…' : 'Confirm Delete'}</button>
+              <button onClick={() => setDeleteId(null)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-black text-[11px] font-black uppercase tracking-widest py-4.5 rounded-3xl transition-all h-14">Cancel</button>
             </div>
           </div>
         </div>

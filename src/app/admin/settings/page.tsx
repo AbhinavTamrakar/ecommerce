@@ -303,7 +303,7 @@ export default function AdminSettingsPage() {
       {(activeTab === 'social' || activeTab === 'quick') && (
         <div className="bg-white rounded-[3rem] border border-gray-100 shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
            <div className="overflow-x-auto min-h-[400px]">
-             <table className="w-full text-sm">
+             <table className="w-full text-[15px]">
                <thead>
                  <tr className="bg-gray-50/80 border-b border-gray-100">
                    <th className="px-12 py-6 text-left text-[11px] font-black uppercase tracking-[0.2em] text-black/80">{activeTab === 'social' ? 'Platform Node' : 'Link Identifier'}</th>
@@ -371,7 +371,7 @@ export default function AdminSettingsPage() {
       {activeTab === 'payment' && (
         <div className="bg-white rounded-[3rem] border border-gray-100 shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
            <div className="overflow-x-auto">
-             <table className="w-full text-sm">
+             <table className="w-full text-[15px]">
                <thead>
                  <tr className="bg-gray-50/80 border-b border-gray-100">
                    <th className="px-12 py-6 text-left text-[11px] font-black uppercase tracking-[0.2em] text-black/80">Method Entity</th>

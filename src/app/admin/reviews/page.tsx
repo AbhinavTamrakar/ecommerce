@@ -117,7 +117,7 @@ export default function AdminReviewsPage() {
 
       <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden mb-12 animate-in fade-in zoom-in-95 duration-1000">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1000px] text-sm">
+          <table className="w-full min-w-[1000px] text-[15px]">
             <thead>
               <tr className="bg-gray-50/80 border-b border-gray-100 text-black">
                 <th className="px-8 py-6 text-left text-[10px] font-bold uppercase tracking-[0.2em]">S.N</th>

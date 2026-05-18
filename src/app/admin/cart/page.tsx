@@ -142,11 +142,11 @@ export default function AdminCartsPage() {
       {/* Carts table */}
       <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden mb-12 animate-in fade-in zoom-in-95 duration-1000">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-[15px]">
             <thead>
               <tr className="bg-gray-50/80 border-b border-gray-100 text-[10px] font-black uppercase tracking-[0.2em] text-black">
                 <th className="px-8 py-6 text-left">S.N</th>
-                {['Customer Entity', 'Asset Visuals', 'Volume', 'Valuation', 'Updated', 'Action'].map(h => (
+                {['Customer Name', 'Product', 'Quantity', 'Total Price', 'Updated', 'Action'].map(h => (
                   <th key={h} className="px-8 py-6 text-left">{h}</th>
                 ))}
               </tr>

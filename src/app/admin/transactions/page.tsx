@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
-import { Eye, CreditCard, X, Search } from 'lucide-react'
+import { Eye, CreditCard, X, Search, Filter, Calendar } from 'lucide-react'
 import Pagination from '@/components/admin/Pagination'
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://194.146.12.71:8008'
@@ -62,6 +62,8 @@ export default function TransactionsPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null)
   const [isServerPaginated, setIsServerPaginated] = useState(false)
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
 
   useEffect(() => {
     if (!token) return
@@ -96,7 +98,12 @@ export default function TransactionsPage() {
       String(p.order_id).includes(search) ||
       p.order?.user?.name?.toLowerCase().includes(search.toLowerCase())
     const matchStatus = statusFilter === 'all' || p.status?.toLowerCase() === statusFilter
-    return matchSearch && matchStatus
+    
+    const pDateStr = (p.paid_at || p.created_at || '').split('T')[0]
+    const matchFromDate = !fromDate || pDateStr >= fromDate
+    const matchToDate = !toDate || pDateStr <= toDate
+    
+    return matchSearch && matchStatus && matchFromDate && matchToDate
   })
 
   // Display logic
@@ -112,46 +119,80 @@ export default function TransactionsPage() {
              <div className="p-2 bg-white rounded-xl shadow-sm border border-gray-100">
                <CreditCard size={22} className="text-black" /> 
             </div>
-            Financial Ledger
+            Transcations
           </h1>
-          <p className="text-[10px] font-bold text-black/80 mt-1 uppercase tracking-[0.3em] ml-1">Universal Asset Acquisition Registry</p>
+          <p className="text-[10px] font-bold text-black/80 mt-1 uppercase tracking-[0.3em] ml-1">Asset Registry</p>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-3 mb-8 flex flex-wrap items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-700">
-        <div className="flex-1 min-w-[280px] relative">
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black" size={18} />
-          <input
-            type="text"
-            placeholder="Filter by Transaction ID, Order # or Identity Node"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full text-sm font-bold border border-transparent bg-gray-50/50 rounded-2xl px-14 py-4 outline-none focus:ring-2 focus:ring-black/5 transition-all shadow-inner"
-          />
+      <div className="flex items-center gap-3 mb-8 flex-wrap animate-in fade-in slide-in-from-top-4 duration-700">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-1.5 flex items-center flex-1 min-w-[280px]">
+           <div className="flex-1 relative">
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black/30" size={18} />
+              <input 
+                 type="text" 
+                 placeholder="Search transactions..." 
+                 value={search}
+                 onChange={(e) => setSearch(e.target.value)}
+                 className="w-full bg-gray-50/50 border-none rounded-xl py-2.5 pl-14 pr-6 text-sm font-bold text-black placeholder:text-black/30 focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-inner"
+              />
+           </div>
         </div>
-        <div className="flex items-center gap-2 px-6 h-14 bg-gray-50/30 rounded-2xl border border-gray-50">
-           <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-[10px] font-black uppercase tracking-widest border-none outline-none focus:ring-0 bg-transparent text-[#96b1d8] hover:text-black cursor-pointer transition-all"
-          >
-            <option value="all">Global Visibility</option>
-            <option value="success">Completed</option>
-            <option value="pending">Awaiting</option>
-            <option value="failed">Rejected</option>
-            <option value="refunded">Reversed</option>
-          </select>
+
+        <select 
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="bg-white border border-gray-100 rounded-2xl py-3 px-6 text-[10px] font-black uppercase tracking-widest text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-sm cursor-pointer hover:border-gray-200"
+        >
+          <option value="all">All Transaction</option>
+          <option value="success">Completed</option>
+          <option value="pending">Awaiting</option>
+          <option value="failed">Rejected</option>
+          <option value="refunded">Refunded</option>
+        </select>
+
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <span className="absolute -top-2.5 left-3 px-1 bg-white text-[8px] font-black text-black/40 uppercase tracking-widest z-10">From</span>
+            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-black/30" size={12} />
+            <input 
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="bg-white border border-gray-100 rounded-2xl py-3 pl-10 pr-4 text-[9px] font-black uppercase tracking-widest text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-sm hover:border-gray-200"
+            />
+          </div>
+          <div className="relative group">
+            <span className="absolute -top-2.5 left-3 px-1 bg-white text-[8px] font-black text-black/40 uppercase tracking-widest z-10">To</span>
+            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-black/30" size={12} />
+            <input 
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="bg-white border border-gray-100 rounded-2xl py-3 pl-10 pr-4 text-[9px] font-black uppercase tracking-widest text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-sm hover:border-gray-200"
+            />
+            <button 
+              onClick={() => {
+                setStatusFilter('all');
+                setFromDate('');
+                setToDate('');
+                setSearch('');
+              }}
+              className="absolute -bottom-5 right-2 text-[8px] font-black uppercase tracking-[0.2em] text-black/40 hover:text-red-500 transition-colors whitespace-nowrap"
+            >
+              Clear Filters
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Table */}
       <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden mb-12 animate-in fade-in zoom-in-95 duration-1000">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-[15px]">
             <thead>
               <tr className="bg-gray-50/80 border-b border-gray-100">
-                {['S.N', 'Ref ID', 'Order', 'Entity Node', 'Volume', 'Channel', 'Phase', 'Timestamp', 'View'].map((h) => (
+                {['S.N', 'Transaction ID', 'Order No', 'Customer Name', 'Total Price', 'Payment Method', 'Payment Status', 'Timestamp', 'View'].map((h) => (
                   <th key={h} className="px-8 py-6 text-left text-[10px] font-bold text-black uppercase tracking-[0.2em] whitespace-nowrap">
                     {h}
                   </th>
@@ -242,43 +283,47 @@ export default function TransactionsPage() {
           className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50 p-4"
           onClick={() => setSelectedPayment(null)}
         >
+          <style>{`
+            .no-scrollbar::-webkit-scrollbar { display: none; }
+            .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+          `}</style>
           <div
-            className="bg-white rounded-[4rem] shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-300"
+            className="bg-white rounded-[3rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300 no-scrollbar"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="px-12 py-10 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
+            <div className="px-8 py-7 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-black text-black tracking-tighter leading-none mb-2">Audit Receipt</h2>
-                <p className="text-[10px] font-black text-[#96b1d8] uppercase tracking-[0.3em]">Payload Hash: ORD-{selectedPayment.order_id}</p>
+                <h2 className="text-xl font-black text-black tracking-tighter leading-none mb-1">Transaction Audit</h2>
+                <p className="text-[9px] font-black text-[#96b1d8] uppercase tracking-[0.2em]">ORD-{selectedPayment.order_id}</p>
               </div>
               <button 
                 onClick={() => setSelectedPayment(null)} 
-                className="text-black/90 hover:text-black p-4 bg-white rounded-3xl shadow-sm transition-all"
+                className="text-black/90 hover:text-black p-3 bg-white rounded-2xl shadow-sm transition-all"
               >
-                <X size={24} />
+                <X size={20} />
               </button>
             </div>
-            <div className="p-12 space-y-2">
+            <div className="p-8 space-y-1 max-h-[60vh] overflow-y-auto no-scrollbar">
               {[
-                ['Registry ID', `#${selectedPayment.id}`],
-                ['Transaction', selectedPayment.transaction_id || 'LOCAL_CACHE'],
-                ['Identity', selectedPayment.order?.user?.name || 'Unmapped Node'],
-                ['Endpoint', selectedPayment.order?.user?.email || 'OFFLINE'],
-                ['Gross Value', `$${Number(selectedPayment.amount).toLocaleString()}`],
-                ['Methodology', selectedPayment.payment_method?.name || 'GENERIC_GW'],
-                ['Lifecycle', selectedPayment.status.toUpperCase()],
-                ['Log Timestamp', new Date(selectedPayment.paid_at || selectedPayment.created_at).toLocaleString()],
+                ['Reference ID', `#${selectedPayment.id}`],
+                ['Transaction ID', selectedPayment.transaction_id || 'INTERNAL_REF'],
+                ['Customer', selectedPayment.order?.user?.name || 'Guest Node'],
+                ['Email', selectedPayment.order?.user?.email || '—'],
+                ['Amount Paid', `$${Number(selectedPayment.amount).toLocaleString()}`],
+                ['Method', selectedPayment.payment_method?.name || 'GENERIC'],
+                ['Payment Status', selectedPayment.status.toUpperCase()],
+                ['Timestamp', new Date(selectedPayment.paid_at || selectedPayment.created_at).toLocaleString()],
               ].map(([label, value]) => (
-                <div key={label} className="flex justify-between items-center py-5 border-b border-gray-50 last:border-0">
-                  <span className="text-[10px] font-black text-black uppercase tracking-[0.2em]">{label}</span>
-                  <span className={`text-sm font-black text-right break-all ml-8 tracking-tighter ${label === 'Lifecycle' ? (selectedPayment.status === 'success' ? 'text-green-600' : 'text-red-500') : 'text-black'}`}>
+                <div key={label} className="flex justify-between items-center py-4 border-b border-gray-50 last:border-0 gap-4">
+                  <span className="text-[10px] font-black text-black/60 uppercase tracking-[0.1em] shrink-0">{label}</span>
+                  <span className={`text-xs font-black text-right break-all tracking-tighter ${label === 'Payment Status' ? (selectedPayment.status === 'success' ? 'text-green-600' : 'text-red-500') : 'text-black'}`}>
                     {value}
                   </span>
                 </div>
               ))}
             </div>
-            <div className="bg-gray-50 px-12 py-8 text-center border-t border-gray-100">
-               <button onClick={() => setSelectedPayment(null)} className="text-[11px] font-black text-black uppercase tracking-[0.4em] hover:text-black transition-all">Dismiss Internal Audit</button>
+            <div className="bg-gray-50 px-8 py-6 text-center border-t border-gray-100">
+               <button onClick={() => setSelectedPayment(null)} className="text-[10px] font-black text-black uppercase tracking-[0.3em] hover:text-[#96b1d8] transition-all">Close Entry</button>
             </div>
           </div>
         </div>

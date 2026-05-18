@@ -21,6 +21,9 @@ const jost = Jost({
 export const metadata: Metadata = {
   title: "ShakTa — Modern Fashion Store",
   description: "Discover curated fashion with ShakTa. Premium clothing and accessories.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

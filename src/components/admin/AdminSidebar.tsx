@@ -69,68 +69,62 @@ export default function AdminSidebar() {
     router.push('/')
   }
 
-  const NavLinks = () => (
-    <nav className="flex-1 px-3 py-4 overflow-y-auto hide-scrollbar">
-      {navGroups.map((group) => (
-        <div key={group.label} className="mb-4">
-          <p className="px-3 mb-1 text-[10px] uppercase tracking-widest font-bold text-black/80">
-            {group.label}
-          </p>
-          <div className="space-y-0.5">
-            {group.links.map(({ href, label, icon: Icon }) => {
-              const active = pathname === href || (href !== '/admin' && pathname.startsWith(href))
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  onClick={() => setOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                    active
-                      ? 'bg-[#f97316] text-white font-medium'
-                      : 'text-black hover:text-black hover:bg-black/10'
-                  }`}
-                >
-                  <Icon size={17} />
-                  {label}
-                </Link>
-              )
-            })}
-          </div>
-        </div>
-      ))}
-    </nav>
-  )
-
-  const BottomLinks = () => (
-    <div className="px-3 py-4 border-t border-white/10">
-      <Link
-        href="/"
-        onClick={() => setOpen(false)}
-        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/60 hover:text-white hover:bg-white/10 transition-colors mb-1"
-      >
-        ← Back to Store
-      </Link>
-      <button
-        onClick={handleLogout}
-        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/60 hover:text-red-400 hover:bg-white/10 transition-colors w-full text-left"
-      >
-        <LogOut size={17} />
-        Sign Out
-      </button>
-    </div>
-  )
-
   return (
     <>
       {/* Desktop Sidebar — only on md+ */}
       {!isMobile && (
         <aside className="fixed top-0 left-0 h-full w-64 bg-[#96b1d8] text-black flex flex-col z-50">
-          <div className="px-6 py-5 border-b border-white/10">
-            <p className="text-[20px] uppercase tracking-widest font-bold text-black/80 mb-0.5">ShakTa</p>
-            <h1 className="text-lg font-bold">Admin Panel</h1>
+          <div className="px-6 py-5 border-b border-white/10 shrink-0">
+            <p className="text-[20px] uppercase tracking-widest font-black text-black mb-0.5">ShakTa</p>
+            <h1 className="text-lg font-black text-black/60">Admin Panel</h1>
           </div>
-          <NavLinks />
-          <BottomLinks />
+          
+          <nav className="flex-1 px-3 py-4 overflow-y-auto hide-scrollbar">
+            {navGroups.map((group) => (
+              <div key={group.label} className="mb-4">
+                <p className="px-3 mb-1 text-[10px] uppercase tracking-widest font-bold text-black/80">
+                  {group.label}
+                </p>
+                <div className="space-y-0.5">
+                  {group.links.map(({ href, label, icon: Icon }) => {
+                    const active = pathname === href || (href !== '/admin' && pathname.startsWith(href))
+                    return (
+                      <Link
+                        key={href}
+                        href={href}
+                        scroll={false}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+                          active
+                            ? 'bg-black text-white font-medium shadow-md transition-all'
+                            : 'text-black hover:text-black hover:bg-black/5'
+                        }`}
+                      >
+                        <Icon size={17} />
+                        {label}
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+          </nav>
+
+          <div className="px-3 py-4 border-t border-white/10 shrink-0">
+            <Link
+              href="/"
+              scroll={false}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-black/60 hover:text-black hover:bg-black/5 transition-colors mb-1"
+            >
+              ← Back to Store
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-black/60 hover:text-red-600 hover:bg-black/5 transition-colors w-full text-left"
+            >
+              <LogOut size={17} />
+              Sign Out
+            </button>
+          </div>
         </aside>
       )}
 
@@ -165,12 +159,59 @@ export default function AdminSidebar() {
           className="fixed top-0 left-0 h-full w-64 bg-[#96b1d8] text-black flex flex-col z-50 transition-transform duration-300"
           style={{ transform: open ? 'translateX(0)' : 'translateX(-100%)' }}
         >
-          <div className="px-6 py-5 border-b border-white/10">
-            <p className="text-[11px] uppercase tracking-widest font-bold text-black/80 mb-0.5">ShakTa</p>
-            <h1 className="text-lg font-bold">Admin Panel</h1>
+          <div className="px-6 py-5 border-b border-white/10 shrink-0">
+            <p className="text-[11px] uppercase tracking-widest font-black text-black mb-0.5">ShakTa</p>
+            <h1 className="text-lg font-black text-black/60">Admin Panel</h1>
           </div>
-          <NavLinks />
-          <BottomLinks />
+          
+          <nav className="flex-1 px-3 py-4 overflow-y-auto hide-scrollbar">
+            {navGroups.map((group) => (
+              <div key={group.label} className="mb-4">
+                <p className="px-3 mb-1 text-[10px] uppercase tracking-widest font-bold text-black/80">
+                  {group.label}
+                </p>
+                <div className="space-y-0.5">
+                  {group.links.map(({ href, label, icon: Icon }) => {
+                    const active = pathname === href || (href !== '/admin' && pathname.startsWith(href))
+                    return (
+                      <Link
+                        key={href}
+                        href={href}
+                        scroll={false}
+                        onClick={() => setOpen(false)}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+                          active
+                            ? 'bg-black text-white font-medium shadow-md transition-all'
+                            : 'text-black hover:text-black hover:bg-black/5'
+                        }`}
+                      >
+                        <Icon size={17} />
+                        {label}
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+          </nav>
+
+          <div className="px-3 py-4 border-t border-white/10 shrink-0">
+            <Link
+              href="/"
+              scroll={false}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-black/60 hover:text-black hover:bg-black/5 transition-colors mb-1"
+            >
+              ← Back to Store
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-black/60 hover:text-red-600 hover:bg-black/5 transition-colors w-full text-left"
+            >
+              <LogOut size={17} />
+              Sign Out
+            </button>
+          </div>
         </aside>
       )}
     </>

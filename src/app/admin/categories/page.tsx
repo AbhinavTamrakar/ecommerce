@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
-import { Plus, Trash2, X, Layers, Image as ImageIcon } from 'lucide-react'
+import { Plus, Trash2, X, Layers, Image as ImageIcon, Pencil } from 'lucide-react'
 import { AddCategoryForm } from '@/components/admin/AddCategoryForm'
+import { UpdateCategoryForm } from '@/components/admin/UpdateCategoryForm'
 import { DeleteCategoryButton } from '@/components/admin/DeleteCategoryButton'
 import Pagination from '@/components/admin/Pagination'
 
@@ -14,6 +15,8 @@ export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState<any>(null)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [totalPages, setTotalPages] = useState(1)
@@ -73,12 +76,12 @@ export default function AdminCategoriesPage() {
 
       <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden mb-12 animate-in fade-in zoom-in-95 duration-700">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-[15px]">
             <thead>
               <tr className="bg-gray-50/80 border-b border-gray-100 text-black">
                 <th className="px-8 py-6 text-left text-[10px] font-bold uppercase tracking-[0.2em]">S.N</th>
-                <th className="px-8 py-6 text-left text-[10px] font-bold uppercase tracking-[0.2em]">Category Entity</th>
-                <th className="px-8 py-6 text-left text-[10px] font-bold uppercase tracking-[0.2em]">Route Index</th>
+                <th className="px-8 py-6 text-left text-[10px] font-bold uppercase tracking-[0.2em]">Category Name</th>
+                <th className="px-8 py-6 text-left text-[10px] font-bold uppercase tracking-[0.2em]">Slug</th>
                 <th className="px-8 py-6 text-right text-[10px] font-bold uppercase tracking-[0.2em]">Actions</th>
               </tr>
             </thead>
@@ -127,7 +130,19 @@ export default function AdminCategoriesPage() {
                         </span>
                     </td>
                     <td className="px-8 py-6 text-right whitespace-nowrap">
-                       <DeleteCategoryButton id={cat.id} onDeleted={() => fetchCategories(page, pageSize)} />
+                       <div className="flex items-center justify-end gap-2">
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedCategory(cat);
+                              setShowEditModal(true);
+                            }}
+                            className="p-3 rounded-2xl text-black/80 hover:text-black hover:bg-white transition-all shadow-sm border border-transparent hover:border-gray-100"
+                          >
+                            <Pencil size={18} />
+                          </button>
+                          <DeleteCategoryButton id={cat.id} onDeleted={() => fetchCategories(page, pageSize)} />
+                       </div>
                     </td>
                   </tr>
                 ))
@@ -166,6 +181,28 @@ export default function AdminCategoriesPage() {
               </div>
               <div className="p-12">
                  <AddCategoryForm onCategoryAdded={() => { setShowAddModal(false); fetchCategories(page, pageSize); }} />
+              </div>
+           </div>
+        </div>
+      )}
+
+      {showEditModal && selectedCategory && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50 p-6" onClick={() => setShowEditModal(false)}>
+           <div className="bg-white rounded-[4rem] shadow-2xl w-full max-w-xl overflow-hidden animate-in zoom-in-95 duration-300" onClick={e => e.stopPropagation()}>
+              <div className="px-12 py-10 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                 <div>
+                    <h2 className="text-3xl font-black text-black tracking-tighter leading-none mb-2">Edit Category</h2>
+                    <p className="text-[10px] font-black text-black/70 uppercase tracking-[0.2em]">Modify classification node</p>
+                 </div>
+                 <button onClick={() => setShowEditModal(false)} className="p-5 bg-white rounded-3xl shadow-sm text-black/90 hover:text-black transition-all">
+                    <X size={24} />
+                 </button>
+              </div>
+              <div className="p-12">
+                 <UpdateCategoryForm 
+                   category={selectedCategory} 
+                   onCategoryUpdated={() => { setShowEditModal(false); fetchCategories(page, pageSize); }} 
+                 />
               </div>
            </div>
         </div>

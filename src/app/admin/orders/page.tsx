@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { UpdateOrderStatus } from '@/components/admin/UpdateOrderStatus'
-import { Package, ShoppingBag, Search, Filter } from 'lucide-react'
+import { Package, ShoppingBag, Search, Filter, Calendar, X } from 'lucide-react'
 import Pagination from '@/components/admin/Pagination'
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://194.146.12.71:8008'
@@ -14,7 +14,6 @@ const statusColor: Record<string, string> = {
   shipped: 'bg-purple-500 text-white shadow-sm',
   pending: 'bg-black text-white shadow-sm',
   cancelled: 'bg-red-500 text-white shadow-sm',
-  refunded: 'bg-gray-400 text-white shadow-sm',
 }
 
 export default function AdminOrdersPage() {
@@ -26,6 +25,8 @@ export default function AdminOrdersPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
   const [isServerPaginated, setIsServerPaginated] = useState(false)
 
   const fetchOrders = async (p = 1, limit = 10) => {
@@ -76,7 +77,11 @@ export default function AdminOrdersPage() {
 
     const matchStatus = statusFilter === 'all' || order.status?.toLowerCase() === statusFilter
     
-    return matchSearch && matchStatus
+    const oDateStr = order.created_at ? order.created_at.split('T')[0] : ''
+    const matchFromDate = !fromDate || oDateStr >= fromDate
+    const matchToDate = !toDate || oDateStr <= toDate
+    
+    return matchSearch && matchStatus && matchFromDate && matchToDate
   })
 
   // Display logic: only slice if server didn't paginate
@@ -101,40 +106,73 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Filter Row */}
-      <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-3 mb-8 flex flex-wrap items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-700">
-        <div className="flex-1 min-w-[300px] relative">
-           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black" size={18} />
-           <input 
-              type="text" 
-              placeholder="Search by ID, Customer Name, Order Status or Payment..." 
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-gray-50/50 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold text-black placeholder:text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-inner"
-           />
+      <div className="flex items-center gap-3 mb-8 flex-wrap animate-in fade-in slide-in-from-top-4 duration-700">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-1.5 flex items-center flex-1 min-w-[280px]">
+           <div className="flex-1 relative">
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-black/30" size={18} />
+              <input 
+                 type="text" 
+                 placeholder="Search orders..." 
+                 value={search}
+                 onChange={(e) => setSearch(e.target.value)}
+                 className="w-full bg-gray-50/50 border-none rounded-xl py-2.5 pl-14 pr-6 text-sm font-bold text-black placeholder:text-black/30 focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-inner"
+              />
+           </div>
         </div>
-        
-        <div className="flex items-center gap-2 px-6 h-14 bg-gray-50/30 rounded-2xl border border-gray-50">
-           <Filter size={16} className="text-black" />
-           <select 
-             value={statusFilter}
-             onChange={(e) => setStatusFilter(e.target.value)}
-             className="bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-[#96b1d8] hover:text-black outline-none cursor-pointer"
-           >
-              <option value="all">Global Visibility</option>
-              {Object.keys(statusColor).map(s => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-           </select>
+
+        <select 
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="bg-white border border-gray-100 rounded-2xl py-3 px-6 text-[10px] font-black uppercase tracking-widest text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-sm cursor-pointer hover:border-gray-200"
+        >
+          <option value="all">All Orders</option>
+          {Object.keys(statusColor).map(s => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <span className="absolute -top-2.5 left-3 px-1 bg-white text-[8px] font-black text-black/40 uppercase tracking-widest z-10">From</span>
+            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-black/30" size={12} />
+            <input 
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="bg-white border border-gray-100 rounded-2xl py-3 pl-10 pr-4 text-[9px] font-black uppercase tracking-widest text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-sm hover:border-gray-200"
+            />
+          </div>
+          <div className="relative group">
+            <span className="absolute -top-2.5 left-3 px-1 bg-white text-[8px] font-black text-black/40 uppercase tracking-widest z-10">To</span>
+            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-black/30" size={12} />
+            <input 
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="bg-white border border-gray-100 rounded-2xl py-3 pl-10 pr-4 text-[9px] font-black uppercase tracking-widest text-black focus:ring-2 focus:ring-black/5 outline-none transition-all shadow-sm hover:border-gray-200"
+            />
+            <button 
+              onClick={() => {
+                setStatusFilter('all');
+                setFromDate('');
+                setToDate('');
+                setSearch('');
+              }}
+              className="absolute -bottom-5 right-2 text-[8px] font-black uppercase tracking-[0.2em] text-black/40 hover:text-red-500 transition-colors whitespace-nowrap"
+            >
+              Clear Filters
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden mb-12 animate-in fade-in zoom-in-95 duration-1000">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-[15px]">
             <thead>
               <tr className="bg-gray-50/80 border-b border-gray-100 text-black">
                 <th className="px-8 py-6 text-left text-[10px] font-bold uppercase tracking-[0.2em] whitespace-nowrap">S.N</th>
-                {['Order', 'Customer', 'Date', 'Total', 'Payment', 'Status', 'Actions'].map((h) => (
+                {['Order No.', 'Customer', 'Date', 'Total Price', 'Payment Status', 'Delivery Status', 'Actions'].map((h) => (
                   <th key={h} className="px-8 py-6 text-left text-[10px] font-bold uppercase tracking-[0.2em] whitespace-nowrap">
                     {h}
                   </th>
